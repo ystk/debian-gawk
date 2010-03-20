@@ -1,0 +1,52 @@
+## DP: Description: Fix typos in German PO file. (#314081)
+## DP: Author: Jens Seidel <jensseidel@users.sf.net>
+## DP: Upstream status: Needs to be sent upstream
+## DP: Date: 2005-06-14
+
+--- a/po/de.po
++++ b/po/de.po
+@@ -365,7 +365,7 @@
+ 
+ #: awkgram.y:2748 profile.c:95
+ msgid "sending profile to standard error"
+-msgstr "Schicke Profile auf Stadard-Fehlerausgabe."
++msgstr "Schicke Profile auf Standard-Fehlerausgabe."
+ 
+ #: awkgram.y:2780
+ #, c-format
+@@ -1536,7 +1536,7 @@
+ #: main.c:718
+ #, c-format
+ msgid "Usage: %s [POSIX or GNU style options] [--] %cprogram%c file ...\n"
+-msgstr "Anwendung: %s [POSIX- oder GNU-Optionen] -- %cPROGRAM%c Datei ...\n"
++msgstr "Anwendung: %s [POSIX- oder GNU-Optionen] -- %cPROGRAMM%c Datei ...\n"
+ 
+ #: main.c:723
+ msgid "POSIX options:\t\tGNU long options:\n"
+@@ -1544,7 +1544,7 @@
+ 
+ #: main.c:724
+ msgid "\t-f progfile\t\t--file=progfile\n"
+-msgstr "\t-f PROGRAM\t\t--file=PROGRAM\n"
++msgstr "\t-f PROGRAM\t\t--file=PROGRAMM\n"
+ 
+ #: main.c:725
+ msgid "\t-F fs\t\t\t--field-separator=fs\n"
+@@ -1804,7 +1804,7 @@
+ 
+ #: node.c:657
+ msgid "POSIX does not allow `\\x' escapes"
+-msgstr "POSIX erlabut keine '\\x'-Escapes."
++msgstr "POSIX erlaubt keine '\\x'-Escapes."
+ 
+ #: node.c:663
+ msgid "no hex digits in `\\x' escape sequence"
+@@ -1915,7 +1915,7 @@
+ 
+ #: regcomp.c:145
+ msgid "Invalid character class name"
+-msgstr "Ungültier Name für Zeichenklasse."
++msgstr "Ungültiger Name für Zeichenklasse."
+ 
+ #: regcomp.c:148
+ msgid "Trailing backslash"

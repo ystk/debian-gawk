@@ -3,7 +3,7 @@
  */
 
 /* 
- * Copyright (C) 1986, 1988, 1989, 1991-2009 the Free Software Foundation, Inc.
+ * Copyright (C) 1986, 1988, 1989, 1991-2011 the Free Software Foundation, Inc.
  * 
  * This file is part of GAWK, the GNU implementation of the
  * AWK Programming Language.
@@ -79,13 +79,7 @@ Please port the following code to your weird host;
 AWKNUM
 Floor(AWKNUM n)
 {
-	return floor(n
-#if 0
-#ifdef _CRAY
-		* (1.0 + DBL_EPSILON)
-#endif
-#endif
-	);
+	return floor(n);
 }
 
 /* Ceil --- do ceil(), also for Cray */
@@ -93,13 +87,7 @@ Floor(AWKNUM n)
 AWKNUM
 Ceil(AWKNUM n)
 {
-	return ceil(n
-#if 0
-#ifdef _CRAY
-		* (1.0 + DBL_EPSILON)
-#endif
-#endif
-	);
+	return ceil(n);
 }
 
 #ifdef HAVE_UINTMAX_T

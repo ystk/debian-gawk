@@ -7,8 +7,8 @@
  */
 
 /* 
- * Copyright (C) 1991-1992, 1995-1996, 1999, 2001, 2002, 2003, 2005, 2009
- * the Free Software Foundation, Inc.
+ * Copyright (C) 1991-1992, 1995-1996, 1999, 2001-2003, 2005, 2009, 2010, 2011,
+ * 2012, the Free Software Foundation, Inc.
  * 
  * This file is part of GAWK, the GNU implementation of the
  * AWK Programming Language.
@@ -128,13 +128,13 @@
 #define HAVE_ISASCII 1
 
 /* Define to 1 if you have the `iswctype' function. */
-#undef HAVE_ISWCTYPE
+#define HAVE_ISWCTYPE 1
 
 /* Define to 1 if you have the `iswlower' function. */
-#undef HAVE_ISWLOWER
+#define HAVE_ISWLOWER 1
 
 /* Define to 1 if you have the `iswupper' function. */
-#undef HAVE_ISWUPPER
+#define HAVE_ISWUPPER 1
 
 /* Define if you have <langinfo.h> and nl_langinfo(CODESET). */
 #undef HAVE_LANGINFO_CODESET
@@ -145,8 +145,14 @@
 /* Define to 1 if you have the <libintl.h> header file. */
 #undef HAVE_LIBINTL_H
 
+/* Define if you have the libsigsegv library. */
+#undef HAVE_LIBSIGSEGV
+
 /* Define to 1 if you have the `m' library (-lm). */
 #undef HAVE_LIBM
+
+/* Define to 1 if you have a fully functional readline library. */
+#undef HAVE_LIBREADLINE
 
 /* Define to 1 if you have the <limits.h> header file. */
 #define HAVE_LIMITS_H 1
@@ -161,10 +167,10 @@
 #undef HAVE_LONG_LONG_INT
 
 /* Define to 1 if you have the `mbrlen' function. */
-#undef HAVE_MBRLEN
+#define HAVE_MBRLEN 1
 
 /* Define to 1 if mbrtowc and mbstate_t are properly declared. */
-#undef HAVE_MBRTOWC
+#define HAVE_MBRTOWC 1
 
 /* Define to 1 if you have the <mcheck.h> header file. */
 #undef HAVE_MCHECK_H
@@ -202,14 +208,14 @@
 /* Define to 1 if you have the <netinet/in.h> header file. */
 #undef HAVE_NETINET_IN_H
 
-/* we have portals on /p on this system */
-#undef HAVE_PORTALS
+/* we'll use the one in [.missing_d] */
+#undef HAVE_SETENV
 
 /* Define to 1 if you have the `setlocale' function. */
 #undef HAVE_SETLOCALE
 
-/* Define to 1 if you have the <signum.h> header file. */
-#undef HAVE_SIGNUM_H
+/* Define to 1 if you have the `setsid' function. */
+#undef HAVE_SETSID
 
 /* Define to 1 if you have the `snprintf' function. */
 #undef HAVE_SNPRINTF
@@ -238,6 +244,9 @@
 
 /* Define to 1 if you have the `strchr' function. */
 #define HAVE_STRCHR 1
+
+/* Define to 1 if you have the `strcoll' function. */
+#define HAVE_STRCOLL 1
 
 /* Define to 1 if you have the `strerror' function. */
 #define HAVE_STRERROR 1
@@ -270,10 +279,10 @@
 /* Define to 1 if you have the `strtoul' function. */
 #define HAVE_STRTOUL 1
 
-/* Define to 1 if `st_blksize' is member of `struct stat'. */
+/* Define to 1 if `st_blksize' is a member of `struct stat'. */
 #undef HAVE_STRUCT_STAT_ST_BLKSIZE
 
-/* Define to 1 if `tm_zone' is member of `struct tm'. */
+/* Define to 1 if `tm_zone' is a member of `struct tm'. */
 #undef HAVE_STRUCT_TM_TM_ZONE
 
 /* Define to 1 if your `struct stat' has `st_blksize'. Deprecated, use
@@ -282,6 +291,9 @@
 
 /* Define to 1 if you have the `system' function. */
 #define HAVE_SYSTEM 1
+
+/* Define to 1 if you have the <sys/ioctl.h> header file. */
+#undef HAVE_SYS_IOCTL_H
 
 /* Define to 1 if you have the <sys/param.h> header file. */
 #undef HAVE_SYS_PARAM_H
@@ -316,10 +328,10 @@
 #undef HAVE_TM_ZONE
 
 /* Define to 1 if you have the `towlower' function. */
-#undef HAVE_TOWLOWER
+#define HAVE_TOWLOWER 1
 
 /* Define to 1 if you have the `towupper' function. */
-#undef HAVE_TOWUPPER
+#define HAVE_TOWUPPER 1
 
 /* Define to 1 if you don't have `tm_zone' but do have the external array
    `tzname'. */
@@ -344,26 +356,29 @@
 /* Define to 1 if the system has the type `unsigned long long int'. */
 #undef HAVE_UNSIGNED_LONG_LONG_INT
 
+/* Define to 1 if you have the `usleep' function. */
+#define HAVE_USLEEP 1
+
 /* Define to 1 if you have the `vprintf' function. */
 #define HAVE_VPRINTF 1
 
 /* Define to 1 if you have the <wchar.h> header file. */
-#undef HAVE_WCHAR_H
+#define HAVE_WCHAR_H 1
 
 /* Define to 1 if you have the `wcrtomb' function. */
-#undef HAVE_WCRTOMB
+#define HAVE_WCRTOMB 1
 
 /* Define to 1 if you have the `wcscoll' function. */
-#undef HAVE_WCSCOLL
+#define HAVE_WCSCOLL 1
 
 /* Define to 1 if you have the `wctype' function. */
-#undef HAVE_WCTYPE
+#define HAVE_WCTYPE 1
 
 /* Define to 1 if you have the <wctype.h> header file. */
-#undef HAVE_WCTYPE_H
+#define HAVE_WCTYPE_H 1
 
 /* systems should define this type here */
-#undef HAVE_WCTYPE_T
+#define HAVE_WCTYPE_T 1
 
 /* systems should define this type here */
 #undef HAVE_WINT_T
@@ -384,19 +399,19 @@
 #define PACKAGE_NAME "GNU Awk"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "GNU Awk 3.1.7"
+#define PACKAGE_STRING "GNU Awk 3.1.8"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "gawk"
 
+/* Define to the home page for this package. */
+#undef PACKAGE_URL
+
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "3.1.7"
+#define PACKAGE_VERSION "4.0.1"
 
 /* Define to 1 if *printf supports %F format */
 #undef PRINTF_HAS_F_FORMAT
-
-/* Define to 1 if the C compiler supports function prototypes. */
-#define PROTOTYPES 1
 
 /* Define as the return type of signal handlers (`int' or `void'). */
 #define RETSIGTYPE void
@@ -406,9 +421,6 @@
 
 /* The size of a `unsigned long', as computed by sizeof. */
 #define SIZEOF_UNSIGNED_LONG 4
-
-/* return type of sprintf */
-#define SPRINTF_RET int
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
@@ -426,7 +438,7 @@
 #define USE_INCLUDED_STRFTIME 1
 
 /* Version number of package */
-#define VERSION "3.1.6"
+#define VERSION "4.0.1"
 
 /* Define to 1 if on AIX 3.
    System headers sometimes define this.
@@ -472,9 +484,6 @@
 # undef _TANDEM_SOURCE
 #endif
 
-/* Define like PROTOTYPES; this can be used by system headers. */
-#define __PROTOTYPES 1
-
 /* Define to empty if `const' does not conform to ANSI C. */
 #undef const
 
@@ -493,8 +502,9 @@
 /* Define to `int' if <sys/types.h> doesn't define.  */
 #undef pid_t
 
-/* Define to equivalent of C99 restrict keyword, or to nothing if this is not
-   supported. Do not define if restrict is supported directly. */
+/* Define to the equivalent of the C99 'restrict' keyword, or to
+   nothing if this is not supported.  Do not define if restrict is
+   supported directly.  */
 #define restrict
 #if defined(__DECC) && (__DECC_VER >= 60400000)
 #undef restrict

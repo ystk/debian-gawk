@@ -1,9 +1,9 @@
 /*
- * main.c -- Expression tree constructors and main program for gawk. 
+ * main.c -- Code generator and main program for gawk. 
  */
 
 /* 
- * Copyright (C) 1986, 1988, 1989, 1991-2009 the Free Software Foundation, Inc.
+ * Copyright (C) 1986, 1988, 1989, 1991-2012 the Free Software Foundation, Inc.
  * 
  * This file is part of GAWK, the GNU implementation of the
  * AWK Programming Language.
@@ -24,54 +24,49 @@
  */
 
 /* FIX THIS BEFORE EVERY RELEASE: */
-#define UPDATE_YEAR	2009
+#define UPDATE_YEAR	2012
 
 #include "awk.h"
 #include "getopt.h"
 
-#ifndef O_BINARY
-#include <fcntl.h>
-#endif
-
 #ifdef HAVE_MCHECK_H
 #include <mcheck.h>
-#endif
-#ifdef HAVE_SIGSEGV_H
-#include <sigsegv.h>
-#else
-typedef void *stackoverflow_context_t;
-#define sigsegv_install_handler(catchsegv) signal(SIGSEGV, catchsig)
-/* define as 0 rather than empty so that (void) cast on it works */
-#define stackoverflow_install_handler(catchstackoverflow, extra_stack, STACK_SIZE) 0
 #endif
 
 #define DEFAULT_PROFILE		"awkprof.out"	/* where to put profile */
 #define DEFAULT_VARFILE		"awkvars.out"	/* where to put vars */
 
 static const char *varfile = DEFAULT_VARFILE;
+const char *command_file = NULL;	/* debugger commands */
 
-static void usage P((int exitval, FILE *fp)) ATTRIBUTE_NORETURN;
-static void copyleft P((void)) ATTRIBUTE_NORETURN;
-static void cmdline_fs P((char *str));
-static void init_args P((int argc0, int argc, const char *argv0, char **argv));
-static void init_vars P((void));
-static NODE *load_environ P((void));
-static NODE *load_procinfo P((void));
-static void add_src P((struct src **data, long *num, long *alloc, enum srctype stype, char *val));
-static RETSIGTYPE catchsig P((int sig)) ATTRIBUTE_NORETURN;
-static int catchsegv P((void *fault_address, int serious));
-static void catchstackoverflow P((int emergency, stackoverflow_context_t scp));
-static void nostalgia P((void)) ATTRIBUTE_NORETURN;
-static void version P((void)) ATTRIBUTE_NORETURN;
-static void init_fds P((void));
-static void init_groupset P((void));
+static void usage(int exitval, FILE *fp) ATTRIBUTE_NORETURN;
+static void copyleft(void) ATTRIBUTE_NORETURN;
+static void cmdline_fs(char *str);
+static void init_args(int argc0, int argc, const char *argv0, char **argv);
+static void init_vars(void);
+static NODE *load_environ(void);
+static NODE *load_procinfo(void);
+static RETSIGTYPE catchsig(int sig);
+#ifdef HAVE_LIBSIGSEGV
+static int catchsegv(void *fault_address, int serious);
+static void catchstackoverflow(int emergency, stackoverflow_context_t scp);
+#endif
+static void nostalgia(void) ATTRIBUTE_NORETURN;
+static void version(void) ATTRIBUTE_NORETURN;
+static void init_fds(void);
+static void init_groupset(void);
+
+static void save_argv(int, char **);
 
 /* These nodes store all the special variables AWK uses */
 NODE *ARGC_node, *ARGIND_node, *ARGV_node, *BINMODE_node, *CONVFMT_node;
-NODE *ENVIRON_node, *ERRNO_node, *FIELDWIDTHS_node, *FILENAME_node, *FNR_node;
-NODE *FS_node, *IGNORECASE_node, *NF_node, *NR_node, *OFMT_node, *OFS_node;
-NODE *ORS_node, *PROCINFO_node, *RLENGTH_node, *RSTART_node, *RS_node;
-NODE *RT_node, *SUBSEP_node, *LINT_node, *TEXTDOMAIN_node;
+NODE *ENVIRON_node, *ERRNO_node, *FIELDWIDTHS_node, *FILENAME_node;
+NODE *FNR_node, *FPAT_node, *FS_node, *IGNORECASE_node, *LINT_node;
+NODE *NF_node, *NR_node, *OFMT_node, *OFS_node, *ORS_node, *PROCINFO_node;
+NODE *RLENGTH_node, *RSTART_node, *RS_node, *RT_node, *SUBSEP_node;
+NODE *TEXTDOMAIN_node;
+
+NODE *_r;	/* used as temporary in stack macros */
 
 long NF;
 long NR;
@@ -82,7 +77,6 @@ char *OFS;
 char *ORS;
 char *OFMT;
 char *TEXTDOMAIN;
-int MRL;	/* See -mr option for use of this variable */
 
 /*
  * CONVFMT is a convenience pointer for the current number to string format.
@@ -91,9 +85,6 @@ int MRL;	/* See -mr option for use of this variable */
  * Fun, fun, fun, fun.
  */
 char *CONVFMT = "%.6g";
-
-
-int errcount = 0;		/* error counter, used by yyerror() */
 
 NODE *Nnull_string;		/* The global null string */
 
@@ -105,34 +96,38 @@ static void init_locale(struct lconv *l);
 /* The name the program was invoked under, for error messages */
 const char *myname;
 
-/* A block of AWK code to be run before running the program */
-NODE *begin_block = NULL;
+/* A block of AWK code to be run */
+INSTRUCTION *code_block = NULL;
 
-/* A block of AWK code to be run after the last input file */
-NODE *end_block = NULL;
+char **d_argv;			/* saved argv for debugger restarting */
+/*
+ * List of rules and functions with first and last instruction (source_line)
+ * information; used for profiling and debugging.
+ */
+INSTRUCTION *rule_list;
 
-int exiting = FALSE;		/* Was an "exit" statement executed? */
-int exit_val = EXIT_SUCCESS;	/* optional exit value */
+int exit_val = EXIT_SUCCESS;		/* exit value */
 
 #if defined(YYDEBUG) || defined(GAWKDEBUG)
 extern int yydebug;
 #endif
 
-struct src *srcfiles = NULL;	/* source file name(s) */
-long numfiles = -1;		/* how many source files */
-static long allocfiles;		/* for how many is *srcfiles allocated */
+SRCFILE *srcfiles; /* source files */
 
-#define	srcfiles_add(stype, val) \
-	add_src(&srcfiles, &numfiles, &allocfiles, stype, val)
+/*
+ * structure to remember variable pre-assignments
+ */
+struct pre_assign {
+	enum assign_type { PRE_ASSIGN = 1, PRE_ASSIGN_FS } type;
+	char *val;
+};
 
-static struct src *preassigns = NULL;	/* requested via -v or -F */
-static long numassigns = -1;		/* how many of them */
-static long allocassigns;		/* for how many is allocated */
+static struct pre_assign *preassigns = NULL;	/* requested via -v or -F */
+static long numassigns = -1;			/* how many of them */
 
 static int disallow_var_assigns = FALSE;	/* true for --exec */
 
-#define	preassigns_add(stype, val) \
-	add_src(&preassigns, &numassigns, &allocassigns, stype, val)
+static void add_preassign(enum assign_type type, char *val);
 
 #undef do_lint
 #undef do_lint_old
@@ -144,23 +139,24 @@ int do_lint_old = FALSE;	/* warn about stuff not in V7 awk */
 int do_intl = FALSE;		/* dump locale-izable strings to stdout */
 int do_non_decimal_data = FALSE;	/* allow octal/hex C style DATA. Use with caution! */
 int do_nostalgia = FALSE;	/* provide a blast from the past */
-int do_intervals = FALSE;	/* allow {...,...} in regexps */
+int do_intervals = FALSE;	/* allow {...,...} in regexps, see resetup() */
 int do_profiling = FALSE;	/* profile and pretty print the program */
 int do_dump_vars = FALSE;	/* dump all global variables at end */
 int do_tidy_mem = FALSE;	/* release vars when done */
-int do_optimize = FALSE;	/* apply any safe optimizations */
-
-int in_begin_rule = FALSE;	/* we're in a BEGIN rule */
-int in_end_rule = FALSE;	/* we're in an END rule */
-int whiny_users = FALSE;	/* do things that whiny users want */
+int do_optimize = TRUE;		/* apply default optimizations */
+int do_binary = FALSE;		/* hands off my data! */
+int do_sandbox = FALSE; 	/* sandbox mode - disable 'system' function & redirections */
 int use_lc_numeric = FALSE;	/* obey locale for decimal point */
-#ifdef MBS_SUPPORT
+
+#if MBS_SUPPORT
 int gawk_mb_cur_max;		/* MB_CUR_MAX value, see comment in main() */
-#else
-const int gawk_mb_cur_max = 1;
 #endif
 
+FILE *output_fp;		/* default output for debugger */
 int output_is_tty = FALSE;	/* control flushing of output */
+
+/* default format for strftime(), available via PROCINFO */
+const char def_strftime_format[] = "%a %b %e %H:%M:%S %Z %Y";
 
 extern const char *version_string;
 
@@ -169,45 +165,38 @@ GETGROUPS_T *groupset;		/* current group set */
 int ngroups;			/* size of said set */
 #endif
 
-/* The parse tree is stored here.  */
-NODE *expression_value;
+void (*lintfunc)(const char *mesg, ...) = warning;
 
-#if _MSC_VER == 510
-void (*lintfunc) P((va_list va_alist, ...)) = warning;
-#else
-#ifdef CAN_USE_STDARG_H
-void (*lintfunc) P((const char *mesg, ...)) = warning;
-#else
-void (*lintfunc) () = warning;
-#endif
-#endif
-
+/*
+ * Note: reserve -D for future use, to merge dgawk into gawk.
+ * Note: reserve -l for future use, for xgawk's -l option.
+ */
 static const struct option optab[] = {
-	{ "compat",		no_argument,		& do_traditional,	1 },
 	{ "traditional",	no_argument,		& do_traditional,	1 },
-	{ "lint",		optional_argument,	NULL,		'l' },
+	{ "lint",		optional_argument,	NULL,		'L' },
 	{ "lint-old",		no_argument,		& do_lint_old,	1 },
 	{ "optimize",		no_argument,		& do_optimize,	'O' },
 	{ "posix",		no_argument,		& do_posix,	1 },
+	{ "command",		required_argument,	NULL,		'R' },
 	{ "nostalgia",		no_argument,		& do_nostalgia,	1 },
-	{ "gen-po",		no_argument,		& do_intl,	1 },
+	{ "gen-pot",		no_argument,		& do_intl,	1 },
 	{ "non-decimal-data",	no_argument,		& do_non_decimal_data, 1 },
 	{ "profile",		optional_argument,	NULL,		'p' },
-	{ "copyleft",		no_argument,		NULL,		'C' },
 	{ "copyright",		no_argument,		NULL,		'C' },
 	{ "field-separator",	required_argument,	NULL,		'F' },
 	{ "file",		required_argument,	NULL,		'f' },
 	{ "re-interval",	no_argument,		& do_intervals,	1 },
-	{ "source",		required_argument,	NULL,		's' },
+	{ "source",		required_argument,	NULL,		'e' },
 	{ "dump-variables",	optional_argument,	NULL,		'd' },
 	{ "assign",		required_argument,	NULL,		'v' },
 	{ "version",		no_argument,		NULL,		'V' },
-	{ "usage",		no_argument,		NULL,		'u' },
-	{ "help",		no_argument,		NULL,		'u' },
-	{ "exec",		required_argument,	NULL,		'S' },
+	{ "help",		no_argument,		NULL,		'h' },
+	{ "exec",		required_argument,	NULL,		'E' },
 	{ "use-lc-numeric",	no_argument,		& use_lc_numeric, 1 },
+	{ "characters-as-bytes", no_argument,		& do_binary,	 'b' },
+	{ "sandbox",		no_argument,		& do_sandbox, 	1 },
 #if defined(YYDEBUG) || defined(GAWKDEBUG)
-	{ "parsedebug",		no_argument,		NULL,		'D' },
+	{ "parsedebug",		no_argument,		NULL,		'Y' },
 #endif
 	{ NULL, 0, NULL, '\0' }
 };
@@ -222,25 +211,21 @@ static const struct option optab[] = {
 int
 main(int argc, char **argv)
 {
-	int c;
-	char *scan;
-	/* the + on the front tells GNU getopt not to rearrange argv */
-	const char *optlist = "+F:f:v:W;m:DO";
+	/*
+	 * The + on the front tells GNU getopt not to rearrange argv.
+	 * Note: reserve -D for future use, to merge dgawk into gawk.
+	 * Note: reserve -l for future use, for xgawk's -l option.
+	 */
+	const char *optlist = "+F:f:v:W;m:bcCd::e:E:gh:L:nNOp::PrR:StVY";
 	int stopped_early = FALSE;
 	int old_optind;
-	extern int optind;
-	extern int opterr;
-	extern char *optarg;
 	int i;
-	int stdio_problem = FALSE;
+	int c;
+	char *scan, *src;
 	char *extra_stack;
 
 	/* do these checks early */
-	if (getenv("TIDYMEM") != NULL)
-		do_tidy_mem = TRUE;
-
-	if (getenv("WHINY_USERS") != NULL)
-		whiny_users = TRUE;
+	do_tidy_mem = (getenv("TIDYMEM") != NULL);
 
 #ifdef HAVE_MCHECK_H
 #ifdef HAVE_MTRACE
@@ -258,7 +243,7 @@ main(int argc, char **argv)
 #if defined(LC_MESSAGES)
 	setlocale(LC_MESSAGES, "");
 #endif
-#if defined(LC_NUMERIC)
+#if defined(LC_NUMERIC) && defined(HAVE_LOCALE_H)
 	/*
 	 * Force the issue here.  According to POSIX 2001, decimal
 	 * point is used for parsing source code and for command-line
@@ -280,7 +265,7 @@ main(int argc, char **argv)
 	setlocale(LC_TIME, "");
 #endif
 
-#ifdef MBS_SUPPORT
+#if MBS_SUPPORT
 	/*
 	 * In glibc, MB_CUR_MAX is actually a function.  This value is
 	 * tested *a lot* in many speed-critical places in gawk. Caching
@@ -288,6 +273,9 @@ main(int argc, char **argv)
 	 */
 	gawk_mb_cur_max = MB_CUR_MAX;
 	/* Without MBS_SUPPORT, gawk_mb_cur_max is 1. */
+
+	/* init the cache for checking bytes if they're characters */
+	init_btowc_cache();
 #endif
 
 	(void) bindtextdomain(PACKAGE, LOCALEDIR);
@@ -297,24 +285,18 @@ main(int argc, char **argv)
 #ifdef SIGBUS
 	(void) signal(SIGBUS, catchsig);
 #endif
+
 	(void) sigsegv_install_handler(catchsegv);
 #define STACK_SIZE (16*1024)
-	extra_stack = malloc(STACK_SIZE);
-	if (extra_stack == NULL)
-		fatal(_("out of memory"));
+	emalloc(extra_stack, char *, STACK_SIZE, "main");
 	(void) stackoverflow_install_handler(catchstackoverflow, extra_stack, STACK_SIZE);
 #undef STACK_SIZE
 
 	myname = gawk_name(argv[0]);
-        argv[0] = (char *) myname;
 	os_arg_fixup(&argc, &argv); /* emulate redirection, expand wildcards */
 
-	/* remove sccs gunk */
-	if (strncmp(version_string, "@(#)", 4) == 0)
-		version_string += 4;
-
 	if (argc < 2)
-		usage(1, stderr);
+		usage(EXIT_FAILURE, stderr);
 
 	/* Robustness: check that file descriptors 0, 1, 2 are open */
 	init_fds();
@@ -322,8 +304,16 @@ main(int argc, char **argv)
 	/* init array handling. */
 	array_init();
 
+	output_fp = stdout;
+
 	/* we do error messages ourselves on invalid options */
 	opterr = FALSE;
+
+	/* copy argv before getopt gets to it; used to restart the debugger */  
+	save_argv(argc, argv);
+
+	/* initialize global (main) execution context */
+	push_context(new_context());
 
 	/* option processing. ready, set, go! */
 	for (optopt = 0, old_optind = 1;
@@ -334,66 +324,58 @@ main(int argc, char **argv)
 
 		switch (c) {
 		case 'F':
-			preassigns_add(PRE_ASSIGN_FS, optarg);
+			add_preassign(PRE_ASSIGN_FS, optarg);
 			break;
 
-		case 'S':
+		case 'E':
 			disallow_var_assigns = TRUE;
 			/* fall through */
 		case 'f':
 			/*
-			 * a la MKS awk, allow multiple -f options.
-			 * this makes function libraries real easy.
-			 * most of the magic is in the scanner.
+			 * Allow multiple -f options.
+			 * This makes function libraries real easy.
+			 * Most of the magic is in the scanner.
 			 *
 			 * The following is to allow for whitespace at the end
 			 * of a #! /bin/gawk line in an executable file
 			 */
 			scan = optarg;
 			if (argv[optind-1] != optarg)
-				while (ISSPACE(*scan))
+				while (isspace((unsigned char) *scan))
 					scan++;
-			srcfiles_add(SOURCEFILE,
-				(*scan == '\0' ? argv[optind++] : optarg));
+			src = (*scan == '\0' ? argv[optind++] : optarg);
+			(void) add_srcfile((src && src[0] == '-' && src[1] == '\0') ?
+					SRC_STDIN : SRC_FILE,
+					src, srcfiles, NULL, NULL);
+
 			break;
 
 		case 'v':
-			preassigns_add(PRE_ASSIGN, optarg);
+			add_preassign(PRE_ASSIGN, optarg);
 			break;
 
 		case 'm':
 			/*
-			 * Research awk extension.
+			 * BWK awk extension.
 			 *	-mf nnn		set # fields, gawk ignores
 			 *	-mr nnn		set record length, ditto
 			 *
-			 * As of at least 10/2007, Research awk also ignores it.
+			 * As of at least 10/2007, BWK awk also ignores it.
 			 */
 			if (do_lint)
 				lintwarn(_("`-m[fr]' option irrelevant in gawk"));
 			if (optarg[0] != 'r' && optarg[0] != 'f')
 				warning(_("-m option usage: `-m[fr] nnn'"));
-			/*
-			 * Set fixed length records for Tandem,
-			 * ignored on other platforms (see io.c:get_a_record).
-			 */
-			if (optarg[0] == 'r') {
-				if (ISDIGIT(optarg[1]))
-					MRL = atoi(optarg+1);
-				else {
-					MRL = atoi(argv[optind]);
-					optind++;
-				}
-			} else if (optarg[1] == '\0')
-				optind++;
 			break;
 
-		case 'W':       /* gawk specific options - now in getopt_long */
-			fprintf(stderr, _("%s: option `-W %s' unrecognized, ignored\n"),
-				argv[0], optarg);
+		case 'b':
+			do_binary = TRUE;
 			break;
 
-		/* These can only come from long form options */
+		case 'c':
+			do_traditional = TRUE;
+			break;
+
 		case 'C':
 			copyleft();
 			break;
@@ -404,8 +386,24 @@ main(int argc, char **argv)
 				varfile = optarg;
 			break;
 
-		case 'l':
+		case 'e':
+			if (optarg[0] == '\0')
+				warning(_("empty argument to `-e/--source' ignored"));
+			else
+				(void) add_srcfile(SRC_CMDLINE, optarg, srcfiles, NULL, NULL);
+			break;
+
+		case 'g':
+			do_intl = TRUE;
+			break;
+
+		case 'h':
+			/* write usage to stdout, per GNU coding stds */
+			usage(EXIT_SUCCESS, stdout);
+			break;
+
 #ifndef NO_LINT
+		case 'L':
 			do_lint = LINT_ALL;
 			if (optarg != NULL) {
 				if (strcmp(optarg, "fatal") == 0)
@@ -413,11 +411,27 @@ main(int argc, char **argv)
 				else if (strcmp(optarg, "invalid") == 0)
 					do_lint = LINT_INVALID;
 			}
+			break;
+
+		case 't':
+			do_lint_old = TRUE;
+			break;
+#else
+		case 'L':
+		case 't':
+			break;
 #endif
+
+		case 'n':
+			do_non_decimal_data = TRUE;
+			break;
+
+		case 'N':
+			use_lc_numeric = TRUE;
 			break;
 
 		case 'O':
-			do_optimize = TRUE;
+			do_optimize++;
 			break;
 
 		case 'p':
@@ -428,19 +442,25 @@ main(int argc, char **argv)
 				set_prof_file(DEFAULT_PROFILE);
 			break;
 
-		case 's':
-			if (optarg[0] == '\0')
-				warning(_("empty argument to `--source' ignored"));
-			else
-				srcfiles_add(CMDLINE, optarg);
+		case 'P':
+			do_posix = TRUE;
 			break;
 
-		case 'u':
-			usage(0, stdout);	/* per coding stds */
-			break;
+		case 'r':
+			do_intervals = TRUE;
+ 			break;
+ 
+		case 'S':
+			do_sandbox = TRUE;
+  			break;
 
 		case 'V':
 			version();
+			break;
+
+		case 'W':       /* gawk specific options - now in getopt_long */
+			fprintf(stderr, _("%s: option `-W %s' unrecognized, ignored\n"),
+				argv[0], optarg);
 			break;
 
 		case 0:
@@ -451,20 +471,28 @@ main(int argc, char **argv)
 			 */
 			break;
 
-		case 'D':
+		case 'Y':
+		case 'R':
 #if defined(YYDEBUG) || defined(GAWKDEBUG)
-			yydebug = 2;
-			break;
+			if (c == 'Y') {
+				yydebug = 2;
+				break;
+			}
 #endif
-			/* if not debugging, fall through */
+			if (c == 'R' &&  which_gawk == exe_debugging) {
+				if (optarg[0] != '\0')
+					command_file = optarg;
+				break;
+			}
+			/* if not debugging or dgawk, fall through */
 
 		case '?':
 		default:
 			/*
-			 * New behavior.  If not posix, an unrecognized
-			 * option stops argument processing so that it can
-			 * go into ARGV for the awk program to see. This
-			 * makes use of ``#! /bin/gawk -f'' easier.
+			 * If not posix, an unrecognized option stops argument
+			 * processing so that it can go into ARGV for the awk
+			 * program to see. This makes use of ``#! /bin/gawk -f''
+			 * easier.
 			 *
 			 * However, it's never simple. If optopt is set,
 			 * an option that requires an argument didn't get the
@@ -481,16 +509,18 @@ main(int argc, char **argv)
 				optind = old_optind;
 				stopped_early = TRUE;
 				goto out;
-			} else if (optopt != '\0')
-				/* Use 1003.2 required message format */
+			} else if (optopt != '\0') {
+				/* Use POSIX required message format */
 				fprintf(stderr,
 					_("%s: option requires an argument -- %c\n"),
 					myname, optopt);
+				usage(EXIT_FAILURE, stderr);
+			}
 			/* else
 				let getopt print error message for us */
 			break;
 		}
-		if (c == 'S')	/* --exec ends option processing */
+		if (c == 'E')	/* --exec ends option processing */
 			break;
 	}
 out:
@@ -526,6 +556,15 @@ out:
 	if (do_lint && os_is_setuid())
 		warning(_("running %s setuid root may be a security problem"), myname);
 
+#if MBS_SUPPORT
+	if (do_binary) {
+		if (do_posix)
+			warning(_("`--posix' overrides `--binary'"));
+		else
+			gawk_mb_cur_max = 1;	/* hands off my data! */
+	}
+#endif
+
 	/*
 	 * Force profiling if this is pgawk.
 	 * Don't bother if the command line already set profiling up.
@@ -549,6 +588,8 @@ out:
 	 */
 	resetup();
 
+	(void) grow_stack();
+
 	/* Set up the special variables */
 	init_vars();
 
@@ -556,12 +597,16 @@ out:
 	init_fields();
 
 	/* Now process the pre-assignments */
-	for (i = 0; i <= numassigns; i++)
-		if (preassigns[i].stype == PRE_ASSIGN)
+	for (i = 0; i <= numassigns; i++) {
+		if (preassigns[i].type == PRE_ASSIGN)
 			(void) arg_assign(preassigns[i].val, TRUE);
 		else	/* PRE_ASSIGN_FS */
 			cmdline_fs(preassigns[i].val);
-	free(preassigns);
+		efree(preassigns[i].val);
+	}
+
+	if (preassigns != NULL)
+		efree(preassigns);
 
 	if ((BINMODE & 1) != 0)
 		if (os_setbinmode(fileno(stdin), O_BINARY) == -1)
@@ -576,18 +621,19 @@ out:
 #ifdef GAWKDEBUG
 	setbuf(stdout, (char *) NULL);	/* make debugging easier */
 #endif
-	if (isatty(fileno(stdout)))
+	if (os_isatty(fileno(stdout)))
 		output_is_tty = TRUE;
 	/* No -f or --source options, use next arg */
-	if (numfiles == -1) {
+	if (srcfiles->next == srcfiles) {
 		if (optind > argc - 1 || stopped_early) /* no args left or no program */
-			usage(1, stderr);
-		srcfiles_add(CMDLINE, argv[optind]);
+			usage(EXIT_FAILURE, stderr);
+		(void) add_srcfile(SRC_CMDLINE, argv[optind], srcfiles, NULL, NULL);
 		optind++;
 	}
 
-	init_args(optind, argc, myname, argv);
-	(void) tokexpand();
+	init_args(optind, argc,
+			do_posix ? argv[0] : myname,
+			argv);
 
 #if defined(LC_NUMERIC)
 	/*
@@ -597,22 +643,18 @@ out:
 	 */
 	setlocale(LC_NUMERIC, "C");
 #endif
-
 	/* Read in the program */
-	if (yyparse() != 0 || errcount != 0)
+	if (parse_program(&code_block) != 0)
 		exit(EXIT_FAILURE);
-
-	free(srcfiles);
-
+	
 	if (do_intl)
 		exit(EXIT_SUCCESS);
 
-	if (do_lint && begin_block == NULL && expression_value == NULL
-	     && end_block == NULL)
-		lintwarn(_("no program text at all!"));
-
 	if (do_lint)
 		shadow_funcs();
+
+	if (do_lint && code_block->nexti->opcode == Op_atexit)
+		lintwarn(_("no program text at all!"));
 
 	init_profiling_signals();
 
@@ -636,40 +678,10 @@ out:
 		setlocale(LC_NUMERIC, "");
 #endif
 
-	/* Whew. Finally, run the program. */
-	if (begin_block != NULL) {
-		in_begin_rule = TRUE;
-		(void) interpret(begin_block);
-	}
-	in_begin_rule = FALSE;
-	if (! exiting && (expression_value != NULL || end_block != NULL))
-		do_input();
-	if (end_block != NULL) {
-		in_end_rule = TRUE;
-		(void) interpret(end_block);
-	}
-	in_end_rule = FALSE;
-	/*
-	 * This used to be:
-	 *
-	 * if (close_io() != 0 && ! exiting && exit_val == 0)
-	 * 	exit_val = 1;
-	 *
-	 * Other awks don't care about problems closing open files
-	 * and pipes, in that it doesn't affect their exit status.
-	 * So we no longer do either.
-	 */
-	(void) close_io(& stdio_problem);
-	/*
-	 * However, we do want to exit non-zero if there was a problem
-	 * with stdout/stderr, so we reinstate a slightly different
-	 * version of the above:
-	 */
-	if (stdio_problem && ! exiting && exit_val == EXIT_SUCCESS)
-		exit_val = EXIT_FAILURE;
+	interpret(code_block);
 
 	if (do_profiling) {
-		dump_prog(begin_block, expression_value, end_block);
+		dump_prog(code_block);
 		dump_funcs();
 	}
 
@@ -678,30 +690,37 @@ out:
 
 	if (do_tidy_mem)
 		release_all_vars();
+	
+	/* keep valgrind happier */
+	if (extra_stack)
+		efree(extra_stack);
 
 	exit(exit_val);		/* more portable */
 	return exit_val;	/* to suppress warnings */
 }
 
-/* add_src --- add one element to *srcfiles or *preassigns */
+/* add_preassign --- add one element to preassigns */
 
 static void
-add_src(struct src **data, long *num, long *alloc, enum srctype stype, char *val)
+add_preassign(enum assign_type type, char *val)
 {
+	static long alloc_assigns;		/* for how many are allocated */
+
 #define INIT_SRC 4
 
-	++*num;
+	++numassigns;
 
-	if (*data == NULL) {
-		emalloc(*data, struct src *, INIT_SRC * sizeof(struct src), "add_src");
-		*alloc = INIT_SRC;
-	} else if (*num >= *alloc) {
-		(*alloc) *= 2;
-		erealloc(*data, struct src *, (*alloc) * sizeof(struct src), "add_src");
+	if (preassigns == NULL) {
+		emalloc(preassigns, struct pre_assign *,
+			INIT_SRC * sizeof(struct pre_assign), "add_preassign");
+		alloc_assigns = INIT_SRC;
+	} else if (numassigns >= alloc_assigns) {
+		alloc_assigns *= 2;
+		erealloc(preassigns, struct pre_assign *,
+			alloc_assigns * sizeof(struct pre_assign), "add_preassigns");
 	}
-
-	(*data)[*num].stype = stype;
-	(*data)[*num].val = val;
+	preassigns[numassigns].type = type;
+	preassigns[numassigns].val = estrdup(val, strlen(val));
 
 #undef INIT_SRC
 }
@@ -711,7 +730,6 @@ add_src(struct src **data, long *num, long *alloc, enum srctype stype, char *val
 static void
 usage(int exitval, FILE *fp)
 {
-
 	/* Not factoring out common stuff makes it easier to translate. */
 	fprintf(fp, _("Usage: %s [POSIX or GNU style options] -f progfile [--] file ...\n"),
 		myname);
@@ -720,37 +738,37 @@ usage(int exitval, FILE *fp)
 
 	/* GNU long options info. This is too many options. */
 
-	fputs(_("POSIX options:\t\tGNU long options:\n"), fp);
+	fputs(_("POSIX options:\t\tGNU long options: (standard)\n"), fp);
 	fputs(_("\t-f progfile\t\t--file=progfile\n"), fp);
 	fputs(_("\t-F fs\t\t\t--field-separator=fs\n"), fp);
 	fputs(_("\t-v var=val\t\t--assign=var=val\n"), fp);
-	fputs(_("\t-m[fr] val\n"), fp);
+	fputs(_("Short options:\t\tGNU long options: (extensions)\n"), fp);
+	fputs(_("\t-b\t\t\t--characters-as-bytes\n"), fp);
+	fputs(_("\t-c\t\t\t--traditional\n"), fp);
+	fputs(_("\t-C\t\t\t--copyright\n"), fp);
+	fputs(_("\t-d[file]\t\t--dump-variables[=file]\n"), fp);
+	fputs(_("\t-e 'program-text'\t--source='program-text'\n"), fp);
+	fputs(_("\t-E file\t\t\t--exec=file\n"), fp);
+	fputs(_("\t-g\t\t\t--gen-pot\n"), fp);
+	fputs(_("\t-h\t\t\t--help\n"), fp);
+	fputs(_("\t-L [fatal]\t\t--lint[=fatal]\n"), fp);
+	fputs(_("\t-n\t\t\t--non-decimal-data\n"), fp);
+	fputs(_("\t-N\t\t\t--use-lc-numeric\n"), fp);
 	fputs(_("\t-O\t\t\t--optimize\n"), fp);
-	fputs(_("\t-W compat\t\t--compat\n"), fp);
-	fputs(_("\t-W copyleft\t\t--copyleft\n"), fp);
-	fputs(_("\t-W copyright\t\t--copyright\n"), fp);
-	fputs(_("\t-W dump-variables[=file]\t--dump-variables[=file]\n"), fp);
-	fputs(_("\t-W exec=file\t\t--exec=file\n"), fp);
-	fputs(_("\t-W gen-po\t\t--gen-po\n"), fp);
-	fputs(_("\t-W help\t\t\t--help\n"), fp);
-	fputs(_("\t-W lint[=fatal]\t\t--lint[=fatal]\n"), fp);
-	fputs(_("\t-W lint-old\t\t--lint-old\n"), fp);
-	fputs(_("\t-W non-decimal-data\t--non-decimal-data\n"), fp);
+	fputs(_("\t-p[file]\t\t--profile[=file]\n"), fp);
+	fputs(_("\t-P\t\t\t--posix\n"), fp);
+	fputs(_("\t-r\t\t\t--re-interval\n"), fp);
+	if (which_gawk == exe_debugging)
+		fputs(_("\t-R file\t\t\t--command=file\n"), fp);
+	fputs(_("\t-S\t\t\t--sandbox\n"), fp);
+	fputs(_("\t-t\t\t\t--lint-old\n"), fp);
+	fputs(_("\t-V\t\t\t--version\n"), fp);
 #ifdef NOSTALGIA
 	fputs(_("\t-W nostalgia\t\t--nostalgia\n"), fp);
 #endif
 #ifdef GAWKDEBUG
-	fputs(_("\t-W parsedebug\t\t--parsedebug\n"), fp);
+	fputs(_("\t-Y\t\t--parsedebug\n"), fp);
 #endif
-	fputs(_("\t-W profile[=file]\t--profile[=file]\n"), fp);
-	fputs(_("\t-W posix\t\t--posix\n"), fp);
-	fputs(_("\t-W re-interval\t\t--re-interval\n"), fp);
-	fputs(_("\t-W source=program-text\t--source=program-text\n"), fp);
-	fputs(_("\t-W traditional\t\t--traditional\n"), fp);
-	fputs(_("\t-W usage\t\t--usage\n"), fp);
-	fputs(_("\t-W use-lc-numeric\t--use-lc-numeric\n"), fp);
-	fputs(_("\t-W version\t\t--version\n"), fp);
-
 
 	/* This is one string to make things easier on translators. */
 	/* TRANSLATORS: --help output 5 (end)
@@ -800,11 +818,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n\
 GNU General Public License for more details.\n\
 \n");
 	static const char blurb_part3[] =
-/*
-	  N_("You should have received a copy of the GNU General Public License\n\
-along with this program; if not, write to the Free Software\n\
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.\n");
-*/
 	  N_("You should have received a copy of the GNU General Public License\n\
 along with this program. If not, see http://www.gnu.org/licenses/.\n");
  
@@ -827,16 +840,16 @@ along with this program. If not, see http://www.gnu.org/licenses/.\n");
 static void
 cmdline_fs(char *str)
 {
-	register NODE **tmp;
+	NODE **tmp;
 
-	tmp = get_lhs(FS_node, (Func_ptr *) 0, FALSE);
+	tmp = &FS_node->var_value;
 	unref(*tmp);
 	/*
 	 * Only if in full compatibility mode check for the stupid special
 	 * case so -F\t works as documented in awk book even though the shell
 	 * hands us -Ft.  Bleah!
 	 *
-	 * Thankfully, Posix didn't propagate this "feature".
+	 * Thankfully, POSIX didn't propagate this "feature".
 	 */
 	if (str[0] == 't' && str[1] == '\0') {
 		if (do_lint)
@@ -855,19 +868,26 @@ init_args(int argc0, int argc, const char *argv0, char **argv)
 {
 	int i, j;
 	NODE **aptr;
+	NODE *tmp;
 
-	ARGV_node = install("ARGV", node((NODE *) NULL, Node_var_array, (NODE *) NULL));
-	aptr = assoc_lookup(ARGV_node, tmp_number(0.0), FALSE);
-	*aptr = make_string((char *) argv0, strlen(argv0));
+	ARGV_node = install_symbol(estrdup("ARGV", 4), mk_symbol(Node_var_array, (NODE *) NULL));
+	tmp =  make_number(0.0);
+	aptr = assoc_lookup(ARGV_node, tmp, FALSE);
+	unref(tmp);
+	unref(*aptr);
+	*aptr = make_string(argv0, strlen(argv0));
 	(*aptr)->flags |= MAYBE_NUM;
-	for (i = argc0, j = 1; i < argc; i++) {
-		aptr = assoc_lookup(ARGV_node, tmp_number((AWKNUM) j), FALSE);
+	for (i = argc0, j = 1; i < argc; i++, j++) {
+		tmp = make_number((AWKNUM) j);
+		aptr = assoc_lookup(ARGV_node, tmp, FALSE);
+		unref(tmp);
+		unref(*aptr);
 		*aptr = make_string(argv[i], strlen(argv[i]));
 		(*aptr)->flags |= MAYBE_NUM;
-		j++;
 	}
-	ARGC_node = install("ARGC",
-			node(make_number((AWKNUM) j), Node_var, (NODE *) NULL));
+
+	ARGC_node = install_symbol(estrdup("ARGC", 4),
+					mk_symbol(Node_var, make_number((AWKNUM) j)));
 }
 
 /*
@@ -877,45 +897,48 @@ init_args(int argc0, int argc, const char *argv0, char **argv)
  * they have NULL entries in that field. This is notably true of FS
  * and IGNORECASE.
  */
+
 struct varinit {
 	NODE **spec;
 	const char *name;
-	NODETYPE type;
 	const char *strval;
 	AWKNUM numval;
+	Func_ptr update;
 	Func_ptr assign;
+	int do_assign;
 	int flags;
 #define NO_INSTALL	0x01
 #define NON_STANDARD	0x02
 };
 
 static const struct varinit varinit[] = {
-{NULL,		"ARGC",		Node_illegal,		NULL,	0,  NULL,	NO_INSTALL },
-{&ARGIND_node,	"ARGIND",	Node_var,		NULL,	0,  NULL,	NON_STANDARD },
-{NULL,		"ARGV",		Node_illegal,		NULL,	0,  NULL,	NO_INSTALL },
-{&BINMODE_node,	"BINMODE",	Node_BINMODE,		NULL,	0,  NULL,	NON_STANDARD },
-{&CONVFMT_node,	"CONVFMT",	Node_CONVFMT,		"%.6g",	0,  set_CONVFMT,	0 },
-{NULL,		"ENVIRON",	Node_illegal,		NULL,	0,  NULL,	NO_INSTALL },
-{&ERRNO_node,	"ERRNO",	Node_var,		NULL,	0,  NULL,	NON_STANDARD },
-{&FIELDWIDTHS_node, "FIELDWIDTHS", Node_FIELDWIDTHS,	"",	0,  NULL,	NON_STANDARD },
-{&FILENAME_node, "FILENAME",	Node_var,		"",	0,  NULL,	0 },
-{&FNR_node,	"FNR",		Node_FNR,		NULL,	0,  set_FNR,	0 },
-{&FS_node,	"FS",		Node_FS,		" ",	0,  NULL,	0 },
-{&IGNORECASE_node, "IGNORECASE", Node_IGNORECASE,	NULL,	0,  NULL,	NON_STANDARD },
-{&LINT_node,	"LINT",		Node_LINT,		NULL,	0,  NULL,	NON_STANDARD },
-{&NF_node,	"NF",		Node_NF,		NULL,	-1, NULL,	0 },
-{&NR_node,	"NR",		Node_NR,		NULL,	0,  set_NR,	0 },
-{&OFMT_node,	"OFMT",		Node_OFMT,		"%.6g",	0,  set_OFMT,	0 },
-{&OFS_node,	"OFS",		Node_OFS,		" ",	0,  set_OFS,	0 },
-{&ORS_node,	"ORS",		Node_ORS,		"\n",	0,  set_ORS,	0 },
-{NULL,		"PROCINFO",	Node_illegal,		NULL,	0,  NULL,	NO_INSTALL | NON_STANDARD },
-{&RLENGTH_node, "RLENGTH",	Node_var,		NULL,	0,  NULL,	0 },
-{&RS_node,	"RS",		Node_RS,		"\n",	0,  set_RS,	0 },
-{&RSTART_node,	"RSTART",	Node_var,		NULL,	0,  NULL,	0 },
-{&RT_node,	"RT",		Node_var,		"",	0,  NULL,	NON_STANDARD },
-{&SUBSEP_node,	"SUBSEP",	Node_SUBSEP,		"\034",	0,  NULL,	0 },
-{&TEXTDOMAIN_node,	"TEXTDOMAIN",		Node_TEXTDOMAIN,	"messages",	0,  set_TEXTDOMAIN,	NON_STANDARD },
-{0,		NULL,		Node_illegal,		NULL,	0,  NULL,	0 },
+{NULL,		"ARGC",		NULL,	0,  NULL, NULL,	FALSE, NO_INSTALL },
+{&ARGIND_node,	"ARGIND",	NULL,	0,  NULL, NULL,	FALSE, NON_STANDARD },
+{NULL,		"ARGV",		NULL,	0,  NULL, NULL,	FALSE, NO_INSTALL },
+{&BINMODE_node,	"BINMODE",	NULL,	0,  NULL, set_BINMODE,	FALSE, NON_STANDARD },
+{&CONVFMT_node,	"CONVFMT",	"%.6g",	0,  NULL, set_CONVFMT,TRUE, 	0 },
+{NULL,		"ENVIRON",	NULL,	0,  NULL, NULL,	FALSE, NO_INSTALL },
+{&ERRNO_node,	"ERRNO",	"",	0,  NULL, NULL,	FALSE, NON_STANDARD },
+{&FIELDWIDTHS_node, "FIELDWIDTHS", "",	0,  NULL, set_FIELDWIDTHS,	FALSE, NON_STANDARD },
+{&FILENAME_node, "FILENAME",	"",	0,  NULL, NULL,	FALSE, 0 },
+{&FNR_node,	"FNR",		NULL,	0,  update_FNR, set_FNR,	TRUE, 0 },
+{&FS_node,	"FS",		" ",	0,  NULL, set_FS,	FALSE, 0 },
+{&FPAT_node,	"FPAT",		"[^[:space:]]+", 0,  NULL, set_FPAT,	FALSE, NON_STANDARD },
+{&IGNORECASE_node, "IGNORECASE", NULL,	0,  NULL, set_IGNORECASE,	FALSE, NON_STANDARD },
+{&LINT_node,	"LINT",		NULL,	0,  NULL, set_LINT,	FALSE, NON_STANDARD },
+{&NF_node,	"NF",		NULL,	-1, update_NF, set_NF,	FALSE, 0 },
+{&NR_node,	"NR",		NULL,	0,  update_NR, set_NR,	TRUE, 0 },
+{&OFMT_node,	"OFMT",		"%.6g",	0,  NULL, set_OFMT,	TRUE, 0 },
+{&OFS_node,	"OFS",		" ",	0,  NULL, set_OFS,	TRUE, 0 },
+{&ORS_node,	"ORS",		"\n",	0,  NULL, set_ORS,	TRUE, 0 },
+{NULL,		"PROCINFO",	NULL,	0,  NULL, NULL,	FALSE, NO_INSTALL | NON_STANDARD },
+{&RLENGTH_node, "RLENGTH",	NULL,	0,  NULL, NULL,	FALSE, 0 },
+{&RS_node,	"RS",		"\n",	0,  NULL, set_RS,	TRUE, 0 },
+{&RSTART_node,	"RSTART",	NULL,	0,  NULL, NULL,	FALSE, 0 },
+{&RT_node,	"RT",		"",	0,  NULL, NULL,	FALSE, NON_STANDARD },
+{&SUBSEP_node,	"SUBSEP",	"\034",	0,  NULL, set_SUBSEP,	TRUE, 0 },
+{&TEXTDOMAIN_node,	"TEXTDOMAIN",	"messages",	0,  NULL, set_TEXTDOMAIN,	TRUE, NON_STANDARD },
+{0,		NULL,		NULL,	0,  NULL, NULL,	FALSE, 0 },
 };
 
 /* init_vars --- actually initialize everything in the symbol table */
@@ -923,18 +946,20 @@ static const struct varinit varinit[] = {
 static void
 init_vars()
 {
-	register const struct varinit *vp;
+	const struct varinit *vp;
+	NODE *n;
 
-	for (vp = varinit; vp->name; vp++) {
+	for (vp = varinit; vp->name != NULL; vp++) {
 		if ((vp->flags & NO_INSTALL) != 0)
 			continue;
+		n = mk_symbol(Node_var, vp->strval == NULL
+				? make_number(vp->numval)
+				: make_string(vp->strval, strlen(vp->strval)));
+		n->var_assign = (Func_ptr) vp->assign;
+		n->var_update = (Func_ptr) vp->update;
 
-		*(vp->spec) = install((char *) vp->name,
-		  node(vp->strval == NULL ? make_number(vp->numval)
-				: make_string((char *) vp->strval,
-					strlen(vp->strval)),
-		       vp->type, (NODE *) NULL));
-		if (vp->assign)
+		*(vp->spec) = install_symbol(estrdup(vp->name, strlen(vp->name)), n);
+		if (vp->do_assign)
 			(*(vp->assign))();
 	}
 
@@ -949,18 +974,17 @@ init_vars()
 static NODE *
 load_environ()
 {
-#if ! defined(TANDEM)
-#if ! (defined(MSDOS) && !defined(DJGPP)) && ! defined(OS2) && ! (defined(VMS) && defined(__DECC))
+#if ! (defined(VMS) && defined(__DECC))
 	extern char **environ;
 #endif
-	register char *var, *val;
+	char *var, *val;
 	NODE **aptr;
-	register int i;
-#endif /* TANDEM */
+	int i;
+	NODE *tmp;
 
-	ENVIRON_node = install("ENVIRON", 
-			node((NODE *) NULL, Node_var_array, (NODE *) NULL));
-#if ! defined(TANDEM)
+	ENVIRON_node = install_symbol(estrdup("ENVIRON", 7), 
+				mk_symbol(Node_var_array, (NODE *) NULL));
+
 	for (i = 0; environ[i] != NULL; i++) {
 		static char nullstr[] = "";
 
@@ -970,8 +994,10 @@ load_environ()
 			*val++ = '\0';
 		else
 			val = nullstr;
-		aptr = assoc_lookup(ENVIRON_node, tmp_string(var, strlen(var)),
-				    FALSE);
+		tmp = make_string(var, strlen(var));
+		aptr = assoc_lookup(ENVIRON_node, tmp, FALSE);
+		unref(tmp);
+		unref(*aptr);
 		*aptr = make_string(val, strlen(val));
 		(*aptr)->flags |= MAYBE_NUM;
 
@@ -983,7 +1009,8 @@ load_environ()
 	 * Put AWKPATH into ENVIRON if it's not there.
 	 * This allows querying it from within awk programs.
 	 */
-	if (! in_array(ENVIRON_node, tmp_string("AWKPATH", 7))) {
+	tmp = make_string("AWKPATH", 7);
+	if (! in_array(ENVIRON_node, tmp)) {
 		/*
 		 * On VMS, environ[] only holds a subset of what getenv() can
 		 * find, so look AWKPATH up before resorting to default path.
@@ -991,10 +1018,11 @@ load_environ()
 		val = getenv("AWKPATH");
 		if (val == NULL)
 			val = defpath;
-		aptr = assoc_lookup(ENVIRON_node, tmp_string("AWKPATH", 7), FALSE);
+		aptr = assoc_lookup(ENVIRON_node, tmp, FALSE);
+		unref(*aptr);
 		*aptr = make_string(val, strlen(val));
 	}
-#endif /* TANDEM */
+	unref(tmp);
 	return ENVIRON_node;
 }
 
@@ -1003,13 +1031,17 @@ load_environ()
 static NODE *
 load_procinfo()
 {
+#if defined (HAVE_GETGROUPS) && defined(NGROUPS_MAX) && NGROUPS_MAX > 0
 	int i;
-	NODE **aptr;
 	char name[100];
+#endif
 	AWKNUM value;
 
-	PROCINFO_node = install("PROCINFO",
-			node((NODE *) NULL, Node_var_array, (NODE *) NULL));
+	PROCINFO_node = install_symbol(estrdup("PROCINFO", 8),
+				mk_symbol(Node_var_array, (NODE *) NULL));
+
+	update_PROCINFO_str("version", VERSION);
+	update_PROCINFO_str("strftime", def_strftime_format);
 
 #ifdef GETPGRP_VOID
 #define getpgrp_arg() /* nothing */
@@ -1018,55 +1050,57 @@ load_procinfo()
 #endif
 
 	value = getpgrp(getpgrp_arg());
-	aptr = assoc_lookup(PROCINFO_node, tmp_string("pgrpid", 6), FALSE);
-	*aptr = make_number(value);
+	update_PROCINFO_num("pgrpid", value);
 
 	/*
-	 * could put a lot of this into a table, but then there's
-	 * portability problems declaring all the functions. so just
-	 * do it the slow and stupid way. sigh.
+	 * Could put a lot of this into a table, but then there's
+	 * portability problems declaring all the functions. So just
+	 * do it the slow and stupid way. Sigh.
 	 */
 
-	aptr = assoc_lookup(PROCINFO_node, tmp_string("version", 7), FALSE);
-	*aptr = make_string(VERSION, strlen(VERSION));
-
 	value = getpid();
-	aptr = assoc_lookup(PROCINFO_node, tmp_string("pid", 3), FALSE);
-	*aptr = make_number(value);
+	update_PROCINFO_num("pid", value);
 
 	value = getppid();
-	aptr = assoc_lookup(PROCINFO_node, tmp_string("ppid", 4), FALSE);
-	*aptr = make_number(value);
+	update_PROCINFO_num("ppid", value);
 
 	value = getuid();
-	aptr = assoc_lookup(PROCINFO_node, tmp_string("uid", 3), FALSE);
-	*aptr = make_number(value);
+	update_PROCINFO_num("uid", value);
 
 	value = geteuid();
-	aptr = assoc_lookup(PROCINFO_node, tmp_string("euid", 4), FALSE);
-	*aptr = make_number(value);
+	update_PROCINFO_num("euid", value);
 
 	value = getgid();
-	aptr = assoc_lookup(PROCINFO_node, tmp_string("gid", 3), FALSE);
-	*aptr = make_number(value);
+	update_PROCINFO_num("gid", value);
 
 	value = getegid();
-	aptr = assoc_lookup(PROCINFO_node, tmp_string("egid", 4), FALSE);
-	*aptr = make_number(value);
+	update_PROCINFO_num("egid", value);
 
-	aptr = assoc_lookup(PROCINFO_node, tmp_string("FS", 2), FALSE);
-	*aptr = (using_fieldwidths() ? make_string("FIELDWIDTHS", 11) :
-				make_string("FS", 2) );
+	switch (current_field_sep()) {
+	case Using_FIELDWIDTHS:
+		update_PROCINFO_str("FS", "FIELDWIDTHS");
+		break;
+	case Using_FPAT:
+		update_PROCINFO_str("FS", "FPAT");
+		break;
+	case Using_FS:
+		update_PROCINFO_str("FS", "FS");
+		break;
+	default:
+		fatal(_("unknown value for field spec: %d\n"),
+				current_field_sep());
+		break;
+	}
+
 
 #if defined (HAVE_GETGROUPS) && defined(NGROUPS_MAX) && NGROUPS_MAX > 0
 	for (i = 0; i < ngroups; i++) {
 		sprintf(name, "group%d", i + 1);
 		value = groupset[i];
-		aptr = assoc_lookup(PROCINFO_node, tmp_string(name, strlen(name)), FALSE);
-		*aptr = make_number(value);
+		update_PROCINFO_num(name, value);
 	}
 	if (groupset) {
-		free(groupset);
+		efree(groupset);
 		groupset = NULL;
 	}
 #endif
@@ -1078,9 +1112,9 @@ load_procinfo()
 int
 is_std_var(const char *var)
 {
-	register const struct varinit *vp;
+	const struct varinit *vp;
 
-	for (vp = varinit; vp->name; vp++) {
+	for (vp = varinit; vp->name != NULL; vp++) {
 		if (strcmp(vp->name, var) == 0) {
 			if ((do_traditional || do_posix) && (vp->flags & NON_STANDARD) != 0)
 				return FALSE;
@@ -1092,6 +1126,26 @@ is_std_var(const char *var)
 	return FALSE;
 }
 
+
+/* get_spec_varname --- return the name of a special variable
+	with the given assign or update routine.
+*/
+
+const char *
+get_spec_varname(Func_ptr fptr)
+{
+	const struct varinit *vp;
+
+	if (! fptr)
+		return NULL;
+	for (vp = varinit; vp->name != NULL; vp++) {
+		if (vp->assign == fptr || vp->update == fptr)
+			return vp->name;
+	}
+	return NULL;
+}
+
+
 /* arg_assign --- process a command-line assignment */
 
 int
@@ -1099,10 +1153,10 @@ arg_assign(char *arg, int initing)
 {
 	char *cp, *cp2;
 	int badvar;
-	Func_ptr after_assign = NULL;
 	NODE *var;
 	NODE *it;
 	NODE **lhs;
+	long save_FNR;
 
 	if (! initing && disallow_var_assigns)
 		return FALSE;	/* --exec */
@@ -1116,18 +1170,24 @@ arg_assign(char *arg, int initing)
 		fprintf(stderr,
 			_("%s: `%s' argument to `-v' not in `var=value' form\n\n"),
 			myname, arg);
-		usage(1, stderr);
+		usage(EXIT_FAILURE, stderr);
 	}
 
 	*cp++ = '\0';
 
+	/* avoid false source indications in a fatal message */
+	source = NULL;
+	sourceline = 0;
+	save_FNR = FNR;
+	FNR = 0;
+
 	/* first check that the variable name has valid syntax */
 	badvar = FALSE;
-	if (! ISALPHA(arg[0]) && arg[0] != '_')
+	if (! isalpha((unsigned char) arg[0]) && arg[0] != '_')
 		badvar = TRUE;
 	else
 		for (cp2 = arg+1; *cp2; cp2++)
-			if (! ISALNUM(*cp2) && *cp2 != '_') {
+			if (! isalnum((unsigned char) *cp2) && *cp2 != '_') {
 				badvar = TRUE;
 				break;
 			}
@@ -1140,8 +1200,17 @@ arg_assign(char *arg, int initing)
 			lintwarn(_("`%s' is not a variable name, looking for file `%s=%s'"),
 				arg, arg, cp);
 	} else {
+		if (check_special(arg) >= 0)
+			fatal(_("cannot use gawk builtin `%s' as variable name"), arg);
+
+		if (! initing) {
+			var = lookup(arg);
+			if (var != NULL && var->type == Node_func)
+				fatal(_("cannot use function `%s' as variable name"), arg); 
+		}
+
 		/*
-		 * Recent versions of nawk expand escapes inside assignments.
+		 * BWK awk expands escapes inside assignments.
 		 * This makes sense, so we do it too.
 		 */
 		it = make_str_node(cp, strlen(cp), SCAN);
@@ -1156,17 +1225,31 @@ arg_assign(char *arg, int initing)
 		if (do_posix)
 			setlocale(LC_NUMERIC, "");
 #endif /* LC_NUMERIC */
-		var = variable(arg, FALSE, Node_var);
-		lhs = get_lhs(var, &after_assign, FALSE);
+
+		/*
+		 * since we are restoring the original text of ARGV later,
+		 * need to copy the variable name part if we don't want
+		 * name like v=abc instead of just v in var->vname
+		 */
+
+		cp2 = estrdup(arg, cp - arg);	/* var name */
+
+		var = variable(cp2, Node_var);
+		if (var == NULL)	/* error */
+			exit(EXIT_FATAL);
+		if (var->type == Node_var && var->var_update)
+			var->var_update();
+		lhs = get_lhs(var, FALSE);
 		unref(*lhs);
 		*lhs = it;
-		if (after_assign != NULL)
-			(*after_assign)();
+		/* check for set_FOO() routine */
+		if (var->type == Node_var && var->var_assign)
+			var->var_assign();
 	}
 
 	if (! initing)
 		*--cp = '=';	/* restore original text of ARGV */
-
+	FNR = save_FNR;
 	return ! badvar;
 }
 
@@ -1191,6 +1274,7 @@ catchsig(int sig)
 	/* NOTREACHED */
 }
 
+#ifdef HAVE_LIBSIGSEGV
 /* catchsegv --- for use with libsigsegv */
 
 static int
@@ -1214,6 +1298,7 @@ catchstackoverflow(int emergency, stackoverflow_context_t scp)
 	/*NOTREACHED*/
 	return;
 }
+#endif /* HAVE_LIBSIGSEGV */
 
 /* nostalgia --- print the famous error message and die */
 
@@ -1287,20 +1372,35 @@ init_groupset()
 	 */
 	ngroups = getgroups(0, NULL);
 #endif
-	if (ngroups == -1)
-		fatal(_("could not find groups: %s"), strerror(errno));
-	else if (ngroups == 0)
+	/* If an error or no groups, just give up and get on with life. */
+	if (ngroups <= 0)
 		return;
 
 	/* fill in groups */
 	emalloc(groupset, GETGROUPS_T *, ngroups * sizeof(GETGROUPS_T), "init_groupset");
 
 	ngroups = getgroups(ngroups, groupset);
-	if (ngroups == -1)
-		fatal(_("could not find groups: %s"), strerror(errno));
+	/* same thing here, give up but keep going */
+	if (ngroups == -1) {
+		efree(groupset);
+		ngroups = 0;
+		groupset = NULL;
+	}
 #endif
 }
 
+/* estrdup --- duplicate a string */
+
+char *
+estrdup(const char *str, size_t len)
+{
+	char *s;
+	emalloc(s, char *, len + 1, "estrdup");
+	memcpy(s, str, len);
+	s[len] = '\0';
+	return s;
+}
+             
 #if defined(HAVE_LOCALE_H)
 
 /* init_locale --- initialize locale info. */
@@ -1320,15 +1420,44 @@ init_locale(struct lconv *l)
 
 	t = localeconv();
 	*l = *t;
-	l->thousands_sep = strdup(t->thousands_sep);
-	l->decimal_point = strdup(t->decimal_point);
-	l->grouping = strdup(t->grouping);
-	l->int_curr_symbol = strdup(t->int_curr_symbol);
-	l->currency_symbol = strdup(t->currency_symbol);
-	l->mon_decimal_point = strdup(t->mon_decimal_point);
-	l->mon_thousands_sep = strdup(t->mon_thousands_sep);
-	l->mon_grouping = strdup(t->mon_grouping);
-	l->positive_sign = strdup(t->positive_sign);
-	l->negative_sign = strdup(t->negative_sign);
+	l->thousands_sep = estrdup(t->thousands_sep, strlen(t->thousands_sep));
+	l->decimal_point = estrdup(t->decimal_point, strlen(t->decimal_point));
+	l->grouping = estrdup(t->grouping, strlen(t->grouping));
+	l->int_curr_symbol = estrdup(t->int_curr_symbol, strlen(t->int_curr_symbol));
+	l->currency_symbol = estrdup(t->currency_symbol, strlen(t->currency_symbol));
+	l->mon_decimal_point = estrdup(t->mon_decimal_point, strlen(t->mon_decimal_point));
+	l->mon_thousands_sep = estrdup(t->mon_thousands_sep, strlen(t->mon_thousands_sep));
+	l->mon_grouping = estrdup(t->mon_grouping, strlen(t->mon_grouping));
+	l->positive_sign = estrdup(t->positive_sign, strlen(t->positive_sign));
+	l->negative_sign = estrdup(t->negative_sign, strlen(t->negative_sign));
 }
 #endif /* LOCALE_H */
+
+/* save_argv --- save argv array */
+
+static void
+save_argv(int argc, char **argv)
+{
+	int i;
+
+	emalloc(d_argv, char **, (argc + 1) * sizeof(char *), "save_argv");
+	for (i = 0; i < argc; i++)
+		d_argv[i] = estrdup(argv[i], strlen(argv[i]));
+	d_argv[argc] = NULL;
+}
+
+/*
+ * update_global_values --- make sure the symbol table has correct values.
+ * Called from the grammar before dumping values.
+ */
+
+void
+update_global_values()
+{
+	const struct varinit *vp;
+
+	for (vp = varinit; vp->name; vp++) {
+		if (vp->update != NULL)
+			vp->update();
+	}
+}

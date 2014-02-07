@@ -6,7 +6,7 @@
  */
 
 /*
- * Copyright (C) 1995 - 2001 the Free Software Foundation, Inc.
+ * Copyright (C) 1995 - 2001, 2011 the Free Software Foundation, Inc.
  * 
  * This file is part of GAWK, the GNU implementation of the
  * AWK Programming Language.
@@ -29,11 +29,12 @@
 #include "awk.h"
 #include <dlfcn.h>
 
+int plugin_is_GPL_compatible;
+
 static void *sdl = NULL;
 
 static NODE *
-zaxxon(tree)
-NODE *tree;
+zaxxon(int nargs)
 {
 	NODE *obj;
 	int i;
@@ -42,11 +43,11 @@ NODE *tree;
 	/*
 	 * Print the arguments
 	 */
-	printf("External linkage %s(", tree->param);
+	printf("External linkage zaxxon(");
 
-	for (i = 0; i < tree->param_cnt; i++) {
+	for (i = 0; i < nargs; i++) {
 
-		obj = get_argument(tree, i);
+		obj = get_scalar_argument(i, TRUE);
 
 		if (obj == NULL)
 			break;
@@ -54,7 +55,6 @@ NODE *tree;
 		force_string(obj);
 
 		printf(comma ? ", %s" : "%s", obj->stptr);
-		free_temp(obj);
 		comma = 1;
 	}
 
@@ -63,7 +63,7 @@ NODE *tree;
 	/*
 	 * Do something useful
 	 */
-	obj = get_argument(tree, 0);
+	obj = get_scalar_argument(0, FALSE);
 
 	if (obj != NULL) {
 		force_string(obj);
@@ -75,14 +75,10 @@ NODE *tree;
 			dlclose(sdl);
 			sdl = NULL;
 		}
-		free_temp(obj);
 	}
 
 	/* Set the return value */
-	set_value(tmp_number((AWKNUM) 3.14));
-
-	/* Just to make the interpreter happy */
-	return tmp_number((AWKNUM) 0);
+	return make_number((AWKNUM) 3.14);
 }
 
 NODE *
@@ -92,5 +88,5 @@ void *dl;
 {
 	sdl = dl;
 	make_builtin("zaxxon", zaxxon, 4);
-	return tmp_number((AWKNUM) 0);
+	return make_number((AWKNUM) 0);
 }

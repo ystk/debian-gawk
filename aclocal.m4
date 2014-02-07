@@ -1,4 +1,4 @@
-# generated automatically by aclocal 1.11 -*- Autoconf -*-
+# generated automatically by aclocal 1.11.1 -*- Autoconf -*-
 
 # Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004,
 # 2005, 2006, 2007, 2008, 2009  Free Software Foundation, Inc.
@@ -13,63 +13,11 @@
 
 m4_ifndef([AC_AUTOCONF_VERSION],
   [m4_copy([m4_PACKAGE_VERSION], [AC_AUTOCONF_VERSION])])dnl
-m4_if(m4_defn([AC_AUTOCONF_VERSION]), [2.63],,
-[m4_warning([this file was generated for autoconf 2.63.
+m4_if(m4_defn([AC_AUTOCONF_VERSION]), [2.68],,
+[m4_warning([this file was generated for autoconf 2.68.
 You have another version of autoconf.  It may work, but is not guaranteed to.
 If you have problems, you may need to regenerate the build system entirely.
 To do so, use the procedure documented by the package, typically `autoreconf'.])])
-
-# intlmacosx.m4 serial 1 (gettext-0.17)
-dnl Copyright (C) 2004-2007 Free Software Foundation, Inc.
-dnl This file is free software; the Free Software Foundation
-dnl gives unlimited permission to copy and/or distribute it,
-dnl with or without modifications, as long as this notice is preserved.
-dnl
-dnl This file can can be used in projects which are not available under
-dnl the GNU General Public License or the GNU Library General Public
-dnl License but which still want to provide support for the GNU gettext
-dnl functionality.
-dnl Please note that the actual code of the GNU gettext library is covered
-dnl by the GNU Library General Public License, and the rest of the GNU
-dnl gettext package package is covered by the GNU General Public License.
-dnl They are *not* in the public domain.
-
-dnl Checks for special options needed on MacOS X.
-dnl Defines INTL_MACOSX_LIBS.
-AC_DEFUN([gt_INTL_MACOSX],
-[
-  dnl Check for API introduced in MacOS X 10.2.
-  AC_CACHE_CHECK([for CFPreferencesCopyAppValue],
-    gt_cv_func_CFPreferencesCopyAppValue,
-    [gt_save_LIBS="$LIBS"
-     LIBS="$LIBS -Wl,-framework -Wl,CoreFoundation"
-     AC_TRY_LINK([#include <CoreFoundation/CFPreferences.h>],
-       [CFPreferencesCopyAppValue(NULL, NULL)],
-       [gt_cv_func_CFPreferencesCopyAppValue=yes],
-       [gt_cv_func_CFPreferencesCopyAppValue=no])
-     LIBS="$gt_save_LIBS"])
-  if test $gt_cv_func_CFPreferencesCopyAppValue = yes; then
-    AC_DEFINE([HAVE_CFPREFERENCESCOPYAPPVALUE], 1,
-      [Define to 1 if you have the MacOS X function CFPreferencesCopyAppValue in the CoreFoundation framework.])
-  fi
-  dnl Check for API introduced in MacOS X 10.3.
-  AC_CACHE_CHECK([for CFLocaleCopyCurrent], gt_cv_func_CFLocaleCopyCurrent,
-    [gt_save_LIBS="$LIBS"
-     LIBS="$LIBS -Wl,-framework -Wl,CoreFoundation"
-     AC_TRY_LINK([#include <CoreFoundation/CFLocale.h>], [CFLocaleCopyCurrent();],
-       [gt_cv_func_CFLocaleCopyCurrent=yes],
-       [gt_cv_func_CFLocaleCopyCurrent=no])
-     LIBS="$gt_save_LIBS"])
-  if test $gt_cv_func_CFLocaleCopyCurrent = yes; then
-    AC_DEFINE([HAVE_CFLOCALECOPYCURRENT], 1,
-      [Define to 1 if you have the MacOS X function CFLocaleCopyCurrent in the CoreFoundation framework.])
-  fi
-  INTL_MACOSX_LIBS=
-  if test $gt_cv_func_CFPreferencesCopyAppValue = yes || test $gt_cv_func_CFLocaleCopyCurrent = yes; then
-    INTL_MACOSX_LIBS="-Wl,-framework -Wl,CoreFoundation"
-  fi
-  AC_SUBST([INTL_MACOSX_LIBS])
-])
 
 # Copyright (C) 2002, 2003, 2005, 2006, 2007, 2008  Free Software Foundation, Inc.
 #
@@ -86,7 +34,7 @@ AC_DEFUN([AM_AUTOMAKE_VERSION],
 [am__api_version='1.11'
 dnl Some users find AM_AUTOMAKE_VERSION and mistake it for a way to
 dnl require some minimum version.  Point them to the right macro.
-m4_if([$1], [1.11], [],
+m4_if([$1], [1.11.1], [],
       [AC_FATAL([Do not call $0, use AM_INIT_AUTOMAKE([$1]).])])dnl
 ])
 
@@ -102,7 +50,7 @@ m4_define([_AM_AUTOCONF_VERSION], [])
 # Call AM_AUTOMAKE_VERSION and AM_AUTOMAKE_VERSION so they can be traced.
 # This function is AC_REQUIREd by AM_INIT_AUTOMAKE.
 AC_DEFUN([AM_SET_CURRENT_AUTOMAKE_VERSION],
-[AM_AUTOMAKE_VERSION([1.11])dnl
+[AM_AUTOMAKE_VERSION([1.11.1])dnl
 m4_ifndef([AC_AUTOCONF_VERSION],
   [m4_copy([m4_PACKAGE_VERSION], [AC_AUTOCONF_VERSION])])dnl
 _AM_AUTOCONF_VERSION(m4_defn([AC_AUTOCONF_VERSION]))])
@@ -793,32 +741,6 @@ AC_DEFUN([_AM_SET_OPTIONS],
 AC_DEFUN([_AM_IF_OPTION],
 [m4_ifset(_AM_MANGLE_OPTION([$1]), [$2], [$3])])
 
-# Copyright (C) 1996, 1997, 1998, 2000, 2001, 2002, 2003, 2005, 2006
-# Free Software Foundation, Inc.
-#
-# This file is free software; the Free Software Foundation
-# gives unlimited permission to copy and/or distribute it,
-# with or without modifications, as long as this notice is preserved.
-
-# serial 5
-
-AC_DEFUN([AM_C_PROTOTYPES],
-[AC_REQUIRE([AC_C_PROTOTYPES])
-if test "$ac_cv_prog_cc_stdc" != no; then
-  U= ANSI2KNR=
-else
-  U=_ ANSI2KNR=./ansi2knr
-fi
-# Ensure some checks needed by ansi2knr itself.
-AC_REQUIRE([AC_HEADER_STDC])
-AC_CHECK_HEADERS([string.h])
-AC_SUBST([U])dnl
-AC_SUBST([ANSI2KNR])dnl
-_AM_SUBST_NOTMAKE([ANSI2KNR])dnl
-])
-
-AU_DEFUN([fp_C_PROTOTYPES], [AM_C_PROTOTYPES])
-
 # Check to make sure that the build environment is sane.    -*- Autoconf -*-
 
 # Copyright (C) 1996, 1997, 2000, 2001, 2003, 2005, 2008
@@ -1031,6 +953,7 @@ m4_include([m4/arch.m4])
 m4_include([m4/codeset.m4])
 m4_include([m4/gettext.m4])
 m4_include([m4/iconv.m4])
+m4_include([m4/intlmacosx.m4])
 m4_include([m4/intmax_t.m4])
 m4_include([m4/inttypes_h.m4])
 m4_include([m4/isc-posix.m4])
@@ -1038,15 +961,12 @@ m4_include([m4/lcmessage.m4])
 m4_include([m4/lib-ld.m4])
 m4_include([m4/lib-link.m4])
 m4_include([m4/lib-prefix.m4])
-m4_include([m4/libtool.m4])
+m4_include([m4/libsigsegv.m4])
 m4_include([m4/longlong.m4])
-m4_include([m4/ltoptions.m4])
-m4_include([m4/ltsugar.m4])
-m4_include([m4/ltversion.m4])
-m4_include([m4/lt~obsolete.m4])
 m4_include([m4/nls.m4])
 m4_include([m4/po.m4])
 m4_include([m4/progtest.m4])
+m4_include([m4/readline.m4])
 m4_include([m4/socket.m4])
 m4_include([m4/stdint_h.m4])
 m4_include([m4/uintmax_t.m4])

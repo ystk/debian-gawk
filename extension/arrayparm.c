@@ -10,7 +10,7 @@
  */
 
 /*
- * Copyright (C) 2001, 2003, 2004 the Free Software Foundation, Inc.
+ * Copyright (C) 2001, 2003, 2004, 2011 the Free Software Foundation, Inc.
  * 
  * This file is part of GAWK, the GNU implementation of the
  * AWK Programming Language.
@@ -32,6 +32,8 @@
 
 #include "awk.h"
 
+int plugin_is_GPL_compatible;
+
 /*  do_mkarray --- turn a variable into an array */
 
 /*
@@ -41,8 +43,7 @@
  */
 
 static NODE *
-do_mkarray(tree)
-NODE *tree;
+do_mkarray(int args)
 {
 	int ret = -1;
 	NODE *var, *sub, *val;
@@ -51,13 +52,9 @@ NODE *tree;
 	if  (do_lint && get_curfunc_arg_count() > 3)
 		lintwarn("mkarray: called with too many arguments");
 
-	var = get_argument(tree, 0);
-	if (var == NULL)
-		var = stack_ptr[0];
-
-	var = get_array(var);
-	sub = get_argument(tree, 1);
-	val = get_argument(tree, 2);
+	var = get_array_argument(0, FALSE);
+	sub = get_scalar_argument(1, FALSE);
+	val = get_scalar_argument(2, FALSE);
 
 	printf("var->type = %s\n", nodetype2str(var->type));
 	printf("sub->type = %s\n", nodetype2str(sub->type));
@@ -69,12 +66,8 @@ NODE *tree;
 	*elemval = dupnode(val);
 	ret = 0;
 
-
 	/* Set the return value */
-	set_value(tmp_number((AWKNUM) ret));
-
-	/* Just to make the interpreter happy */
-	return tmp_number((AWKNUM) 0);
+	return make_number((AWKNUM) ret);
 }
 
 /* dlload --- load new builtins in this library */
@@ -86,5 +79,5 @@ void *dl;
 {
 	make_builtin("mkarray", do_mkarray, 3);
 
-	return tmp_number((AWKNUM) 0);
+	return make_number((AWKNUM) 0);
 }

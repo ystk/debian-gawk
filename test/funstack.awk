@@ -118,7 +118,7 @@
 
 BEGIN						{ initialize() }
 
-/^ *@ *[Ss][Tt][Rr][Ii][Nn][Gg] *{/		{ do_String(); next }
+/^ *@ *[Ss][Tt][Rr][Ii][Nn][Gg] *\{/		{ do_String(); next }
 
 /^ *@ *[Pp][Rr][Ee][Aa][Mm][Bb][Ll][Ee]/	{ next }
 
@@ -163,7 +163,7 @@ function do_Article()
 	In_Article = 1
 
 	Citation_label = $0
-	sub(/^[^\{]*{/,"",Citation_label)
+	sub(/^[^\{]*\{/,"",Citation_label)
 	sub(/ *, *$/,"",Citation_label)
 
 	Author = ""
@@ -376,82 +376,82 @@ function html_accents(s)
 		gsub(/{\\aa}/,	"\\&aring;",	s)
 		gsub(/{\\ae}/,	"\\&aelig;",	s)
 
-		gsub(/{\\c{c}}/,"\\&ccedil;",	s)
+		gsub(/\{\\c\{c\}\}/,"\\&ccedil;",	s)
 
-		gsub(/{\\\e}/,	"\\&egrave;",	s)
-		gsub(/{\\'e}/,	"\\&eacute;",	s)
-		gsub(/{\\[\^]e}/,"\\&ecirc;",	s)
-		gsub(/{\\\"e}/,	"\\&euml;",	s)
+		gsub(/\{\\\e\}/,	"\\&egrave;",	s)
+		gsub(/\{\\'e\}/,	"\\&eacute;",	s)
+		gsub(/\{\\[\^]e\}/,"\\&ecirc;",	s)
+		gsub(/\{\\\"e\}/,	"\\&euml;",	s)
 
-		gsub(/{\\\i}/,	"\\&igrave;",	s)
-		gsub(/{\\'i}/,	"\\&iacute;",	s)
-		gsub(/{\\[\^]i}/,"\\&icirc;",	s)
-		gsub(/{\\\"i}/,	"\\&iuml;",	s)
+		gsub(/\{\\\i\}/,	"\\&igrave;",	s)
+		gsub(/\{\\'i\}/,	"\\&iacute;",	s)
+		gsub(/\{\\[\^]i\}/,"\\&icirc;",	s)
+		gsub(/\{\\\"i\}/,	"\\&iuml;",	s)
 
 		# ignore eth and thorn
 
-		gsub(/{\\~n}/,	"\\&ntilde;",	s)
+		gsub(/\{\\~n\}/,	"\\&ntilde;",	s)
 
-		gsub(/{\\\o}/,	"\\&ograve;",	s)
-		gsub(/{\\'o}/,	"\\&oacute;",	s)
-		gsub(/{\\[\^]o}/, "\\&ocirc;",	s)
-		gsub(/{\\~o}/,	"\\&otilde;",	s)
-		gsub(/{\\\"o}/,	"\\&ouml;",	s)
-		gsub(/{\\o}/,	"\\&oslash;",	s)
+		gsub(/\{\\\o\}/,	"\\&ograve;",	s)
+		gsub(/\{\\'o\}/,	"\\&oacute;",	s)
+		gsub(/\{\\[\^]o\}/, "\\&ocirc;",	s)
+		gsub(/\{\\~o\}/,	"\\&otilde;",	s)
+		gsub(/\{\\\"o\}/,	"\\&ouml;",	s)
+		gsub(/\{\\o\}/,	"\\&oslash;",	s)
 
-		gsub(/{\\\u}/,	"\\&ugrave;",	s)
-		gsub(/{\\'u}/,	"\\&uacute;",	s)
-		gsub(/{\\[\^]u}/,"\\&ucirc;",	s)
-		gsub(/{\\\"u}/,	"\\&uuml;",	s)
+		gsub(/\{\\\u\}/,	"\\&ugrave;",	s)
+		gsub(/\{\\'u\}/,	"\\&uacute;",	s)
+		gsub(/\{\\[\^]u\}/,"\\&ucirc;",	s)
+		gsub(/\{\\\"u\}/,	"\\&uuml;",	s)
 
-		gsub(/{\\'y}/,	"\\&yacute;",	s)
-		gsub(/{\\\"y}/,	"\\&yuml;",	s)
+		gsub(/\{\\'y\}/,	"\\&yacute;",	s)
+		gsub(/\{\\\"y\}/,	"\\&yuml;",	s)
 
 		# Now do the same for upper-case accents
 
-		gsub(/{\\\A}/,	"\\&Agrave;",	s)
-		gsub(/{\\'A}/,	"\\&Aacute;",	s)
-		gsub(/{\\[\^]A}/,	"\\&Acirc;",	s)
-		gsub(/{\\~A}/,	"\\&Atilde;",	s)
-		gsub(/{\\\"A}/,	"\\&Auml;",	s)
-		gsub(/{\\AA}/,	"\\&Aring;",	s)
-		gsub(/{\\AE}/,	"\\&AElig;",	s)
+		gsub(/\{\\\A\}/,	"\\&Agrave;",	s)
+		gsub(/\{\\'A\}/,	"\\&Aacute;",	s)
+		gsub(/\{\\[\^]A\}/,	"\\&Acirc;",	s)
+		gsub(/\{\\~A\}/,	"\\&Atilde;",	s)
+		gsub(/\{\\\"A\}/,	"\\&Auml;",	s)
+		gsub(/\{\\AA\}/,	"\\&Aring;",	s)
+		gsub(/\{\\AE\}/,	"\\&AElig;",	s)
 
-		gsub(/{\\c{C}}/,"\\&Ccedil;",	s)
+		gsub(/\{\\c\{C\}\}/,"\\&Ccedil;",	s)
 
-		gsub(/{\\\e}/,	"\\&Egrave;",	s)
-		gsub(/{\\'E}/,	"\\&Eacute;",	s)
-		gsub(/{\\[\^]E}/,	"\\&Ecirc;",	s)
-		gsub(/{\\\"E}/,	"\\&Euml;",	s)
+		gsub(/\{\\\e\}/,	"\\&Egrave;",	s)
+		gsub(/\{\\'E\}/,	"\\&Eacute;",	s)
+		gsub(/\{\\[\^]E\}/,	"\\&Ecirc;",	s)
+		gsub(/\{\\\"E\}/,	"\\&Euml;",	s)
 
-		gsub(/{\\\I}/,	"\\&Igrave;",	s)
-		gsub(/{\\'I}/,	"\\&Iacute;",	s)
-		gsub(/{\\[\^]I}/,	"\\&Icirc;",	s)
-		gsub(/{\\\"I}/,	"\\&Iuml;",	s)
+		gsub(/\{\\\I\}/,	"\\&Igrave;",	s)
+		gsub(/\{\\'I\}/,	"\\&Iacute;",	s)
+		gsub(/\{\\[\^]I\}/,	"\\&Icirc;",	s)
+		gsub(/\{\\\"I\}/,	"\\&Iuml;",	s)
 
 		# ignore eth and thorn
 
-		gsub(/{\\~N}/,	"\\&Ntilde;",	s)
+		gsub(/\{\\~N\}/,	"\\&Ntilde;",	s)
 
-		gsub(/{\\\O}/,	"\\&Ograve;",	s)
-		gsub(/{\\'O}/,	"\\&Oacute;",	s)
-		gsub(/{\\[\^]O}/,	"\\&Ocirc;",	s)
-		gsub(/{\\~O}/,	"\\&Otilde;",	s)
-		gsub(/{\\\"O}/,	"\\&Ouml;",	s)
-		gsub(/{\\O}/,	"\\&Oslash;",	s)
+		gsub(/\{\\\O\}/,	"\\&Ograve;",	s)
+		gsub(/\{\\'O\}/,	"\\&Oacute;",	s)
+		gsub(/\{\\[\^]O\}/,	"\\&Ocirc;",	s)
+		gsub(/\{\\~O\}/,	"\\&Otilde;",	s)
+		gsub(/\{\\\"O\}/,	"\\&Ouml;",	s)
+		gsub(/\{\\O\}/,	"\\&Oslash;",	s)
 
-		gsub(/{\\\U}/,	"\\&Ugrave;",	s)
-		gsub(/{\\'U}/,	"\\&Uacute;",	s)
-		gsub(/{\\[\^]U}/,	"\\&Ucirc;",	s)
-		gsub(/{\\\"U}/,	"\\&Uuml;",	s)
+		gsub(/\{\\\U\}/,	"\\&Ugrave;",	s)
+		gsub(/\{\\'U\}/,	"\\&Uacute;",	s)
+		gsub(/\{\\[\^]U\}/,	"\\&Ucirc;",	s)
+		gsub(/\{\\\"U\}/,	"\\&Uuml;",	s)
 
-		gsub(/{\\'Y}/,	"\\&Yacute;",	s)
+		gsub(/\{\\'Y\}/,	"\\&Yacute;",	s)
 
-		gsub(/{\\ss}/,	"\\&szlig;",	s)
+		gsub(/\{\\ss\}/,	"\\&szlig;",	s)
 
 		# Others not mentioned in Flynn's book
-		gsub(/{\\'\\i}/,"\\&iacute;",	s)
-		gsub(/{\\'\\j}/,"j",		s)
+		gsub(/\{\\'\\i\}/,"\\&iacute;",	s)
+		gsub(/\{\\'\\j\}/,"j",		s)
 	}
 	return (s)
 }
@@ -663,7 +663,8 @@ function html_header()
 function html_label( label)
 {
 	label = Volume "(" Number "):" Month ":" Year
-	gsub(/[^A-Za-z0-9():,;.\/\-]/,"",label)
+	# gsub(/[^A-Za-z0-9():,;.\/\-]/,"",label)
+	gsub(/[^[:alnum:]():,;.\/\-]/,"",label)
 	return (label)
 }
 
@@ -673,7 +674,8 @@ function html_length(s)
 	if (HTML)
 	{
 		gsub(/<\/?[^>]*>/,"",s)		# remove SGML tags
-		gsub(/&[A-Za-z0-9]+;/,"",s)	# remove SGML entities
+		# gsub(/&[A-Za-z0-9]+;/,"",s)	# remove SGML entities
+		gsub(/&[[:alnum:]]+;/,"",s)	# remove SGML entities
 	}
 	return (length(s))
 }
@@ -949,8 +951,10 @@ function TeX_to_HTML_nonmath(s)
 		{
 			gsub(/\\\&/, "\\&", s)	# reduce TeX ampersands to conventional ones
 
-			gsub(/\\[a-z][a-z] +/,"",s) # remove TeX font changes
-			gsub(/\\[^A-Za-z]/,"",s) # remove remaining TeX control symbols
+			#gsub(/\\[a-z][a-z] +/,"",s) # remove TeX font changes
+			gsub(/\\[[:lower:]][[:lower:]] +/,"",s) # remove TeX font changes
+			#gsub(/\\[^A-Za-z]/,"",s) # remove remaining TeX control symbols
+			gsub(/\\[^[:alpha:]]/,"",s) # remove remaining TeX control symbols
 		}
 	}
 	return (s)

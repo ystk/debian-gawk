@@ -1,6 +1,6 @@
 # bisonfix.awk --- tweak awkgram.c for stupid compilers.
 
-# Copyright (C) 2005 the Free Software Foundation, Inc.
+# Copyright (C) 2005, 2009 the Free Software Foundation, Inc.
 # 
 # This file is part of GAWK, the GNU implementation of the
 # AWK Programming Language.
@@ -19,16 +19,24 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
-/^#if \(! defined \(yyoverflow\) \\/ {
+BEGIN { sfile = ARGV[1] ; delete ARGV[1] }
+
+/^#if.*\\$/ {
 	line = $0
 	sub(/\\$/, "", line)
 	getline line2
-	sub(/\\$/, "", line2)
-	getline line3
-
-	line = line line2 line3
+	while (line2 ~ /\\$/) {
+		line = line line2
+		sub(/\\$/, "", line)
+		getline line2
+	}
+	line = line line2
+	sub(/\\$/, "", line)
 	print line
 	next
 }
 
+/^#line.*y\.tab\.c/	{ sub(/y.tab/, sfile) }
+
 { print }
+

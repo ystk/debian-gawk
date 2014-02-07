@@ -1,8 +1,5 @@
 /* configh.in.  Generated from configure.ac by autoheader.  */
 
-/* switch statements are enabled in awk programs */
-#undef ALLOW_SWITCH
-
 /* dynamic loading is possible */
 #undef DYNAMIC
 
@@ -44,9 +41,6 @@
 /* Define to 1 if you have the declaration of `tzname', and to 0 if you don't.
    */
 #undef HAVE_DECL_TZNAME
-
-/* Define to 1 if you have the <dlfcn.h> header file. */
-#undef HAVE_DLFCN_H
 
 /* Define to 1 if you don't have `vprintf' but do have `_doprnt.' */
 #undef HAVE_DOPRNT
@@ -109,6 +103,12 @@
 /* Define to 1 if you have the `m' library (-lm). */
 #undef HAVE_LIBM
 
+/* Define to 1 if you have a fully functional readline library. */
+#undef HAVE_LIBREADLINE
+
+/* Define if you have the libsigsegv library. */
+#undef HAVE_LIBSIGSEGV
+
 /* Define to 1 if you have the <limits.h> header file. */
 #undef HAVE_LIMITS_H
 
@@ -163,14 +163,14 @@
 /* Define to 1 if you have the <netinet/in.h> header file. */
 #undef HAVE_NETINET_IN_H
 
-/* we have portals on /p on this system */
-#undef HAVE_PORTALS
+/* Define to 1 if you have the `setenv' function. */
+#undef HAVE_SETENV
 
 /* Define to 1 if you have the `setlocale' function. */
 #undef HAVE_SETLOCALE
 
-/* Define to 1 if you have the <signum.h> header file. */
-#undef HAVE_SIGNUM_H
+/* Define to 1 if you have the `setsid' function. */
+#undef HAVE_SETSID
 
 /* Define to 1 if you have the `snprintf' function. */
 #undef HAVE_SNPRINTF
@@ -200,6 +200,9 @@
 /* Define to 1 if you have the `strchr' function. */
 #undef HAVE_STRCHR
 
+/* Define to 1 if you have the `strcoll' function. */
+#undef HAVE_STRCOLL
+
 /* Define to 1 if you have the `strerror' function. */
 #undef HAVE_STRERROR
 
@@ -227,10 +230,10 @@
 /* Define to 1 if you have the `strtoul' function. */
 #undef HAVE_STRTOUL
 
-/* Define to 1 if `st_blksize' is member of `struct stat'. */
+/* Define to 1 if `st_blksize' is a member of `struct stat'. */
 #undef HAVE_STRUCT_STAT_ST_BLKSIZE
 
-/* Define to 1 if `tm_zone' is member of `struct tm'. */
+/* Define to 1 if `tm_zone' is a member of `struct tm'. */
 #undef HAVE_STRUCT_TM_TM_ZONE
 
 /* Define to 1 if your `struct stat' has `st_blksize'. Deprecated, use
@@ -239,6 +242,9 @@
 
 /* Define to 1 if you have the `system' function. */
 #undef HAVE_SYSTEM
+
+/* Define to 1 if you have the <sys/ioctl.h> header file. */
+#undef HAVE_SYS_IOCTL_H
 
 /* Define to 1 if you have the <sys/param.h> header file. */
 #undef HAVE_SYS_PARAM_H
@@ -293,6 +299,9 @@
 /* Define to 1 if the system has the type `unsigned long long int'. */
 #undef HAVE_UNSIGNED_LONG_LONG_INT
 
+/* Define to 1 if you have the `usleep' function. */
+#undef HAVE_USLEEP
+
 /* Define to 1 if you have the `vprintf' function. */
 #undef HAVE_VPRINTF
 
@@ -317,16 +326,6 @@
 /* systems should define this type here */
 #undef HAVE_WINT_T
 
-/* Define to the sub-directory in which libtool stores uninstalled libraries.
-   */
-#undef LT_OBJDIR
-
-/* disable fatal errors on directories */
-#undef NO_DIRECTORY_FATAL
-
-/* disable use of libsigsegv */
-#undef NO_LIBSIGSEGV
-
 /* disable lint checks */
 #undef NO_LINT
 
@@ -345,14 +344,14 @@
 /* Define to the one symbol short name of this package. */
 #undef PACKAGE_TARNAME
 
+/* Define to the home page for this package. */
+#undef PACKAGE_URL
+
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
 
 /* Define to 1 if *printf supports %F format */
 #undef PRINTF_HAS_F_FORMAT
-
-/* Define to 1 if the C compiler supports function prototypes. */
-#undef PROTOTYPES
 
 /* Define as the return type of signal handlers (`int' or `void'). */
 #undef RETSIGTYPE
@@ -362,9 +361,6 @@
 
 /* The size of `unsigned long', as computed by sizeof. */
 #undef SIZEOF_UNSIGNED_LONG
-
-/* return type of sprintf */
-#undef SPRINTF_RET
 
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
@@ -427,9 +423,6 @@
 # undef __CHAR_UNSIGNED__
 #endif
 
-/* Define like PROTOTYPES; this can be used by system headers. */
-#undef __PROTOTYPES
-
 /* Define to empty if `const' does not conform to ANSI C. */
 #undef const
 
@@ -452,13 +445,14 @@
    nothing if this is not supported.  Do not define if restrict is
    supported directly.  */
 #undef restrict
-/* Work around a bug in Sun C++: it does not support _Restrict, even
-   though the corresponding Sun C compiler does, which causes
-   "#define restrict _Restrict" in the previous line.  Perhaps some future
-   version of Sun C++ will work with _Restrict; if so, it'll probably
-   define __RESTRICT, just as Sun C does.  */
+/* Work around a bug in Sun C++: it does not support _Restrict or
+   __restrict__, even though the corresponding Sun C compiler ends up with
+   "#define restrict _Restrict" or "#define restrict __restrict__" in the
+   previous line.  Perhaps some future version of Sun C++ will work with
+   restrict; if so, hopefully it defines __RESTRICT like Sun C does.  */
 #if defined __SUNPRO_CC && !defined __RESTRICT
 # define _Restrict
+# define __restrict__
 #endif
 
 /* Define to `unsigned int' if <sys/types.h> does not define. */

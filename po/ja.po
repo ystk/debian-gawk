@@ -1,934 +1,976 @@
 # Japanese messages for gawk.
-# Copyright (C) 2003 Free Software Foundation, Inc.
+# Copyright (C) 2003, 2011 Free Software Foundation, Inc.
 # This file is distributed under the same license as the gawk package.
 # Makoto Hosoya <mhosoya@ozemail.com.au>, 2003.
+# Yasuaki Taniguchi <yasuakit@gmail.com>, 2011.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: gawk 3.1.4l\n"
+"Project-Id-Version: gawk 4.0.0\n"
 "Report-Msgid-Bugs-To: arnold@skeeve.com\n"
-"POT-Creation-Date: 2009-07-21 23:23+0300\n"
-"PO-Revision-Date: 2005-06-27 02:37+1000\n"
-"Last-Translator: Makoto Hosoya <mhosoya@ozemail.com.au>\n"
+"POT-Creation-Date: 2012-03-28 22:03+0200\n"
+"PO-Revision-Date: 2011-07-17 08:28+0900\n"
+"Last-Translator: Yasuaki Taniguchi <yasuakit@gmail.com>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
+"Language: ja\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=EUC-JP\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
-#: array.c:112
-#, c-format
-msgid "attempt to use function `%s' as an array"
-msgstr "´Ø¿ô `%s' ¤òÇÛÎó¤È¤·¤Æ»ÈÍÑ¤·¤Æ¤¤¤Ş¤¹¡£"
-
-#: array.c:115
-#, c-format
-msgid "attempt to use scalar parameter `%s' as an array"
-msgstr "¥¹¥«¥é¡¼¥Ñ¥é¥á¡¼¥¿ `%s' ¤òÇÛÎó¤È¤·¤Æ»ÈÍÑ¤·¤Æ¤¤¤Ş¤¹¡£"
-
-#: array.c:118
-#, c-format
-msgid "attempt to use scalar `%s' as array"
-msgstr "¥¹¥«¥é¡¼ `%s' ¤òÇÛÎó¤È¤·¤Æ»ÈÍÑ¤·¤Æ¤¤¤Ş¤¹¡£"
-
-#: array.c:156
+#: array.c:140
 #, c-format
 msgid "from %s"
-msgstr "%s ¤«¤é"
+msgstr "%s ã‹ã‚‰"
 
-#: array.c:514
+#: array.c:248
+msgid "attempt to use a scalar value as array"
+msgstr "ã‚¹ã‚«ãƒ©ãƒ¼å€¤ã‚’é…åˆ—ã¨ã—ã¦ä½¿ç”¨ã™ã‚‹è©¦ã¿ã§ã™"
+
+#: array.c:251
 #, c-format
-msgid "reference to uninitialized element `%s[\"%s\"]'"
-msgstr "½é´ü²½¤µ¤ì¤Æ¤¤¤Ê¤¤Í×ÁÇ `%s[\"%s\"]' ¤ò»²¾È¤·¤Æ¤¤¤Ş¤¹¡£"
+msgid "attempt to use function `%s' as an array"
+msgstr "é–¢æ•° `%s' ã‚’é…åˆ—ã¨ã—ã¦ä½¿ç”¨ã™ã‚‹è©¦ã¿ã§ã™"
 
-#: array.c:520
+#: array.c:254
+#, c-format
+msgid "attempt to use scalar parameter `%s' as an array"
+msgstr "ã‚¹ã‚«ãƒ©ãƒ¼ä»®å¼•æ•° `%s' ã‚’é…åˆ—ã¨ã—ã¦ä½¿ç”¨ã™ã‚‹è©¦ã¿ã§ã™"
+
+#: array.c:257
+#, c-format
+msgid "attempt to use scalar `%s' as an array"
+msgstr "ã‚¹ã‚«ãƒ©ãƒ¼ `%s' ã‚’é…åˆ—ã¨ã—ã¦ä½¿ç”¨ã™ã‚‹è©¦ã¿ã§ã™"
+
+#: array.c:302 array.c:707 builtin.c:84 builtin.c:1385 builtin.c:1427
+#: builtin.c:1440 builtin.c:1859 builtin.c:1871 eval.c:1135 eval.c:1139
+#: eval.c:1495 eval.c:1812
+#, c-format
+msgid "attempt to use array `%s' in a scalar context"
+msgstr "ã‚¹ã‚«ãƒ©ãƒ¼ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã§é…åˆ— `%s' ã‚’ä½¿ç”¨ã™ã‚‹è©¦ã¿ã§ã™"
+
+#: array.c:513
+#, c-format
+msgid "reference to uninitialized element `%s[\"%.*s\"]'"
+msgstr "åˆæœŸåŒ–ã•ã‚Œã¦ã„ãªã„è¦ç´  `%s[\"%.*s\"]' ã¸ã®å‚ç…§ã§ã™"
+
+#: array.c:519
 #, c-format
 msgid "subscript of array `%s' is null string"
-msgstr "ÇÛÎó¤ÎÅº»ú `%s' ¤¬¶õÎó¤Ç¤¹¡£"
+msgstr "é…åˆ— `%s' ã®æ·»å­—ãŒ NULL æ–‡å­—åˆ—ã§ã™"
 
-#: array.c:624
+#: array.c:723
 #, c-format
 msgid "delete: index `%s' not in array `%s'"
-msgstr "delete: ÇÛÎó `%2$s' ¤Ë»ØÉ¸ `%1$s' ¤Ï¤¢¤ê¤Ş¤»¤ó¡£"
+msgstr "delete: é…åˆ— `%2$s' å†…ã«ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ `%1$s' ãŒã‚ã‚Šã¾ã›ã‚“"
 
-#: array.c:793
+#: array.c:734 eval.c:1865
+#, c-format
+msgid "attempt to use scalar `%s[\"%.*s\"]' as an array"
+msgstr "ã‚¹ã‚«ãƒ©ãƒ¼ `%s[\"%.*s\"]' ã‚’é…åˆ—ã¨ã—ã¦ä½¿ç”¨ã™ã‚‹è©¦ã¿ã§ã™"
+
+#: array.c:910
 #, c-format
 msgid "%s: empty (null)\n"
-msgstr "%s: ¶õ (null)\n"
+msgstr "%s: ç©º (null)\n"
 
-#: array.c:798
+#: array.c:915
 #, c-format
 msgid "%s: empty (zero)\n"
-msgstr "%s: ¶õ (zero)\n"
+msgstr "%s: ç©º (zero)\n"
 
-#: array.c:802
+#: array.c:919
 #, c-format
 msgid "%s: table_size = %d, array_size = %d\n"
-msgstr "%s: ¥Æ¡¼¥Ö¥ë¥µ¥¤¥º (table_size) = %d, ÇÛÎó¥µ¥¤¥º (array_size) = %d\n"
+msgstr "%s: ãƒ†ãƒ¼ãƒ–ãƒ«ã‚µã‚¤ã‚º (table_size) = %d, é…åˆ—ã‚µã‚¤ã‚º (array_size) = %d\n"
 
-#: array.c:831
+#: array.c:954
 #, c-format
 msgid "%s: is parameter\n"
-msgstr "%s: ¤Ï¥Ñ¥é¥á¡¼¥¿¤Ç¤¹¡£\n"
+msgstr "%s: ä»®å¼•æ•°ã§ã™\n"
 
-#: array.c:836
+#: array.c:958
 #, c-format
 msgid "%s: array_ref to %s\n"
-msgstr "%s: %s ¤Ø¤ÎÇÛÎó»²¾È (array_ref)\n"
+msgstr "%s: %s ã¸ã®é…åˆ—å‚ç…§ (array_ref) ã§ã™\n"
 
-#: awkgram.y:218
+#: array.c:963
+msgid "adump: argument not an array"
+msgstr "adump: å¼•æ•°ãŒé…åˆ—ã§ã¯ã‚ã‚Šã¾ã›ã‚“"
+
+#: array.c:1086
+msgid "asort: second argument not an array"
+msgstr "asort: ç¬¬äºŒå¼•æ•°ãŒé…åˆ—ã§ã¯ã‚ã‚Šã¾ã›ã‚“"
+
+#: array.c:1087
+msgid "asorti: second argument not an array"
+msgstr "asorti: ç¬¬äºŒå¼•æ•°ãŒé…åˆ—ã§ã¯ã‚ã‚Šã¾ã›ã‚“"
+
+#: array.c:1094
+msgid "asort: first argument not an array"
+msgstr "asort: ç¬¬ä¸€å¼•æ•°ãŒé…åˆ—ã§ã¯ã‚ã‚Šã¾ã›ã‚“"
+
+#: array.c:1095
+msgid "asorti: first argument not an array"
+msgstr "asorti: ç¬¬ä¸€å¼•æ•°ãŒé…åˆ—ã§ã¯ã‚ã‚Šã¾ã›ã‚“"
+
+#: array.c:1102
+msgid "asort: cannot use a subarray of first arg for second arg"
+msgstr "asort: ç¬¬ä¸€å¼•æ•°ã®éƒ¨åˆ†é…åˆ—ã‚’ç¬¬äºŒå¼•æ•°ç”¨ã«ä½¿ç”¨ã™ã‚‹ã“ã¨ã¯å‡ºæ¥ã¾ã›ã‚“"
+
+#: array.c:1103
+msgid "asorti: cannot use a subarray of first arg for second arg"
+msgstr "asorti: ç¬¬ä¸€å¼•æ•°ã®éƒ¨åˆ†é…åˆ—ã‚’ç¬¬äºŒå¼•æ•°ç”¨ã«ä½¿ç”¨ã™ã‚‹ã“ã¨ã¯å‡ºæ¥ã¾ã›ã‚“"
+
+#: array.c:1108
+msgid "asort: cannot use a subarray of second arg for first arg"
+msgstr "asort: ç¬¬äºŒå¼•æ•°ã®éƒ¨åˆ†é…åˆ—ã‚’ç¬¬ä¸€å¼•æ•°ç”¨ã«ä½¿ç”¨ã™ã‚‹ã“ã¨ã¯å‡ºæ¥ã¾ã›ã‚“"
+
+#: array.c:1109
+msgid "asorti: cannot use a subarray of second arg for first arg"
+msgstr "asorti: ç¬¬äºŒå¼•æ•°ã®éƒ¨åˆ†é…åˆ—ã‚’ç¬¬ä¸€å¼•æ•°ç”¨ã«ä½¿ç”¨ã™ã‚‹ã“ã¨ã¯å‡ºæ¥ã¾ã›ã‚“"
+
+#: array.c:1655
+#, c-format
+msgid "`%s' is invalid as a function name"
+msgstr "`%s' ã¯é–¢æ•°åã¨ã—ã¦ã¯ç„¡åŠ¹ã§ã™"
+
+#: array.c:1659
+#, c-format
+msgid "sort comparison function `%s' is not defined"
+msgstr "ã‚½ãƒ¼ãƒˆæ¯”è¼ƒé–¢æ•° `%s' ãŒå®šç¾©ã•ã‚Œã¦ã„ã¾ã›ã‚“"
+
+#: awkgram.y:249
 #, c-format
 msgid "%s blocks must have an action part"
-msgstr "%s ¥Ö¥í¥Ã¥¯¤Ë¤Ï¥¢¥¯¥·¥ç¥óÉô¤¬É¬¿Ü¤Ç¤¹¡£"
+msgstr "%s ãƒ–ãƒ­ãƒƒã‚¯ã«ã¯ã‚¢ã‚¯ã‚·ãƒ§ãƒ³éƒ¨ãŒå¿…é ˆã§ã™"
 
-#: awkgram.y:221
+#: awkgram.y:252
 msgid "each rule must have a pattern or an action part"
-msgstr "³Æ¥ë¡¼¥ë¤Ë¤Ï¥Ñ¥¿¡¼¥ó¤Ş¤¿¤Ï¥¢¥¯¥·¥ç¥óÉô¤¬É¬¿Ü¤Ç¤¹¡£"
+msgstr "å„ãƒ«ãƒ¼ãƒ«ã«ã¯ãƒ‘ã‚¿ãƒ¼ãƒ³ã¾ãŸã¯ã‚¢ã‚¯ã‚·ãƒ§ãƒ³éƒ¨ãŒå¿…é ˆã§ã™ã€‚"
 
-#: awkgram.y:257 awkgram.y:266
-#, fuzzy
+#: awkgram.y:323 awkgram.y:334
 msgid "old awk does not support multiple `BEGIN' or `END' rules"
-msgstr "±é»»»Ò `**' ¤Ï¸Å¤¤ awk ¤Ç»È¤¨¤Ş¤»¤ó¡£"
+msgstr "å¤ã„ awk ã¯è¤‡æ•°ã® `BEGIN' ã¾ãŸã¯ `END' ãƒ«ãƒ¼ãƒ«ã‚’ã‚µãƒãƒ¼ãƒˆã—ã¾ã›ã‚“"
 
-#: awkgram.y:285
+#: awkgram.y:371
 #, c-format
 msgid "`%s' is a built-in function, it cannot be redefined"
-msgstr "`%s' ¤ÏÁÈ¹ş¤ß´Ø¿ô¤Ç¤¹¡£ºÆÄêµÁ¤Ç¤­¤Ş¤»¤ó¡£"
+msgstr "`%s' ã¯çµ„è¾¼ã¿é–¢æ•°ã§ã™ã€‚å†å®šç¾©ã§ãã¾ã›ã‚“"
 
-#: awkgram.y:331
+#: awkgram.y:432
 msgid "regexp constant `//' looks like a C++ comment, but is not"
-msgstr "Àµµ¬É½¸½Äê¿ô `//' ¤Ï C++¥³¥á¥ó¥È¤Ë»÷¤Æ¤¤¤Ş¤¹¤¬¡¢°ã¤¤¤Ş¤¹¡£"
+msgstr "æ­£è¦è¡¨ç¾å®šæ•° `//' ã¯ C++ã‚³ãƒ¡ãƒ³ãƒˆã«ä¼¼ã¦ã„ã¾ã™ãŒã€é•ã„ã¾ã™ã€‚"
 
-#: awkgram.y:334
+#: awkgram.y:436
 #, c-format
 msgid "regexp constant `/%s/' looks like a C comment, but is not"
-msgstr "Àµµ¬É½¸½Äê¿ô `/%s/' ¤Ï C¥³¥á¥ó¥È¤Ë»÷¤Æ¤¤¤Ş¤¹¤¬¡¢°ã¤¤¤Ş¤¹¡£"
+msgstr "æ­£è¦è¡¨ç¾å®šæ•° `/%s/' ã¯ C ã‚³ãƒ¡ãƒ³ãƒˆã«ä¼¼ã¦ã„ã¾ã™ãŒã€ç•°ãªã‚Šã¾ã™"
 
-#: awkgram.y:361 awkgram.y:656
-msgid "statement may have no effect"
-msgstr "Ì¿ÎáÊ¸¤Ë¤Ï¸ú²Ì¤¬Ìµ¤¤¤«¤â¤·¤ì¤Ş¤»¤ó¡£"
-
-#: awkgram.y:458 awkgram.y:482
-#, c-format
-msgid "`%s' used in %s action"
-msgstr "`%s' ¤¬ %s ¤Î¥¢¥¯¥·¥ç¥ó¤Ç»È¤ï¤ì¤Ş¤·¤¿¡£"
-
-#: awkgram.y:473 awkgram.y:477
-msgid "`nextfile' is a gawk extension"
-msgstr "`nextfile' ¤Ï gawk ÆÃÍ­¤Î³ÈÄ¥¤Ç¤¹¡£"
-
-#: awkgram.y:492
-msgid "`return' used outside function context"
-msgstr "`return' ¤¬´Ø¿ôÄêµÁÊ¸¤Î³°¤Ç»È¤ï¤ì¤Ş¤·¤¿¡£"
-
-#: awkgram.y:534
-msgid "plain `print' in BEGIN or END rule should probably be `print \"\"'"
-msgstr ""
-"BEGIN ¤Ş¤¿¤Ï END ¥ë¡¼¥ëÆâ¤Î°ú¿ô¤ÎÌµ¤¤ `print' ¤Ï `print \"\"' ¤À¤È»×¤ï¤ì¤Ş"
-"¤¹¡£"
-
-#: awkgram.y:550 awkgram.y:558
-msgid "`delete array' is a gawk extension"
-msgstr "`delete array' ¤Ï gawk ÆÃÍ­¤Î³ÈÄ¥¤Ç¤¹¡£"
-
-#: awkgram.y:572 awkgram.y:580
-msgid "`delete(array)' is a non-portable tawk extension"
-msgstr "`delete(array)' ¤Ï tawk ÆÃÍ­¤Î³ÈÄ¥¤Ç¤¹¡£Â¾¤Î awk ¤Ç¤Ï»ÈÍÑ¤Ç¤­¤Ş¤»¤ó¡£"
-
-#: awkgram.y:624
+#: awkgram.y:528
 #, c-format
 msgid "duplicate case values in switch body: %s"
-msgstr "switch Ê¸¤ÎÃæ¤Ë½ÅÊ£¤·¤¿ case ÃÍ¤¬»ÈÍÑ¤µ¤ì¤Æ¤¤¤Ş¤¹: %s"
+msgstr "switch æ–‡ã®ä¸­ã§é‡è¤‡ã—ãŸ case å€¤ãŒä½¿ç”¨ã•ã‚Œã¦ã„ã¾ã™: %s"
 
-#: awkgram.y:634
-msgid "Duplicate `default' detected in switch body"
-msgstr "switch Ê¸¤ÎÃæ¤Ë `default' ¤¬½ÅÊ£¤·¤Æ¤¤¤Ş¤¹¡£"
+#: awkgram.y:549
+msgid "duplicate `default' detected in switch body"
+msgstr "switch æ–‡ã®ä¸­ã§é‡è¤‡ã—ãŸ `default' ãŒæ¤œå‡ºã•ã‚Œã¾ã—ãŸ"
 
-#: awkgram.y:723
-msgid "multistage two-way pipelines don't work"
-msgstr "Â¿ÃÊ³¬¤ÇÁĞÊı¸ş¥Ñ¥¤¥×¤òÍøÍÑ¤·¤¿¼°¤Ï»ÈÍÑ¤Ç¤­¤Ş¤»¤ó¡£"
+#: awkgram.y:809
+msgid "`break' is not allowed outside a loop or switch"
+msgstr "`break' ã¯ãƒ«ãƒ¼ãƒ—ã¾ãŸã¯ switch ã®å¤–ã§ã¯è¨±å¯ã•ã‚Œã¦ã„ã¾ã›ã‚“"
 
-#: awkgram.y:814
-msgid "regular expression on right of assignment"
-msgstr "Àµµ¬É½¸½¤¬ÂåÆş¼°¤Î±¦ÊÕ¤Ë»ÈÍÑ¤µ¤ì¤Æ¤¤¤Ş¤¹¡£"
+#: awkgram.y:818
+msgid "`continue' is not allowed outside a loop"
+msgstr "`continue' ã¯ãƒ«ãƒ¼ãƒ—ã®å¤–ã§ã¯è¨±å¯ã•ã‚Œã¦ã„ã¾ã›ã‚“"
 
-#: awkgram.y:824
-msgid "regular expression on left of `~' or `!~' operator"
-msgstr "`~' ¤ä `!~' ±é»»»Ò¤Îº¸ÊÕ¤ËÀµµ¬É½¸½¤¬»ÈÍÑ¤µ¤ì¤Æ¤¤¤Ş¤¹¡£"
-
-#: awkgram.y:830 awkgram.y:903
-#, fuzzy
-msgid "old awk does not support the keyword `in' except after `for'"
-msgstr "±é»»»Ò `**' ¤Ï¸Å¤¤ awk ¤Ç»È¤¨¤Ş¤»¤ó¡£"
+#: awkgram.y:828
+#, c-format
+msgid "`next' used in %s action"
+msgstr "%s ã‚¢ã‚¯ã‚·ãƒ§ãƒ³å†…ã§ `next' ãŒä½¿ç”¨ã•ã‚Œã¾ã—ãŸ"
 
 #: awkgram.y:836
+msgid "`nextfile' is a gawk extension"
+msgstr "`nextfile' ã¯ gawk æ‹¡å¼µã§ã™"
+
+#: awkgram.y:841
+#, c-format
+msgid "`nextfile' used in %s action"
+msgstr "`nextfile' ãŒ %s ã‚¢ã‚¯ã‚·ãƒ§ãƒ³å†…ã§ä½¿ç”¨ã•ã‚Œã¾ã—ãŸ"
+
+#: awkgram.y:865
+msgid "`return' used outside function context"
+msgstr "`return' ãŒé–¢æ•°å®šç¾©æ–‡ã®å¤–ã§ä½¿ã‚ã‚Œã¾ã—ãŸ"
+
+#: awkgram.y:925
+msgid "plain `print' in BEGIN or END rule should probably be `print \"\"'"
+msgstr ""
+"BEGIN ã¾ãŸã¯ END ãƒ«ãƒ¼ãƒ«å†…ã®å¼•æ•°ã®ç„¡ã„ `print' ã¯ `print \"\"' ã ã¨æ€ã‚ã‚Œã¾ã™"
+
+#: awkgram.y:995 awkgram.y:999 awkgram.y:1023
+msgid "`delete array' is a gawk extension"
+msgstr "`delete array' ã¯ gawk æ‹¡å¼µã§ã™"
+
+#: awkgram.y:1019
+msgid "`delete(array)' is a non-portable tawk extension"
+msgstr "`delete(array)' ã¯ç§»æ¤æ€§ã®ç„¡ã„ tawk æ‹¡å¼µã§ã™"
+
+#: awkgram.y:1135
+msgid "multistage two-way pipelines don't work"
+msgstr "å¤šæ®µéšã§åŒæ–¹å‘ãƒ‘ã‚¤ãƒ—ã‚’åˆ©ç”¨ã—ãŸå¼ã¯ä½¿ç”¨ã§ãã¾ã›ã‚“"
+
+#: awkgram.y:1238
+msgid "regular expression on right of assignment"
+msgstr "æ­£è¦è¡¨ç¾ãŒä»£å…¥å¼ã®å³è¾ºã«ä½¿ç”¨ã•ã‚Œã¦ã„ã¾ã™"
+
+#: awkgram.y:1249
+msgid "regular expression on left of `~' or `!~' operator"
+msgstr "`~' ã‚„ `!~' æ¼”ç®—å­ã®å·¦è¾ºã«æ­£è¦è¡¨ç¾ãŒä½¿ç”¨ã•ã‚Œã¦ã„ã¾ã™"
+
+#: awkgram.y:1265 awkgram.y:1419
+msgid "old awk does not support the keyword `in' except after `for'"
+msgstr "å¤ã„ awk ã§ã¯ `in' äºˆç´„èªã¯ `for' ã®å¾Œã‚’é™¤ãã‚µãƒãƒ¼ãƒˆã—ã¾ã›ã‚“"
+
+#: awkgram.y:1275
 msgid "regular expression on right of comparison"
-msgstr "Èæ³Ó¼°¤Î±¦ÊÕ¤ËÀµµ¬É½¸½¤¬»ÈÍÑ¤µ¤ì¤Æ¤¤¤Ş¤¹¡£"
+msgstr "æ¯”è¼ƒå¼ã®å³è¾ºã«æ­£è¦è¡¨ç¾ãŒä½¿ç”¨ã•ã‚Œã¦ã„ã¾ã™ã€‚"
 
-#: awkgram.y:893
+#: awkgram.y:1394
+#, c-format
+msgid "`getline var' invalid inside `%s' rule"
+msgstr "`%s' ãƒ«ãƒ¼ãƒ«ã®å†…éƒ¨ã§ã¯ `getline var' ã¯ç„¡åŠ¹ã§ã™"
+
+#: awkgram.y:1397 eval.c:2504
+#, c-format
+msgid "`getline' invalid inside `%s' rule"
+msgstr "`%s' ãƒ«ãƒ¼ãƒ«ã®å†…éƒ¨ã§ã¯ `getline' ã¯ç„¡åŠ¹ã§ã™"
+
+#: awkgram.y:1402
 msgid "non-redirected `getline' undefined inside END action"
-msgstr "¥ê¥À¥¤¥ì¥¯¥È¤µ¤ì¤Æ¤¤¤Ê¤¤ `getline' ¤Ï END ¥¢¥¯¥·¥ç¥ó¤Ç¤ÏÌ¤ÄêµÁ¤Ç¤¹¡£"
+msgstr "ãƒªãƒ€ã‚¤ãƒ¬ã‚¯ãƒˆã•ã‚Œã¦ã„ãªã„ `getline' ã¯ END ã‚¢ã‚¯ã‚·ãƒ§ãƒ³ã§ã¯æœªå®šç¾©ã§ã™ã€‚"
 
-#: awkgram.y:904
-#, fuzzy
+#: awkgram.y:1421
 msgid "old awk does not support multidimensional arrays"
-msgstr "±é»»»Ò `**' ¤Ï¸Å¤¤ awk ¤Ç»È¤¨¤Ş¤»¤ó¡£"
+msgstr "å¤ã„ awk ã¯å¤šæ¬¡å…ƒé…åˆ—ã‚’ã‚µãƒãƒ¼ãƒˆã—ã¾ã›ã‚“"
 
-#: awkgram.y:950
+#: awkgram.y:1517
 msgid "call of `length' without parentheses is not portable"
-msgstr "³ç¸ÌÌµ¤·¤Î `length' ¤ÏÂ¾¤Î awk ¤Ç»ÈÍÑ¤Ç¤­¤Ş¤»¤ó¡£"
+msgstr "å°æ‹¬å¼§ãŒç„¡ã„ `length' ã¯ç§»æ¤æ€§ãŒã‚ã‚Šã¾ã›ã‚“"
 
-#: awkgram.y:955
-msgid "call of `length' without parentheses is deprecated by POSIX"
-msgstr "POSIX ¤Ï³ç¸ÌÌµ¤·¤Ç¤Î `length' ¤Î»ÈÍÑ¤ò¿ä¾©¤·¤Ş¤»¤ó¡£"
+#: awkgram.y:1580
+msgid "indirect function calls are a gawk extension"
+msgstr "é–“æ¥é–¢æ•°å‘¼ã³å‡ºã—ã¯ gawk æ‹¡å¼µã§ã™"
 
-#: awkgram.y:1009
-msgid "use of non-array as array"
-msgstr "ÇÛÎó¤Ç¤Ê¤¤¤â¤Î¤òÇÛÎó¤È¤·¤Æ»ÈÍÑ¤·¤Æ¤¤¤Ş¤¹¡£"
+#: awkgram.y:1593
+#, c-format
+msgid "can not use special variable `%s' for indirect function call"
+msgstr "ç‰¹åˆ¥ãªå¤‰æ•° `%s' ã¯é–“æ¥é–¢æ•°å‘¼ã³å‡ºã—ç”¨ã«ã¯ä½¿ç”¨å‡ºæ¥ã¾ã›ã‚“"
 
-#: awkgram.y:1012
+#: awkgram.y:1671
 msgid "invalid subscript expression"
-msgstr "Åº»ú¼°¤¬ÉÔÀµ¤Ç¤¹¡£"
+msgstr "æ·»å­—ã®å¼ãŒç„¡åŠ¹ã§ã™"
 
-#: awkgram.y:1257
+#: awkgram.y:1711
+msgid "use of non-array as array"
+msgstr "é…åˆ—ã§ãªã„ã‚‚ã®ã‚’é…åˆ—ã¨ã—ã¦ä½¿ç”¨ã—ã¦ã„ã¾ã™"
+
+#: awkgram.y:1975 awkgram.y:1995 msg.c:98
+msgid "warning: "
+msgstr "è­¦å‘Š: "
+
+#: awkgram.y:1993 msg.c:130
+msgid "fatal: "
+msgstr "è‡´å‘½çš„: "
+
+#: awkgram.y:2043
 msgid "unexpected newline or end of string"
-msgstr "Í½ÁÛ³°¤Î²ş¹Ô¤Ş¤¿¤ÏÊ¸»úÎó¤Î½ªÃ¼¤¬¤¢¤ê¤Ş¤¹¡£"
+msgstr "äºˆæœŸã—ãªã„æ”¹è¡Œã¾ãŸã¯æ–‡å­—åˆ—çµ‚ç«¯ã§ã™"
 
-#: awkgram.y:1374
-msgid "empty program text on command line"
-msgstr "¥³¥Ş¥ó¥É¹Ô¤Î¥×¥í¥°¥é¥àÉ½µ­¤¬¶õ¤Ç¤¹¡£"
-
-#: awkgram.y:1430
+#: awkgram.y:2300 awkgram.y:2358 awkgram.y:2542
 #, c-format
 msgid "can't open source file `%s' for reading (%s)"
-msgstr "¥½¡¼¥¹¥Õ¥¡¥¤¥ë `%s' ¤òÆÉ¤ß¹ş¤à¤¿¤á¤Ë³«¤±¤Ş¤»¤ó (%s)¡£"
+msgstr "ã‚½ãƒ¼ã‚¹ãƒ•ã‚¡ã‚¤ãƒ« `%s' ã‚’èª­ã¿è¾¼ã¿ç”¨ã«é–‹ã‘ã¾ã›ã‚“ (%s)"
 
-#: awkgram.y:1528
+#: awkgram.y:2301 awkgram.y:2359 builtin.c:122
+msgid "reason unknown"
+msgstr "åŸå› ä¸æ˜"
+
+#: awkgram.y:2317
 #, c-format
-msgid "can't read sourcefile `%s' (%s)"
-msgstr "¥½¡¼¥¹¥Õ¥¡¥¤¥ë `%s' ¤òÆÉ¤ß¹ş¤á¤Ş¤»¤ó (%s)¡£"
+msgid "already included source file `%s'"
+msgstr "ã‚½ãƒ¼ã‚¹ãƒ•ã‚¡ã‚¤ãƒ« `%s' ã¯æ—¢ã«èª­ã¿è¾¼ã¾ã‚Œã¦ã„ã¾ã™"
 
-#: awkgram.y:1536
-#, c-format
-msgid "source file `%s' is empty"
-msgstr "¥½¡¼¥¹¥Õ¥¡¥¤¥ë `%s' ¤Ï¶õ¤Ç¤¹¡£"
-
-#: awkgram.y:1728 awkgram.y:1850 awkgram.y:1868 awkgram.y:2243 awkgram.y:2330
-msgid "source file does not end in newline"
-msgstr "¥½¡¼¥¹¥Õ¥¡¥¤¥ë¤¬²ş¹Ô¤Ç½ª¤Ã¤Æ¤¤¤Ş¤»¤ó¡£"
-
-#: awkgram.y:1790
-msgid "unterminated regexp ends with `\\' at end of file"
-msgstr "½ªÃ¼¤µ¤ì¤Æ¤¤¤Ê¤¤Àµµ¬É½¸½¤¬¥Õ¥¡¥¤¥ëºÇ¸å¤Î `\\' ¤Ç½ª¤Ã¤Æ¤¤¤Ş¤¹¡£"
-
-#: awkgram.y:1814
-#, c-format
-msgid "%s: %d: tawk regex modifier `/.../%c' doesn't work in gawk"
-msgstr "%s: %d: tawk ¤ÎÀµµ¬É½¸½½¤¾ş»Ò `/.../%c' ¤Ï gawk ¤Ç»ÈÍÑ¤Ç¤­¤Ş¤»¤ó¡£"
-
-#: awkgram.y:1818
-#, c-format
-msgid "tawk regex modifier `/.../%c' doesn't work in gawk"
-msgstr "tawk ¤ÎÀµµ¬É½¸½½¤¾ş»Ò `/.../%c' ¤Ï gawk ¤Ç»ÈÍÑ¤Ç¤­¤Ş¤»¤ó¡£"
-
-#: awkgram.y:1825
-msgid "unterminated regexp"
-msgstr "Àµµ¬É½¸½¤¬½ªÃ¼¤µ¤ì¤Æ¤¤¤Ş¤»¤ó¡£"
-
-#: awkgram.y:1828
-msgid "unterminated regexp at end of file"
-msgstr "¥Õ¥¡¥¤¥ë¤ÎÃæ¤ÇÀµµ¬É½¸½¤¬½ªÃ¼¤µ¤ì¤Æ¤¤¤Ş¤»¤ó¡£"
-
-#: awkgram.y:1897
-msgid "use of `\\ #...' line continuation is not portable"
-msgstr "`\\ #...' ·Á¼°¤Î¹Ô·ÑÂ³¤ÏÂ¾¤Î awk ¤Ç»È¤¨¤Ş¤»¤ó¡£"
-
-#: awkgram.y:1910
-msgid "backslash not last character on line"
-msgstr "¥Ğ¥Ã¥¯¥¹¥é¥Ã¥·¥å¤¬¹ÔºÇ¸å¤ÎÊ¸»ú¤Ë¤Ê¤Ã¤Æ¤¤¤Ş¤»¤ó¡£"
-
-#: awkgram.y:1955
-msgid "POSIX does not allow operator `**='"
-msgstr "POSIX ¤Ï±é»»»Ò `**=' ¤òµö²Ä¤·¤Ş¤»¤ó¡£"
-
-#: awkgram.y:1957
-msgid "old awk does not support operator `**='"
-msgstr "±é»»»Ò `**=' ¤Ï¸Å¤¤ awk ¤Ç»È¤¨¤Ş¤»¤ó¡£"
-
-#: awkgram.y:1966
-msgid "POSIX does not allow operator `**'"
-msgstr "POSIX ¤Ç¤Ï±é»»»Ò `**' ¤òµö²Ä¤·¤Æ¤¤¤Ş¤»¤ó¡£"
-
-#: awkgram.y:1968
-msgid "old awk does not support operator `**'"
-msgstr "±é»»»Ò `**' ¤Ï¸Å¤¤ awk ¤Ç»È¤¨¤Ş¤»¤ó¡£"
-
-#: awkgram.y:1999
-msgid "operator `^=' is not supported in old awk"
-msgstr "±é»»»Ò `^=' ¤Ï¸Å¤¤ awk ¤Ç»È¤¨¤Ş¤»¤ó¡£"
-
-#: awkgram.y:2007
-msgid "operator `^' is not supported in old awk"
-msgstr "±é»»»Ò `^' ¤Ï¸Å¤¤ awk ¤Ç»È¤¨¤Ş¤»¤ó¡£"
-
-#: awkgram.y:2091 awkgram.y:2106
-msgid "unterminated string"
-msgstr "Ê¸»úÎó¤¬½ªÃ¼¤µ¤ì¤Æ¤¤¤Ş¤»¤ó¡£"
-
-#: awkgram.y:2291
-#, c-format
-msgid "invalid char '%c' in expression"
-msgstr "É½¸½¤Î char '%c' ¤ÏÉÔÀµ¤Ç¤¹¡£"
-
-#: awkgram.y:2339
-#, c-format
-msgid "`%s' is a gawk extension"
-msgstr "`%s' ¤Ï gawk ÆÃÍ­¤Î³ÈÄ¥¤Ç¤¹¡£"
-
-#: awkgram.y:2342
-#, c-format
-msgid "`%s' is a Bell Labs extension"
-msgstr "`%s' ¤Ï¥Ù¥ë¸¦µæ½ê¤Ë¤è¤ë³ÈÄ¥¤Ç¤¹¡£"
-
-#: awkgram.y:2345
-#, c-format
-msgid "POSIX does not allow `%s'"
-msgstr "POSIX ¤Ï `%s' ¤òµö²Ä¤·¤Ş¤»¤ó¡£"
+#: awkgram.y:2343
+msgid "@include is a gawk extension"
+msgstr "@include ã¯ gawk æ‹¡å¼µã§ã™"
 
 #: awkgram.y:2349
+msgid "empty filename after @include"
+msgstr "@include ã®å¾Œã«ç©ºã®ãƒ•ã‚¡ã‚¤ãƒ«åãŒã‚ã‚Šã¾ã™"
+
+#: awkgram.y:2494
+msgid "empty program text on command line"
+msgstr "ã‚³ãƒãƒ³ãƒ‰è¡Œã®ãƒ—ãƒ­ã‚°ãƒ©ãƒ è¡¨è¨˜ãŒç©ºã§ã™"
+
+#: awkgram.y:2609
 #, c-format
-msgid "`%s' is not supported in old awk"
-msgstr "`%s' ¤Ï¸Å¤¤ awk ¤Ç»ÈÍÑ¤Ç¤­¤Ş¤»¤ó¡£"
+msgid "can't read sourcefile `%s' (%s)"
+msgstr "ã‚½ãƒ¼ã‚¹ãƒ•ã‚¡ã‚¤ãƒ« `%s' ã‚’èª­ã¿è¾¼ã‚ã¾ã›ã‚“ (%s)"
 
-#: awkgram.y:2375
-msgid "`goto' considered harmful!\n"
-msgstr "`goto' ¤ÏÍ­³²¤Ç¤¹!\n"
-
-#: awkgram.y:2437
+#: awkgram.y:2620
 #, c-format
-msgid "%d is invalid as number of arguments for %s"
-msgstr "%d ¤Ï %s ¤Ë»È¤¨¤ë°ú¿ô¤Î¿ô¤È¤·¤Æ¤ÏÉÔÀµ¤Ç¤¹¡£"
+msgid "source file `%s' is empty"
+msgstr "ã‚½ãƒ¼ã‚¹ãƒ•ã‚¡ã‚¤ãƒ« `%s' ã¯ç©ºã§ã™"
 
-#: awkgram.y:2456 awkgram.y:2459
-msgid "match: third argument is a gawk extension"
-msgstr "match: Âè»°°ú¿ô¤Ï gawk ÆÃÍ­¤Î³ÈÄ¥¤Ç¤¹¡£"
+#: awkgram.y:2797
+msgid "source file does not end in newline"
+msgstr "ã‚½ãƒ¼ã‚¹ãƒ•ã‚¡ã‚¤ãƒ«ãŒæ”¹è¡Œã§çµ‚ã£ã¦ã„ã¾ã›ã‚“"
 
-#: awkgram.y:2472
+#: awkgram.y:2900
+msgid "unterminated regexp ends with `\\' at end of file"
+msgstr "çµ‚ç«¯ã•ã‚Œã¦ã„ãªã„æ­£è¦è¡¨ç¾ãŒãƒ•ã‚¡ã‚¤ãƒ«æœ€å¾Œã® `\\' ã§çµ‚ã£ã¦ã„ã¾ã™ã€‚"
+
+#: awkgram.y:2924
 #, c-format
-msgid "%s: string literal as last arg of substitute has no effect"
-msgstr "%s: Ê¸»úÎó¥ê¥Æ¥é¥ë¤òÃÖ¤­´¹¤¨ºÇ¸å¤Î°ú¿ô¤Ë»ÈÍÑ¤¹¤ë¤È¸ú²Ì¤¬¤¢¤ê¤Ş¤»¤ó¡£"
-
-#: awkgram.y:2475
-#, c-format
-msgid "%s third parameter is not a changeable object"
-msgstr "%s Âè»°¥Ñ¥é¥á¡¼¥¿¤Ï²ÄÊÑ¥ª¥Ö¥¸¥§¥¯¥È¤Ç¤Ï¤¢¤ê¤Ş¤»¤ó¡£"
-
-#: awkgram.y:2502 awkgram.y:2505
-msgid "close: second argument is a gawk extension"
-msgstr "close: ÂèÆó°ú¿ô¤Ï gawk ÆÃÍ­¤Î³ÈÄ¥¤Ç¤¹¡£"
-
-#: awkgram.y:2515
-msgid "use of dcgettext(_\"...\") is incorrect: remove leading underscore"
-msgstr ""
-"dcgettext(_\"...\")¤Î»È¤¤Êı¤¬´Ö°ã¤Ã¤Æ¤¤¤Ş¤¹: ºÇ½é¤Î¥¢¥ó¥À¡¼¥¹¥³¥¢¤òºï½ü¤·¤Æ¤¯"
-"¤À¤µ¤¤¡£"
-
-#: awkgram.y:2530
-msgid "use of dcngettext(_\"...\") is incorrect: remove leading underscore"
-msgstr ""
-"dcngettext(_\"...\")¤Î»È¤¤Êı¤¬´Ö°ã¤Ã¤Æ¤¤¤Ş¤¹: ºÇ½é¤Î¥¢¥ó¥À¡¼¥¹¥³¥¢¤òºï½ü¤·¤Æ"
-"¤¯¤À¤µ¤¤¡£"
-
-#: awkgram.y:2602
-#, c-format
-msgid "function `%s': parameter #%d, `%s', duplicates parameter #%d"
-msgstr "´Ø¿ô `%s': ¥Ñ¥é¥á¡¼¥¿ #%d, `%s' ¤¬¥Ñ¥é¥á¡¼¥¿ #%d ¤È½ÅÊ£¤·¤Æ¤¤¤Ş¤¹¡£"
-
-#: awkgram.y:2635
-#, c-format
-msgid "function `%s': parameter `%s' shadows global variable"
-msgstr "´Ø¿ô `%s': ¥Ñ¥é¥á¡¼¥¿ `%s' ¤¬Âç°èÊÑ¿ô¤òÊ¤¤¤±£¤·¤Æ¤¤¤Ş¤¹¡£"
-
-#: awkgram.y:2747
-#, c-format
-msgid "could not open `%s' for writing (%s)"
-msgstr "`%s' ¤ò½ñ¹ş¤ßÍÑ¤Ë³«¤±¤Ş¤»¤ó¤Ç¤·¤¿ (%s)¡£"
-
-#: awkgram.y:2748 profile.c:95
-msgid "sending profile to standard error"
-msgstr "¥×¥í¥Õ¥¡¥¤¥ë¤òÉ¸½à¥¨¥é¡¼¤ËÁ÷¤Ã¤Æ¤¤¤Ş¤¹¡£"
-
-#: awkgram.y:2780
-#, c-format
-msgid "%s: close failed (%s)"
-msgstr "%s: ÊÄ¤¸¤ë¤³¤È¤¬¤Ç¤­¤Ş¤»¤ó (%s)¡£"
-
-#: awkgram.y:2901
-msgid "shadow_funcs() called twice!"
-msgstr "shadow_funcs() ¤òÆó²ó¸Æ¤Ó½Ğ¤·¤Æ¤¤¤Ş¤¹!"
+msgid "%s: %d: tawk regex modifier `/.../%c' doesn't work in gawk"
+msgstr "%s: %d: tawk ã®æ­£è¦è¡¨ç¾ä¿®é£¾å­ `/.../%c' ã¯ gawk ã§ä½¿ç”¨ã§ãã¾ã›ã‚“"
 
 #: awkgram.y:2928
-msgid "there were shadowed variables."
-msgstr "Ê¤¤¤±£¤µ¤ì¤¿ÊÑ¿ô¤¬¤¢¤ê¤Ş¤·¤¿¡£"
-
-#: awkgram.y:3001
 #, c-format
-msgid "function `%s': can't use function name as parameter name"
-msgstr "´Ø¿ô `%s': ´Ø¿ôÌ¾¤Ï¥Ñ¥é¥á¡¼¥¿Ì¾¤Ë»ÈÍÑ¤Ç¤­¤Ş¤»¤ó¡£"
+msgid "tawk regex modifier `/.../%c' doesn't work in gawk"
+msgstr "tawk ã®æ­£è¦è¡¨ç¾ä¿®é£¾å­ `/.../%c' ã¯ gawk ã§ä½¿ç”¨ã§ãã¾ã›ã‚“"
 
-#: awkgram.y:3004
-#, fuzzy, c-format
-msgid "function `%s': can't use special variable `%s' as a function parameter"
-msgstr "´Ø¿ô `%s': ´Ø¿ôÌ¾¤Ï¥Ñ¥é¥á¡¼¥¿Ì¾¤Ë»ÈÍÑ¤Ç¤­¤Ş¤»¤ó¡£"
+#: awkgram.y:2935
+msgid "unterminated regexp"
+msgstr "æ­£è¦è¡¨ç¾ãŒçµ‚ç«¯ã•ã‚Œã¦ã„ã¾ã›ã‚“"
+
+#: awkgram.y:2939
+msgid "unterminated regexp at end of file"
+msgstr "ãƒ•ã‚¡ã‚¤ãƒ«ã®ä¸­ã§æ­£è¦è¡¨ç¾ãŒçµ‚ç«¯ã•ã‚Œã¦ã„ã¾ã›ã‚“"
+
+#: awkgram.y:2998
+msgid "use of `\\ #...' line continuation is not portable"
+msgstr "`\\ #...' å½¢å¼ã®è¡Œç¶™ç¶šã¯ç§»æ¤æ€§ãŒã‚ã‚Šã¾ã›ã‚“"
 
 #: awkgram.y:3014
+msgid "backslash not last character on line"
+msgstr "ãƒãƒƒã‚¯ã‚¹ãƒ©ãƒƒã‚·ãƒ¥ãŒè¡Œæœ€å¾Œã®æ–‡å­—ã«ãªã£ã¦ã„ã¾ã›ã‚“ã€‚"
+
+#: awkgram.y:3075
+msgid "POSIX does not allow operator `**='"
+msgstr "POSIX ã§ã¯æ¼”ç®—å­ `**=' ã¯è¨±å¯ã•ã‚Œã¦ã„ã¾ã›ã‚“"
+
+#: awkgram.y:3077
+msgid "old awk does not support operator `**='"
+msgstr "å¤ã„ awk ã¯æ¼”ç®—å­ `**=' ã‚’ã‚µãƒãƒ¼ãƒˆã—ã¾ã›ã‚“"
+
+#: awkgram.y:3086
+msgid "POSIX does not allow operator `**'"
+msgstr "POSIX ã§ã¯æ¼”ç®—å­ `**' ã¯è¨±å¯ã•ã‚Œã¦ã„ã¾ã›ã‚“"
+
+#: awkgram.y:3088
+msgid "old awk does not support operator `**'"
+msgstr "å¤ã„ awk ã¯æ¼”ç®—å­ `**' ã‚’ã‚µãƒãƒ¼ãƒˆã—ã¾ã›ã‚“"
+
+#: awkgram.y:3123
+msgid "operator `^=' is not supported in old awk"
+msgstr "å¤ã„ awk ã¯æ¼”ç®—å­ `^=' ã‚’ã‚µãƒãƒ¼ãƒˆã—ã¾ã›ã‚“"
+
+#: awkgram.y:3131
+msgid "operator `^' is not supported in old awk"
+msgstr "å¤ã„ awk ã¯æ¼”ç®—å­ `^' ã‚’ã‚µãƒãƒ¼ãƒˆã—ã¾ã›ã‚“"
+
+#: awkgram.y:3224 awkgram.y:3240
+msgid "unterminated string"
+msgstr "æ–‡å­—åˆ—ãŒçµ‚ç«¯ã•ã‚Œã¦ã„ã¾ã›ã‚“"
+
+#: awkgram.y:3436
+#, c-format
+msgid "invalid char '%c' in expression"
+msgstr "å¼å†…ã«ç„¡åŠ¹ãªæ–‡å­— '%c' ãŒã‚ã‚Šã¾ã™"
+
+#: awkgram.y:3483
+#, c-format
+msgid "`%s' is a gawk extension"
+msgstr "`%s' ã¯ gawk æ‹¡å¼µã§ã™"
+
+#: awkgram.y:3488
+#, c-format
+msgid "`%s' is a Bell Labs extension"
+msgstr "`%s' ã¯ãƒ™ãƒ«ç ”ç©¶æ‰€ã«ã‚ˆã‚‹æ‹¡å¼µã§ã™"
+
+#: awkgram.y:3493
+#, c-format
+msgid "POSIX does not allow `%s'"
+msgstr "POSIX ã§ã¯ `%s' ã¯è¨±å¯ã•ã‚Œã¦ã„ã¾ã›ã‚“"
+
+#: awkgram.y:3501
+#, c-format
+msgid "`%s' is not supported in old awk"
+msgstr "å¤ã„ awk ã¯ `%s' ã‚’ã‚µãƒãƒ¼ãƒˆã—ã¾ã›ã‚“"
+
+#: awkgram.y:3568
+msgid "`goto' considered harmful!\n"
+msgstr "`goto' ã¯æœ‰å®³ã ã¨è¦‹ãªã•ã‚Œã¦ã„ã¾ã™!\n"
+
+#: awkgram.y:3619
+#, c-format
+msgid "%d is invalid as number of arguments for %s"
+msgstr "%d ã¯ %s ç”¨ã®å¼•æ•°ã®æ•°ã¨ã—ã¦ã¯ç„¡åŠ¹ã§ã™"
+
+#: awkgram.y:3654
+#, c-format
+msgid "%s: string literal as last arg of substitute has no effect"
+msgstr "%s: æ–‡å­—åˆ—ãƒªãƒ†ãƒ©ãƒ«ã‚’ç½®ãæ›ãˆæœ€å¾Œã®å¼•æ•°ã«ä½¿ç”¨ã™ã‚‹ã¨åŠ¹æœãŒã‚ã‚Šã¾ã›ã‚“"
+
+#: awkgram.y:3659
+#, c-format
+msgid "%s third parameter is not a changeable object"
+msgstr "%s ç¬¬ä¸‰ä»®å¼•æ•°ã¯å¯å¤‰ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã§ã¯ã‚ã‚Šã¾ã›ã‚“"
+
+#: awkgram.y:3732 awkgram.y:3735
+msgid "match: third argument is a gawk extension"
+msgstr "match: ç¬¬ä¸‰å¼•æ•°ã¯ gawk æ‹¡å¼µã§ã™"
+
+#: awkgram.y:3789 awkgram.y:3792
+msgid "close: second argument is a gawk extension"
+msgstr "close: ç¬¬äºŒå¼•æ•°ã¯ gawk æ‹¡å¼µã§ã™"
+
+#: awkgram.y:3804
+msgid "use of dcgettext(_\"...\") is incorrect: remove leading underscore"
+msgstr ""
+"dcgettext(_\"...\")ã®ä½¿ç”¨æ³•ãŒé–“é•ã£ã¦ã„ã¾ã™: å…ˆé ­ã®ã‚¢ãƒ³ãƒ€ãƒ¼ã‚¹ã‚³ã‚¢(_)ã‚’å‰Šé™¤ã—"
+"ã¦ãã ã•ã„"
+
+#: awkgram.y:3819
+msgid "use of dcngettext(_\"...\") is incorrect: remove leading underscore"
+msgstr ""
+"dcngettext(_\"...\")ã®ä½¿ç”¨æ³•ãŒé–“é•ã£ã¦ã„ã¾ã™: å…ˆé ­ã®ã‚¢ãƒ³ãƒ€ãƒ¼ã‚¹ã‚³ã‚¢(_)ã‚’å‰Šé™¤ã—"
+"ã¦ãã ã•ã„"
+
+#: awkgram.y:3911
+#, c-format
+msgid "function `%s': parameter #%d, `%s', duplicates parameter #%d"
+msgstr "é–¢æ•° `%s': ä»®å¼•æ•° #%d, `%s' ãŒä»®å¼•æ•° #%d ã¨é‡è¤‡ã—ã¦ã„ã¾ã™"
+
+#: awkgram.y:3953
+#, c-format
+msgid "function `%s': parameter `%s' shadows global variable"
+msgstr "é–¢æ•° `%s': ä»®å¼•æ•° `%s' ãŒå¤§åŸŸå¤‰æ•°ã‚’è¦†ã„éš ã—ã¦ã„ã¾ã™"
+
+#: awkgram.y:4111
+#, c-format
+msgid "could not open `%s' for writing (%s)"
+msgstr "`%s' ã‚’æ›¸è¾¼ã¿ç”¨ã«é–‹ã‘ã¾ã›ã‚“ã§ã—ãŸ (%s)"
+
+#: awkgram.y:4112
+msgid "sending variable list to standard error"
+msgstr "å¤‰æ•°ãƒªã‚¹ãƒˆã‚’æ¨™æº–ã‚¨ãƒ©ãƒ¼ã«é€ã£ã¦ã„ã¾ã™"
+
+#: awkgram.y:4118
+#, c-format
+msgid "%s: close failed (%s)"
+msgstr "%s: é–‰ã˜ã‚‹ã®ã«å¤±æ•—ã—ã¾ã—ãŸ (%s)"
+
+#: awkgram.y:4170
+msgid "shadow_funcs() called twice!"
+msgstr "shadow_funcs() ã‚’äºŒå›å‘¼ã³å‡ºã—ã¦ã„ã¾ã™!"
+
+#: awkgram.y:4176
+msgid "there were shadowed variables."
+msgstr "è¦†ã„éš ã•ã‚ŒãŸå¤‰æ•°ãŒã‚ã‚Šã¾ã—ãŸ"
+
+#: awkgram.y:4206
+#, c-format
+msgid "function `%s': can't use function name as parameter name"
+msgstr "é–¢æ•° `%s': é–¢æ•°åã‚’ä»®å¼•æ•°åã¨ã—ã¦ä½¿ç”¨å‡ºæ¥ã¾ã›ã‚“"
+
+#: awkgram.y:4210
+#, c-format
+msgid "function `%s': can't use special variable `%s' as a function parameter"
+msgstr "é–¢æ•° `%s': ç‰¹åˆ¥ãªå¤‰æ•° `%s' ã¯é–¢æ•°ã®ä»®å¼•æ•°ã¨ã—ã¦ä½¿ç”¨å‡ºæ¥ã¾ã›ã‚“"
+
+#: awkgram.y:4226
 #, c-format
 msgid "function name `%s' previously defined"
-msgstr "´Ø¿ôÌ¾ `%s' ¤ÏÄêµÁºÑ¤ß¤Ç¤¹¡£"
+msgstr "é–¢æ•°å `%s' ã¯å‰ã«å®šç¾©ã•ã‚Œã¦ã„ã¾ã™"
 
-#: awkgram.y:3165 awkgram.y:3171
+#: awkgram.y:4394 awkgram.y:4400
 #, c-format
 msgid "function `%s' called but never defined"
-msgstr "Ì¤ÄêµÁ¤Î´Ø¿ô `%s' ¤ò¸Æ¤Ó½Ğ¤·¤Ş¤·¤¿¡£"
+msgstr "æœªå®šç¾©ã®é–¢æ•° `%s' ã‚’å‘¼ã³å‡ºã—ã¾ã—ãŸ"
 
-#: awkgram.y:3174
+#: awkgram.y:4403
 #, c-format
-msgid "function `%s' defined but never called"
-msgstr "ÄêµÁ¤µ¤ì¤¿´Ø¿ô `%s' ¤Ï°ìÅÙ¤â¸Æ¤Ó½Ğ¤µ¤ì¤Ş¤»¤ó¤Ç¤·¤¿¡£"
+msgid "function `%s' defined but never called directly"
+msgstr "é–¢æ•° `%s' ã¯å®šç¾©ã•ã‚Œã¦ã„ã¾ã™ãŒã€ä¸€åº¦ã‚‚ç›´æ¥å‘¼ã³å‡ºã•ã‚Œã¦ã„ã¾ã›ã‚“"
 
-#: awkgram.y:3201
+#: awkgram.y:4435
 #, c-format
 msgid "regexp constant for parameter #%d yields boolean value"
-msgstr "¥Ñ¥é¥á¡¼¥¿ #%d ¤ÎÀµµ¬É½¸½Äê¿ô¤Ï¥Ö¡¼¥ëÃÍ¤ò½ĞÎÏ¤·¤Ş¤¹¡£"
+msgstr "ä»®å¼•æ•° #%d ç”¨ã®æ­£è¦è¡¨ç¾å®šæ•°ã¯çœŸå½å€¤ã‚’å‡ºåŠ›ã—ã¾ã™"
 
-#: awkgram.y:3245
+#: awkgram.y:4544
 #, c-format
 msgid ""
 "function `%s' called with space between name and `(',\n"
 "or used as a variable or an array"
 msgstr ""
-"´Ø¿ôÌ¾¤È `(' ¤Î´Ö¤Ë¥¹¥Ú¡¼¥¹¤òÆş¤ì¤Æ´Ø¿ô `%s' ¤ò¸Æ¤Ó½Ğ¤·¤Æ¤¤¤Ş¤¹¡£\n"
-"¤Ş¤¿¤Ï¡¢ÊÑ¿ô¤«ÇÛÎó¤È¤·¤Æ»È¤ï¤ì¤Æ¤¤¤Ş¤¹¡£"
+"é–¢æ•°åã¨ `(' ã®é–“ã«ã‚¹ãƒšãƒ¼ã‚¹ã‚’å…¥ã‚Œã¦é–¢æ•° `%s' ã‚’å‘¼ã³å‡ºã—ã¦ã„ã¾ã™ã€‚\n"
+"ã¾ãŸã¯ã€å¤‰æ•°ã‹é…åˆ—ã¨ã—ã¦ä½¿ã‚ã‚Œã¦ã„ã¾ã™ã€‚"
 
-#: awkgram.y:3667 eval.c:1394
+#: awkgram.y:4791 eval.c:2056
+msgid "division by zero attempted"
+msgstr "ã‚¼ãƒ­ã«ã‚ˆã‚‹é™¤ç®—ãŒè©¦ã¿ã‚‰ã‚Œã¾ã—ãŸ"
+
+#: awkgram.y:4800 eval.c:2072
 #, c-format
 msgid "division by zero attempted in `%%'"
-msgstr "`%%' ¤Ç¥¼¥í¤Ç¤Î½ü»»¤ò¹Ô¤¤¤Ş¤·¤¿¡£"
+msgstr "`%%' å†…ã§ã‚¼ãƒ­ã«ã‚ˆã‚‹é™¤ç®—ãŒè©¦ã¿ã‚‰ã‚Œã¾ã—ãŸ"
 
-#: builtin.c:122
+#: builtin.c:120
 #, c-format
 msgid "%s to \"%s\" failed (%s)"
-msgstr "%s ¤«¤é \"%s\" ¤Ø½ĞÎÏ¤Ç¤­¤Ş¤»¤ó (%s)¡£"
+msgstr "%s ã‹ã‚‰ \"%s\" ã¸å‡ºåŠ›ã§ãã¾ã›ã‚“ (%s)ã€‚"
 
-#: builtin.c:123
+#: builtin.c:121
 msgid "standard output"
-msgstr "É¸½à½ĞÎÏ"
+msgstr "æ¨™æº–å‡ºåŠ›"
 
-#: builtin.c:124
-msgid "reason unknown"
-msgstr "¸¶°øÉÔÌÀ"
-
-#: builtin.c:137
+#: builtin.c:135
 msgid "exp: received non-numeric argument"
-msgstr "exp: °ú¿ô¤¬¿ôÃÍ¤Ç¤Ï¤¢¤ê¤Ş¤»¤ó¡£"
+msgstr "exp: å¼•æ•°ãŒæ•°å€¤ã§ã¯ã‚ã‚Šã¾ã›ã‚“"
 
-#: builtin.c:143
+#: builtin.c:141
 #, c-format
 msgid "exp: argument %g is out of range"
-msgstr "exp: °ú¿ô %g ¤¬µöÍÆÈÏ°Ï¤òÄ¶¤¨¤Æ¤¤¤Ş¤¹¡£"
+msgstr "exp: å¼•æ•° %g ãŒç¯„å›²å¤–ã§ã™"
 
-#: builtin.c:201
+#: builtin.c:200
 #, c-format
 msgid "fflush: cannot flush: pipe `%s' opened for reading, not writing"
-msgstr "fflush: ¥Õ¥é¥Ã¥·¥åÉÔ²Ä: ¥Ñ¥¤¥× `%s' ¤ÏÆÉ¤ß¹ş¤ßÀìÍÑ¤Ç¤¹¡£"
+msgstr ""
+"fflush: flush ã§ãã¾ã›ã‚“: ãƒ‘ã‚¤ãƒ— `%s' ã¯èª­ã¿è¾¼ã¿ç”¨ã«é–‹ã‹ã‚Œã¦ã„ã¾ã™ã€‚æ›¸ãè¾¼ã¿"
+"ç”¨ã§ã¯ã‚ã‚Šã¾ã›ã‚“"
 
-#: builtin.c:204
+#: builtin.c:203
 #, c-format
 msgid "fflush: cannot flush: file `%s' opened for reading, not writing"
-msgstr "fflush: ¥Õ¥é¥Ã¥·¥åÉÔ²Ä: ¥Õ¥¡¥¤¥ë `%s' ¤ÏÆÉ¤ß¹ş¤ßÀìÍÑ¤Ç¤¹¡£"
+msgstr ""
+"fflush: flush ã§ãã¾ã›ã‚“: ãƒ•ã‚¡ã‚¤ãƒ« `%s' ã¯èª­ã¿è¾¼ã¿ç”¨ã«é–‹ã‹ã‚Œã¦ã„ã¾ã™ã€‚æ›¸ãè¾¼"
+"ã¿ç”¨ã§ã¯ã‚ã‚Šã¾ã›ã‚“"
 
-#: builtin.c:216
+#: builtin.c:215
 #, c-format
 msgid "fflush: `%s' is not an open file, pipe or co-process"
-msgstr ""
-"fflush: `%s' ¤Ï¥Õ¥¡¥¤¥ë¤«¡¢¥Ñ¥¤¥×¤«¡¢ÊÂ¹Ô¥×¥í¥»¥¹¤Ç¤Ê¤±¤ì¤Ğ¤Ê¤ê¤Ş¤»¤ó¡£"
+msgstr "fflush: `%s' ãŒé–‹ã‹ã‚ŒãŸãƒ•ã‚¡ã‚¤ãƒ«ã€ãƒ‘ã‚¤ãƒ—ã€ãƒ—ãƒ­ã‚»ã‚¹å…±æœ‰ã§ã¯ã‚ã‚Šã¾ã›ã‚“"
 
-#: builtin.c:310
+#: builtin.c:333
 msgid "index: received non-string first argument"
-msgstr "index: Âè°ì°ú¿ô¤¬Ê¸»úÎó¤Ç¤Ï¤¢¤ê¤Ş¤»¤ó¡£"
+msgstr "index: æ–‡å­—åˆ—ã§ã¯ç„¡ã„ç¬¬ä¸€å¼•æ•°ã‚’å—ã‘å–ã‚Šã¾ã—ãŸ"
 
-#: builtin.c:312
+#: builtin.c:335
 msgid "index: received non-string second argument"
-msgstr "index: ÂèÆó°ú¿ô¤¬Ê¸»úÎó¤Ç¤Ï¤¢¤ê¤Ş¤»¤ó¡£"
+msgstr "index: æ–‡å­—åˆ—ã§ã¯ç„¡ã„ç¬¬äºŒå¼•æ•°ã‚’å—ã‘å–ã‚Šã¾ã—ãŸ"
 
-#: builtin.c:434
+#: builtin.c:457
 msgid "int: received non-numeric argument"
-msgstr "int: °ú¿ô¤¬¿ôÃÍ¤Ç¤Ï¤¢¤ê¤Ş¤»¤ó¡£"
+msgstr "int: æ•°å€¤ã§ã¯ç„¡ã„å¼•æ•°ã‚’å—ã‘å–ã‚Šã¾ã—ãŸ"
 
-#: builtin.c:464
-#, fuzzy
+#: builtin.c:493
+msgid "length: received array argument"
+msgstr "length: é…åˆ—å¼•æ•°ã‚’å—ã‘å–ã‚Šã¾ã—ãŸ"
+
+#: builtin.c:496
 msgid "`length(array)' is a gawk extension"
-msgstr "`delete array' ¤Ï gawk ÆÃÍ­¤Î³ÈÄ¥¤Ç¤¹¡£"
+msgstr "`length(array)' ã¯ gawk æ‹¡å¼µã§ã™"
 
-#: builtin.c:473
-msgid "length: untyped argument will be forced to scalar"
-msgstr ""
-
-#: builtin.c:477
+#: builtin.c:504
 msgid "length: received non-string argument"
-msgstr "length: °ú¿ô¤¬Ê¸»úÎó¤Ç¤Ï¤¢¤ê¤Ş¤»¤ó¡£"
+msgstr "length: æ–‡å­—åˆ—ã§ã¯ç„¡ã„å¼•æ•°ã‚’å—ã‘å–ã‚Šã¾ã—ãŸ"
 
-#: builtin.c:508
+#: builtin.c:535
 msgid "log: received non-numeric argument"
-msgstr "log: °ú¿ô¤¬¿ôÃÍ¤Ç¤Ï¤¢¤ê¤Ş¤»¤ó¡£"
+msgstr "log: æ•°å€¤ã§ã¯ç„¡ã„å¼•æ•°ã‚’å—ã‘å–ã‚Šã¾ã—ãŸ"
 
-#: builtin.c:511
+#: builtin.c:538
 #, c-format
 msgid "log: received negative argument %g"
-msgstr "log: °ú¿ô %g ¤¬Éé¤ÎÃÍ¤Ç¤¹¡£"
+msgstr "log: è² ã®å¼•æ•° %g ã‚’å—ã‘å–ã‚Šã¾ã—ãŸ"
 
-#: builtin.c:719 builtin.c:722
-msgid "must use `count$' on all formats or none"
+#: builtin.c:694 builtin.c:699
+msgid "fatal: must use `count$' on all formats or none"
 msgstr ""
-"`count$¡Ç¤ÏÁ´¤Æ¤Î½ñ¼°»ØÄê¤ËÅ¬ÍÑ¤¹¤ë¡¢¤Ş¤¿¤ÏÁ´¤Æ¤ËÅ¬ÍÑ¤·¤Ê¤¤¤Î¤É¤Á¤é¤«¤Ç¤·¤«»È"
-"¤¨¤Ş¤»¤ó¡£"
+"è‡´å‘½çš„: `count$â€™ ã¯å…¨ã¦ã®æ›¸å¼ä½¿ç”¨ã™ã‚‹ã€ã¾ãŸã¯å…¨ã¦ã«ä½¿ç”¨ã—ãªã„ã®ã„ãšã‚Œã‹ã§ãªã‘"
+"ã‚Œã°ã„ã‘ã¾ã›ã‚“"
 
-#: builtin.c:783
+#: builtin.c:762
 #, c-format
-msgid "field width is ignored for `%%%%' specifier"
-msgstr ""
+msgid "field width is ignored for `%%' specifier"
+msgstr "`%%' æŒ‡å®šç”¨ã®ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰å¹…ã¯ç„¡è¦–ã•ã‚Œã¾ã™"
 
-#: builtin.c:785
+#: builtin.c:764
 #, c-format
-msgid "precision is ignored for `%%%%' specifier"
-msgstr ""
+msgid "precision is ignored for `%%' specifier"
+msgstr "`%%' æŒ‡å®šç”¨ã®ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰å¹…ã¯ç„¡è¦–ã•ã‚Œã¾ã™"
 
-#: builtin.c:787
+#: builtin.c:766
 #, c-format
-msgid "field width and precision are ignored for `%%%%' specifier"
-msgstr ""
+msgid "field width and precision are ignored for `%%' specifier"
+msgstr "`%%' æŒ‡å®šç”¨ã®ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰å¹…ãŠã‚ˆã³ç²¾åº¦ã¯ç„¡è¦–ã•ã‚Œã¾ã™"
 
-#: builtin.c:838
-msgid "`$' is not permitted in awk formats"
-msgstr "`$' ¤Ï awk ¤Ç¤Ï»È¤¨¤Ş¤»¤ó¡£"
+#: builtin.c:817
+msgid "fatal: `$' is not permitted in awk formats"
+msgstr "è‡´å‘½çš„: `$' ã¯ awk å½¢å¼å†…ã§ã¯è¨±å¯ã•ã‚Œã¦ã„ã¾ã›ã‚“"
 
-#: builtin.c:844
-msgid "arg count with `$' must be > 0"
-msgstr "½ç½ø»ØÄê¤Î `$' ¤Ë»È¤¨¤ë¿ô»ú¤ÏÀµ¤ÎÃÍ¤Ç¤¹¡£"
+#: builtin.c:826
+msgid "fatal: arg count with `$' must be > 0"
+msgstr "è‡´å‘½çš„: `$' ã§æŒ‡å®šã™ã‚‹å¼•æ•°ã®ç•ªå·ã¯æ­£ã§ãªã‘ã‚Œã°ã„ã‘ã¾ã›ã‚“"
 
-#: builtin.c:846
+#: builtin.c:830
 #, c-format
-msgid "arg count %ld greater than total number of supplied arguments"
-msgstr "½ç½ø»ØÄê %ld ¤¬Í¿¤¨¤é¤ì¤Æ¤¤¤ë°ú¿ô¤Î¿ô¤òÄ¶¤¨¤Æ¤¤¤Ş¤¹¡£"
+msgid "fatal: arg count %ld greater than total number of supplied arguments"
+msgstr "è‡´å‘½çš„: å¼•æ•°ã®ç•ªå· %ld ã¯å¼•æ•°ã¨ã—ã¦ä¸ãˆã‚‰ã‚ŒãŸæ•°ã‚ˆã‚Šå¤§ãã„ã§ã™"
 
-#: builtin.c:848
-msgid "`$' not permitted after period in format"
-msgstr "`$' ¤Ï½ñ¼°»ØÄê¤Î¥Ô¥ê¥ª¥É `.' ¤Î¸å¤Ë»ÈÍÑ¤Ç¤­¤Ş¤»¤ó¡£"
+#: builtin.c:834
+msgid "fatal: `$' not permitted after period in format"
+msgstr "è‡´å‘½çš„: `$' ã¯æ›¸å¼æŒ‡å®šå†…ã®ãƒ”ãƒªã‚ªãƒ‰ `.' ã®å¾Œã«ä½¿ç”¨ã§ãã¾ã›ã‚“"
 
-#: builtin.c:861
-msgid "no `$' supplied for positional field width or precision"
-msgstr "¥Õ¥£¡¼¥ë¥ÉÉı¡¢¤Ş¤¿¤ÏÀºÅÙ¤Î»ØÄê»Ò¤Ë `$' ¤¬Í¿¤¨¤é¤ì¤Æ¤¤¤Ş¤»¤ó¡£"
+#: builtin.c:850
+msgid "fatal: no `$' supplied for positional field width or precision"
+msgstr "è‡´å‘½çš„: ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰å¹…ã€ã¾ãŸã¯ç²¾åº¦ã®æŒ‡å®šå­ã« `$' ãŒä¸ãˆã‚‰ã‚Œã¦ã„ã¾ã›ã‚“"
 
-#: builtin.c:927
+#: builtin.c:921
 msgid "`l' is meaningless in awk formats; ignored"
-msgstr "awk ¤Î½ñ¼°»ØÄê¤Ç¤Ï `l' ¤ÏÌµ°ÕÌ£¤Ç¤¹¡£Ìµ»ë¤·¤Ş¤¹¡£"
+msgstr "awk ã®æ›¸å¼æŒ‡å®šã§ã¯ `l' ã¯ç„¡æ„å‘³ã§ã™ã€‚ç„¡è¦–ã—ã¾ã™"
 
-#: builtin.c:931
-msgid "`l' is not permitted in POSIX awk formats"
-msgstr "POSIX ½àµò¤Î awk ¤Ç¤Ï `l' ¤Ï»ÈÍÑ¤Ç¤­¤Ş¤»¤ó¡£"
+#: builtin.c:925
+msgid "fatal: `l' is not permitted in POSIX awk formats"
+msgstr "è‡´å‘½çš„: POSIX awk æ›¸å¼å†…ã§ã¯ `l' ã¯è¨±å¯ã•ã‚Œã¦ã„ã¾ã›ã‚“"
+
+#: builtin.c:938
+msgid "`L' is meaningless in awk formats; ignored"
+msgstr "awk ã®æ›¸å¼æŒ‡å®šã§ã¯ `L' ã¯ç„¡æ„å‘³ã§ã™ã€‚ç„¡è¦–ã—ã¾ã™ã€‚"
 
 #: builtin.c:942
-msgid "`L' is meaningless in awk formats; ignored"
-msgstr "awk ¤Î½ñ¼°»ØÄê¤Ç¤Ï `L' ¤ÏÌµ°ÕÌ£¤Ç¤¹¡£Ìµ»ë¤·¤Ş¤¹¡£"
+msgid "fatal: `L' is not permitted in POSIX awk formats"
+msgstr "è‡´å‘½çš„: POSIX awk æ›¸å¼å†…ã§ã¯ `L' ã¯è¨±å¯ã•ã‚Œã¦ã„ã¾ã›ã‚“"
 
-#: builtin.c:946
-msgid "`L' is not permitted in POSIX awk formats"
-msgstr "POSIX ½àµò¤Î awk ¤Ç¤Ï `L' ¤Ï»ÈÍÑ¤Ç¤­¤Ş¤»¤ó¡£"
-
-#: builtin.c:957
+#: builtin.c:955
 msgid "`h' is meaningless in awk formats; ignored"
-msgstr "awk ¤Î½ñ¼°»ØÄê¤Ç¤Ï `h' ¤ÏÌµ°ÕÌ£¤Ç¤¹¡£Ìµ»ë¤·¤Ş¤¹¡£"
+msgstr "awk ã®æ›¸å¼æŒ‡å®šã§ã¯ `h' ã¯ç„¡æ„å‘³ã§ã™ã€‚ç„¡è¦–ã—ã¾ã™ã€‚"
 
-#: builtin.c:961
-msgid "`h' is not permitted in POSIX awk formats"
-msgstr "POSIX ½àµò¤Î awk ¤Ç¤Ï `h' ¤Ï»ÈÍÑ¤Ç¤­¤Ş¤»¤ó¡£"
+#: builtin.c:959
+msgid "fatal: `h' is not permitted in POSIX awk formats"
+msgstr "è‡´å‘½çš„: POSIX awk æ›¸å¼å†…ã§ã¯ `h' ã¯è¨±å¯ã•ã‚Œã¦ã„ã¾ã›ã‚“"
 
-#: builtin.c:1236
+#: builtin.c:1272
 #, c-format
 msgid "[s]printf: value %g is out of range for `%%%c' format"
-msgstr "[s]printf: %g ¤ÎÃÍ¤¬½ñ¼° `%%%c' ¤ÎµöÍÆÈÏ°Ï¤òÄ¶¤¨¤Æ¤¤¤Ş¤¹¡£"
+msgstr "[s]printf: å€¤ %g ã¯æ›¸å¼ `%%%c' ã®ç¯„å›²å¤–ã§ã™"
 
-#: builtin.c:1316
+#: builtin.c:1332
 #, c-format
 msgid "ignoring unknown format specifier character `%c': no argument converted"
-msgstr ""
+msgstr "ä¸æ˜ãªæ›¸å¼æŒ‡å®šæ–‡å­— `%c' ã‚’ç„¡è¦–ã—ã¦ã„ã¾ã™: å¤‰æ›ã•ã‚Œã‚‹å¼•æ•°ã¯ã‚ã‚Šã¾ã›ã‚“"
 
-#: builtin.c:1322
-msgid "not enough arguments to satisfy format string"
-msgstr "½ñ¼°»ØÄê¤¹¤ë¤¿¤á¤Î°ú¿ô¤¬Â­¤ê¤Ş¤»¤ó¡£"
+#: builtin.c:1337
+msgid "fatal: not enough arguments to satisfy format string"
+msgstr "è‡´å‘½çš„: æ›¸å¼æ–‡å­—åˆ—ã‚’æº€ãŸã™ååˆ†ãªæ•°ã®å¼•æ•°ãŒã‚ã‚Šã¾ã›ã‚“"
 
-#: builtin.c:1324
+#: builtin.c:1339
 msgid "^ ran out for this one"
-msgstr "^ ¤³¤³¤«¤éÂ­¤ê¤Ş¤»¤ó"
+msgstr "^ ã“ã“ã‹ã‚‰è¶³ã‚Šã¾ã›ã‚“"
 
-#: builtin.c:1330
+#: builtin.c:1346
 msgid "[s]printf: format specifier does not have control letter"
-msgstr "[s]printf: ½ñ¼°»ØÄê»Ò¤ËÀ©¸æÊ¸»ú¤¬¤¢¤ê¤Ş¤»¤ó¡£"
+msgstr "[s]printf: æ›¸å¼æŒ‡å®šå­ã«åˆ¶å¾¡æ–‡å­—ãŒã‚ã‚Šã¾ã›ã‚“"
 
-#: builtin.c:1333
+#: builtin.c:1349
 msgid "too many arguments supplied for format string"
-msgstr "½ñ¼°»ØÄêÊ¸»úÎó¤Î°ú¿ô¤¬Â¿²á¤®¤Ş¤¹¡£"
+msgstr "æ›¸å¼æ–‡å­—åˆ—ã«ä¸ãˆã‚‰ã‚Œã¦ã„ã‚‹å¼•æ•°ãŒå¤šã™ãã¾ã™"
 
-#: builtin.c:1408 builtin.c:1411
+#: builtin.c:1423 builtin.c:1434
 msgid "printf: no arguments"
-msgstr "printf: °ú¿ô¤¬¤¢¤ê¤Ş¤»¤ó¡£"
+msgstr "printf: å¼•æ•°ãŒã‚ã‚Šã¾ã›ã‚“"
 
-#: builtin.c:1435
+#: builtin.c:1475
 msgid "sqrt: received non-numeric argument"
-msgstr "sqrt: °ú¿ô¤¬¿ôÃÍ¤Ç¤Ï¤¢¤ê¤Ş¤»¤ó¡£"
+msgstr "sqrt: æ•°å€¤ã§ã¯ç„¡ã„å¼•æ•°ã‚’å—ã‘å–ã‚Šã¾ã—ãŸ"
 
-#: builtin.c:1439
+#: builtin.c:1479
 #, c-format
 msgid "sqrt: called with negative argument %g"
-msgstr "sqrt: °ú¿ô¤ËÉé¤ÎÃÍ %g ¤ò»ÈÍÑ¤·¤Æ¤¤¤Ş¤¹¡£"
-
-#: builtin.c:1463
-#, c-format
-msgid "substr: start index %g is invalid, using 1"
-msgstr "substr: µ¯ÅÀ»ØÉ¸ %g ¤¬ÉÔÀµ¤Ç¤¹¡£1 ¤ò»È¤¤¤Ş¤¹¡£"
-
-#: builtin.c:1468
-#, c-format
-msgid "substr: non-integer start index %g will be truncated"
-msgstr "substr: µ¯ÅÀ»ØÉ¸ %g ¤Î¾®¿ôÅÀ°Ê²¼¤ÏÀÚ¤ê¼Î¤Æ¤Ş¤¹¡£"
-
-#: builtin.c:1494
-#, c-format
-msgid "substr: length %g is not >= 1"
-msgstr "substr: Ê¸»ú¿ô %g ¤¬ 1 °Ê¾å¤Ç¤Ï¤¢¤ê¤Ş¤»¤ó¡£"
-
-#: builtin.c:1496
-#, c-format
-msgid "substr: length %g is not >= 0"
-msgstr "substr: Ê¸»ú¿ô %g ¤¬ 0 °Ê¾å¤Ç¤Ï¤¢¤ê¤Ş¤»¤ó¡£"
+msgstr "sqrt: è² ã®å€¤ %g ã‚’å¼•æ•°ã«ä½¿ç”¨ã—ã¦å‘¼ã³å‡ºã•ã‚Œã¾ã—ãŸ"
 
 #: builtin.c:1503
 #, c-format
-msgid "substr: non-integer length %g will be truncated"
-msgstr "substr: Ê¸»ú¿ô %g ¤Î¾®¿ôÅÀ°Ê²¼¤ÏÀÚ¤ê¼Î¤Æ¤Ş¤¹¡£"
+msgid "substr: length %g is not >= 1"
+msgstr "substr: é•·ã• %g ãŒ 1 ä»¥ä¸Šã§ã¯ã‚ã‚Šã¾ã›ã‚“"
 
-#: builtin.c:1508
+#: builtin.c:1505
+#, c-format
+msgid "substr: length %g is not >= 0"
+msgstr "substr: é•·ã• %g ãŒ 0 ä»¥ä¸Šã§ã¯ã‚ã‚Šã¾ã›ã‚“"
+
+#: builtin.c:1512
+#, c-format
+msgid "substr: non-integer length %g will be truncated"
+msgstr "substr: æ–‡å­—æ•° %g ã®å°æ•°ç‚¹ä»¥ä¸‹ã¯åˆ‡ã‚Šæ¨ã¦ã¾ã™ã€‚"
+
+#: builtin.c:1517
 #, c-format
 msgid "substr: length %g too big for string indexing, truncating to %g"
-msgstr "substr: Ê¸»ú¿ô %g ¤ÏºÇÂçÃÍ¤òÄ¶¤¨¤Æ¤¤¤Ş¤¹¡£%g ¤ò»È¤¤¤Ş¤¹¡£"
+msgstr "substr: æ–‡å­—æ•° %g ã¯æœ€å¤§å€¤ã‚’è¶…ãˆã¦ã„ã¾ã™ã€‚%g ã‚’ä½¿ã„ã¾ã™ã€‚"
 
-#: builtin.c:1520
+#: builtin.c:1529
+#, c-format
+msgid "substr: start index %g is invalid, using 1"
+msgstr "substr: é–‹å§‹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ %g ãŒç„¡åŠ¹ã§ã™ã€‚1ã‚’ä½¿ç”¨ã—ã¾ã™"
+
+#: builtin.c:1534
+#, c-format
+msgid "substr: non-integer start index %g will be truncated"
+msgstr "substr: é–‹å§‹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ %g ãŒéæ•´æ•°ã®ãŸã‚ã€å€¤ã¯åˆ‡ã‚Šæ¨ã¦ã‚‰ã‚Œã¾ã™"
+
+#: builtin.c:1559
 msgid "substr: source string is zero length"
-msgstr "substr: Ê¸»úÎó¤ÎÄ¹¤µ¤¬¥¼¥í¤Ç¤¹¡£"
+msgstr "substr: æ–‡å­—åˆ—ã®é•·ã•ãŒã‚¼ãƒ­ã§ã™ã€‚"
 
-#: builtin.c:1536
+#: builtin.c:1575
 #, c-format
 msgid "substr: start index %g is past end of string"
-msgstr "substr: µ¯ÅÀ»ØÉ¸ %g ¤¬Ê¸»úÎó¤ÎÄ¹¤µ¤òÄ¶¤¨¤Æ¤¤¤Ş¤¹¡£"
+msgstr "substr: é–‹å§‹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ %g ãŒæ–‡å­—åˆ—çµ‚ç«¯ã®å¾Œã«ã‚ã‚Šã¾ã™"
 
-#: builtin.c:1544
+#: builtin.c:1583
 #, c-format
 msgid ""
 "substr: length %g at start index %g exceeds length of first argument (%lu)"
 msgstr ""
-"substr: µ¯ÅÀ»ØÉ¸ %2$g ¤«¤é¤ÎÊ¸»ú¿ô %1$g ¤ÏÊ¸»úÎó¤ÎÄ¹¤µ %3$lu ¤òÄ¶¤¨¤Æ¤¤¤Ş¤¹¡£"
+"substr: é–‹å§‹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ %2$g ã‹ã‚‰ã®é•·ã• %1$g ã¯ç¬¬ä¸€å¼•æ•°ã®é•·ã•ã‚’è¶…ãˆã¦ã„ã¾ã™ "
+"(%3$lu)"
 
-#: builtin.c:1621
-msgid "strftime: received non-string first argument"
-msgstr "strftime: Âè°ì°ú¿ô¤¬Ê¸»úÎó¤Ç¤Ï¤¢¤ê¤Ş¤»¤ó¡£"
+#: builtin.c:1657
+msgid "strftime: format value in PROCINFO[\"strftime\"] has numeric type"
+msgstr "strftime: PROCINFO[\"strftime\"] ã®æ›¸å¼ã®å€¤ã¯æ•°å€¤å‹ã§ã™"
 
-#: builtin.c:1627
-msgid "strftime: received empty format string"
-msgstr "strftime: ½ñ¼°»ØÄêÊ¸»úÎó¤¬¶õ¤Ç¤¹¡£"
-
-#: builtin.c:1636
+#: builtin.c:1680
 msgid "strftime: received non-numeric second argument"
-msgstr "strftime: ÂèÆó°ú¿ô¤¬¿ôÃÍ¤Ç¤Ï¤¢¤ê¤Ş¤»¤ó¡£"
+msgstr "strftime: éæ•°å€¤ã®ç¬¬äºŒå¼•æ•°ã‚’å—ã‘å–ã‚Šã¾ã—ãŸ"
 
-#: builtin.c:1713
-msgid "mktime: received non-string argument"
-msgstr "mktime: °ú¿ô¤¬Ê¸»úÎó¤Ç¤Ï¤¢¤ê¤Ş¤»¤ó¡£"
-
-#: builtin.c:1758
-msgid "system: received non-string argument"
-msgstr "system: °ú¿ô¤¬Ê¸»úÎó¤Ç¤Ï¤¢¤ê¤Ş¤»¤ó¡£"
-
-#: builtin.c:1879 eval.c:2145
-#, c-format
-msgid "reference to uninitialized field `$%d'"
-msgstr "½é´ü²½¤µ¤ì¤Æ¤¤¤Ê¤¤¥Õ¥£¡¼¥ë¥É `$%d' ¤ò»²¾È¤·¤Æ¤¤¤Ş¤¹¡£"
-
-#: builtin.c:1984
-msgid "tolower: received non-string argument"
-msgstr "tolower: °ú¿ô¤¬Ê¸»úÎó¤Ç¤Ï¤¢¤ê¤Ş¤»¤ó¡£"
-
-#: builtin.c:2014
-msgid "toupper: received non-string argument"
-msgstr "toupper: °ú¿ô¤¬Ê¸»úÎó¤Ç¤Ï¤¢¤ê¤Ş¤»¤ó¡£"
-
-#: builtin.c:2047
-msgid "atan2: received non-numeric first argument"
-msgstr "atan2: Âè°ì°ú¿ô¤¬¿ôÃÍ¤Ç¤Ï¤¢¤ê¤Ş¤»¤ó¡£"
-
-#: builtin.c:2049
-msgid "atan2: received non-numeric second argument"
-msgstr "atan2: ÂèÆó°ú¿ô¤¬¿ôÃÍ¤Ç¤Ï¤¢¤ê¤Ş¤»¤ó¡£"
-
-#: builtin.c:2068
-msgid "sin: received non-numeric argument"
-msgstr "sin: °ú¿ô¤¬¿ôÃÍ¤Ç¤Ï¤¢¤ê¤Ş¤»¤ó¡£"
-
-#: builtin.c:2084
-msgid "cos: received non-numeric argument"
-msgstr "cos: °ú¿ô¤¬¿ôÃÍ¤Ç¤Ï¤¢¤ê¤Ş¤»¤ó¡£"
-
-#: builtin.c:2137
-msgid "srand: received non-numeric argument"
-msgstr "srand: °ú¿ô¤¬¿ôÃÍ¤Ç¤Ï¤¢¤ê¤Ş¤»¤ó¡£"
-
-#: builtin.c:2172
-msgid "match: third argument is not an array"
-msgstr "match: Âè»°°ú¿ô¤¬ÇÛÎóÌ¾¤Ç¤Ï¤¢¤ê¤Ş¤»¤ó¡£"
-
-#: builtin.c:2719
-msgid "gensub: third argument of 0 treated as 1"
-msgstr "gensub: Âè»°°ú¿ô¤¬ 0 ¤Ç¤¹¡£1 ¤òÂå¤ï¤ê¤Ë»ÈÍÑ¤·¤Ş¤¹¡£"
-
-#: builtin.c:2835
-msgid "lshift: received non-numeric first argument"
-msgstr "lshift: Âè°ì°ú¿ô¤¬¿ôÃÍ¤Ç¤Ï¤¢¤ê¤Ş¤»¤ó¡£"
-
-#: builtin.c:2837
-msgid "lshift: received non-numeric second argument"
-msgstr "lshift: ÂèÆó°ú¿ô¤¬¿ôÃÍ¤Ç¤Ï¤¢¤ê¤Ş¤»¤ó¡£"
-
-#: builtin.c:2843
-#, c-format
-msgid "lshift(%lf, %lf): negative values will give strange results"
-msgstr "lshift(%lf, %lf): Éé¤Î¿ôÃÍ¤ò»ÈÍÑ¤¹¤ë¤È°Û¾ï¤Ê·ë²Ì¤Ë¤Ê¤ê¤Ş¤¹¡£"
-
-#: builtin.c:2845
-#, c-format
-msgid "lshift(%lf, %lf): fractional values will be truncated"
-msgstr "lshift(%lf, %lf): ¾®¿ôÅÀ°Ê²¼¤ÏÀÚ¤ê¼Î¤Æ¤Ë¤Ê¤ê¤Ş¤¹¡£"
-
-#: builtin.c:2847
-#, c-format
-msgid "lshift(%lf, %lf): too large shift value will give strange results"
-msgstr "lshift(%lf, %lf): ¥·¥Õ¥ÈÃÍ¤¬Âç¤­²á¤®¤ë¤È°Û¾ï¤Ê·ë²Ì¤Ë¤Ê¤ê¤Ş¤¹¡£"
-
-#: builtin.c:2873
-msgid "rshift: received non-numeric first argument"
-msgstr "rshift: Âè°ì°ú¿ô¤¬¿ôÃÍ¤Ç¤Ï¤¢¤ê¤Ş¤»¤ó¡£"
-
-#: builtin.c:2875
-msgid "rshift: received non-numeric second argument"
-msgstr "rshift: ÂèÆó°ú¿ô¤¬¿ôÃÍ¤Ç¤Ï¤¢¤ê¤Ş¤»¤ó¡£"
-
-#: builtin.c:2881
-#, c-format
-msgid "rshift(%lf, %lf): negative values will give strange results"
-msgstr "rshift(%lf, %lf): Éé¤Î¿ôÃÍ¤ò»ÈÍÑ¤¹¤ë¤È°Û¾ï¤Ê·ë²Ì¤Ë¤Ê¤ê¤Ş¤¹¡£"
-
-#: builtin.c:2883
-#, c-format
-msgid "rshift(%lf, %lf): fractional values will be truncated"
-msgstr "rshift(%lf, %lf): ¾®¿ôÅÀ°Ê²¼¤ÏÀÚ¤ê¼Î¤Æ¤Ë¤Ê¤ê¤Ş¤¹¡£"
-
-#: builtin.c:2885
-#, c-format
-msgid "rshift(%lf, %lf): too large shift value will give strange results"
-msgstr "rshift(%lf, %lf): ¥·¥Õ¥ÈÃÍ¤¬Âç¤­²á¤®¤ë¤È°Û¾ï¤Ê·ë²Ì¤Ë¤Ê¤ê¤Ş¤¹¡£"
-
-#: builtin.c:2911
-msgid "and: received non-numeric first argument"
-msgstr "and: Âè°ì°ú¿ô¤¬¿ôÃÍ¤Ç¤Ï¤¢¤ê¤Ş¤»¤ó¡£"
-
-#: builtin.c:2913
-msgid "and: received non-numeric second argument"
-msgstr "and: ÂèÆó°ú¿ô¤¬¿ôÃÍ¤Ç¤Ï¤¢¤ê¤Ş¤»¤ó¡£"
-
-#: builtin.c:2919
-#, c-format
-msgid "and(%lf, %lf): negative values will give strange results"
-msgstr "and(%lf, %lf): Éé¤Î¿ôÃÍ¤ò»ÈÍÑ¤¹¤ë¤È°Û¾ï¤Ê·ë²Ì¤Ë¤Ê¤ê¤Ş¤¹¡£"
-
-#: builtin.c:2921
-#, c-format
-msgid "and(%lf, %lf): fractional values will be truncated"
-msgstr "and(%lf, %lf): ¾®¿ôÅÀ°Ê²¼¤ÏÀÚ¤ê¼Î¤Æ¤Ë¤Ê¤ê¤Ş¤¹¡£"
-
-#: builtin.c:2947
-msgid "or: received non-numeric first argument"
-msgstr "or: Âè°ì°ú¿ô¤¬¿ôÃÍ¤Ç¤Ï¤¢¤ê¤Ş¤»¤ó¡£"
-
-#: builtin.c:2949
-msgid "or: received non-numeric second argument"
-msgstr "or: ÂèÆó°ú¿ô¤¬¿ôÃÍ¤Ç¤Ï¤¢¤ê¤Ş¤»¤ó¡£"
-
-#: builtin.c:2955
-#, c-format
-msgid "or(%lf, %lf): negative values will give strange results"
-msgstr "or(%lf, %lf): Éé¤Î¿ôÃÍ¤ò»ÈÍÑ¤¹¤ë¤È°Û¾ï¤Ê·ë²Ì¤Ë¤Ê¤ê¤Ş¤¹¡£"
-
-#: builtin.c:2957
-#, c-format
-msgid "or(%lf, %lf): fractional values will be truncated"
-msgstr "or(%lf, %lf): ¾®¿ôÅÀ°Ê²¼¤ÏÀÚ¤ê¼Î¤Æ¤Ë¤Ê¤ê¤Ş¤¹¡£"
-
-#: builtin.c:2983
-msgid "xor: received non-numeric first argument"
-msgstr "xor: Âè°ì°ú¿ô¤¬¿ôÃÍ¤Ç¤Ï¤¢¤ê¤Ş¤»¤ó¡£"
-
-#: builtin.c:2985
-msgid "xor: received non-numeric second argument"
-msgstr "xor: ÂèÆó°ú¿ô¤¬¿ôÃÍ¤Ç¤Ï¤¢¤ê¤Ş¤»¤ó¡£"
-
-#: builtin.c:2991
-#, c-format
-msgid "xor(%lf, %lf): negative values will give strange results"
-msgstr "xor(%lf, %lf): Éé¤Î¿ôÃÍ¤ò»ÈÍÑ¤¹¤ë¤È°Û¾ï¤Ê·ë²Ì¤Ë¤Ê¤ê¤Ş¤¹¡£"
-
-#: builtin.c:2993
-#, c-format
-msgid "xor(%lf, %lf): fractional values will be truncated"
-msgstr "xor(%lf, %lf): ¾®¿ôÅÀ°Ê²¼¤ÏÀÚ¤ê¼Î¤Æ¤Ë¤Ê¤ê¤Ş¤¹¡£"
-
-#: builtin.c:3017
-msgid "compl: received non-numeric argument"
-msgstr "compl: °ú¿ô¤¬¿ôÃÍ¤Ç¤Ï¤¢¤ê¤Ş¤»¤ó¡£"
-
-#: builtin.c:3023
-#, c-format
-msgid "compl(%lf): negative value will give strange results"
-msgstr "compl(%lf): Éé¤Î¿ôÃÍ¤ò»ÈÍÑ¤¹¤ë¤È°Û¾ï¤Ê·ë²Ì¤Ë¤Ê¤ê¤Ş¤¹¡£"
-
-#: builtin.c:3025
-#, c-format
-msgid "compl(%lf): fractional value will be truncated"
-msgstr "compl(%lf): ¾®¿ôÅÀ°Ê²¼¤ÏÀÚ¤ê¼Î¤Æ¤Ë¤Ê¤ê¤Ş¤¹¡£"
-
-#: builtin.c:3198
-#, c-format
-msgid "dcgettext: `%s' is not a valid locale category"
-msgstr "dcgettext: `%s' ¤ÏÉÔÀµ¤Ê¥í¥«¡¼¥ë¡¦¥«¥Æ¥´¥ê¡¼¤Ç¤¹¡£"
-
-#: eval.c:372
-#, c-format
-msgid "unknown nodetype %d"
-msgstr "¥Î¡¼¥É %d ¤Î¼ïÎà¤¬ÉÔÌÀ¤Ç¤¹¡£"
-
-#: eval.c:422
-msgid "buffer overflow in genflags2str"
-msgstr "genflags2str ¤¬¥Ğ¥Ã¥Õ¥¡ÍÆÎÌ¤òÄ¶²á¤·¤Ş¤·¤¿¡£"
-
-#: eval.c:454 eval.c:460 profile.c:781
-#, c-format
-msgid "attempt to use array `%s' in a scalar context"
-msgstr "¥¹¥«¥é¡¼´Ä¶­¤ËÇÛÎó `%s' ¤ò»ÈÍÑ¤·¤Æ¤¤¤Ş¤¹¡£"
-
-#: eval.c:802
-#, c-format
-msgid "for loop: array `%s' changed size from %ld to %ld during loop execution"
+#: builtin.c:1683
+msgid "strftime: second argument less than 0 or too big for time_t"
 msgstr ""
-"for ¥ë¡¼¥×: ¥ë¡¼¥×Ãæ¤ËÇÛÎó `%s' ¤Î¥µ¥¤¥º¤¬ %ld ¤«¤é %ld ¤ËÊÑ¤ï¤ê¤Ş¤·¤¿¡£"
 
-#: eval.c:823
-msgid "`break' outside a loop is not portable"
-msgstr "¥ë¡¼¥×¤Î³°¤Ç»ÈÍÑ¤¹¤ë `break' ¤ÏÂ¾¤Î awk ¤Ç»ÈÍÑ¤Ç¤­¤Ş¤»¤ó¡£"
+#: builtin.c:1690
+msgid "strftime: received non-string first argument"
+msgstr "strftime: éæ–‡å­—åˆ—ã®ç¬¬ä¸€å¼•æ•°ã‚’å—ã‘å–ã‚Šã¾ã—ãŸ"
 
-#: eval.c:827
-msgid "`break' outside a loop is not allowed"
-msgstr "¥ë¡¼¥×¤Î³°¤Ç¤Ï `break' ¤ò»ÈÍÑ¤Ç¤­¤Ş¤»¤ó¡£"
+#: builtin.c:1696
+msgid "strftime: received empty format string"
+msgstr "strftime: ç©ºã®æ›¸å¼æ–‡å­—åˆ—ã‚’å—ã‘å–ã‚Šã¾ã—ãŸ"
 
-#: eval.c:844
-msgid "`continue' outside a loop is not portable"
-msgstr "¥ë¡¼¥×¤Î³°¤Ç»ÈÍÑ¤¹¤ë `continue' ¤ÏÂ¾¤Î awk ¤Ç»ÈÍÑ¤Ç¤­¤Ş¤»¤ó¡£"
+#: builtin.c:1762
+msgid "mktime: received non-string argument"
+msgstr "mktime: éæ–‡å­—åˆ—å¼•æ•°ã‚’å—ã‘å–ã‚Šã¾ã—ãŸ"
 
-#: eval.c:848
-msgid "`continue' outside a loop is not allowed"
-msgstr "¥ë¡¼¥×¤Î³°¤Ç¤Ï `continue' ¤ò»ÈÍÑ¤Ç¤­¤Ş¤»¤ó¡£"
+#: builtin.c:1779
+msgid "mktime: at least one of the values is out of the default range"
+msgstr "mktime: ä¸€ã¤ä»¥ä¸Šã®å€¤ãŒãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®ç¯„å›²ã‚’è¶…ãˆã¦ã„ã¾ã™"
 
-#: eval.c:882
-msgid "`next' cannot be called from a BEGIN rule"
-msgstr "BEGIN ¥ë¡¼¥ë¤«¤é¤Ï `next' ¤ò¸Æ¤Ó½Ğ¤»¤Ş¤»¤ó¡£"
+#: builtin.c:1814
+msgid "'system' function not allowed in sandbox mode"
+msgstr "ã‚µãƒ³ãƒ‰ãƒœãƒƒã‚¯ã‚¹ãƒ¢ãƒ¼ãƒ‰ã§ã¯ 'system' é–¢æ•°ã¯è¨±å¯ã•ã‚Œã¦ã„ã¾ã›ã‚“"
 
-#: eval.c:884
-msgid "`next' cannot be called from an END rule"
-msgstr "END ¥ë¡¼¥ë¤«¤é¤Ï `next' ¤ò¸Æ¤Ó½Ğ¤»¤Ş¤»¤ó¡£"
+#: builtin.c:1819
+msgid "system: received non-string argument"
+msgstr "system: æ–‡å­—åˆ—ã§ã¯ç„¡ã„å¼•æ•°ã‚’å—ã‘å–ã‚Šã¾ã—ãŸ"
 
-#: eval.c:893
-msgid "`nextfile' cannot be called from a BEGIN rule"
-msgstr "BEGIN ¥ë¡¼¥ë¤«¤é¤Ï `nextfile' ¤ò¸Æ¤Ó½Ğ¤»¤Ş¤»¤ó¡£"
-
-#: eval.c:895
-msgid "`nextfile' cannot be called from an END rule"
-msgstr "END ¥ë¡¼¥ë¤«¤é¤Ï `nextfile' ¤ò¸Æ¤Ó½Ğ¤»¤Ş¤»¤ó¡£"
-
-#: eval.c:952
-msgid "statement has no effect"
-msgstr "Ì¿ÎáÊ¸¤Ë¸ú²Ì¤Ï¤¢¤ê¤Ş¤»¤ó¡£"
-
-#: eval.c:1029 eval.c:1999
-#, c-format
-msgid "can't use function name `%s' as variable or array"
-msgstr "´Ø¿ôÌ¾ `%s' ¤ÏÊÑ¿ô¤äÇÛÎó¤Ë¤Ï»È¤¨¤Ş¤»¤ó¡£"
-
-#: eval.c:1036 eval.c:1042
-#, c-format
-msgid "reference to uninitialized argument `%s'"
-msgstr "½é´ü²½¤µ¤ì¤Æ¤¤¤Ê¤¤°ú¿ô `%s' ¤ò»²¾È¤·¤Æ¤¤¤Ş¤¹¡£"
-
-#: eval.c:1051 eval.c:2008
+#: builtin.c:1874 eval.c:1159 eval.c:1790 eval.c:1803
 #, c-format
 msgid "reference to uninitialized variable `%s'"
-msgstr "½é´ü²½¤µ¤ì¤Æ¤¤¤Ê¤¤ÊÑ¿ô `%s' ¤ò»²¾È¤·¤Æ¤¤¤Ş¤¹¡£"
+msgstr "åˆæœŸåŒ–ã•ã‚Œã¦ã„ãªã„å¤‰æ•° `%s' ã¸ã®å‚ç…§ã§ã™"
 
-#: eval.c:1197
-msgid ""
-"concatenation: side effects in one expression have changed the length of "
-"another!"
-msgstr ""
-"concatenation¡ÊÊ¸»úÎóÏ¢·ë¡Ë: °ìÊı¤Î¼°¤ÎÉûºîÍÑ¤Ç¡¢¤â¤¦°ìÊı¤ÎÄ¹¤µ¤¬ÊÑ¤ï¤ê¤Ş¤·"
-"¤¿!"
-
-#: eval.c:1301
-msgid "assignment used in conditional context"
-msgstr "¾ò·ïÊ¸Ãæ¤Ç¤ÎÂåÆş"
-
-#: eval.c:1379
-msgid "division by zero attempted"
-msgstr "¥¼¥í¤Ç¤Î½ü»»¤ò¹Ô¤¤¤Ş¤·¤¿¡£"
-
-#: eval.c:1409 profile.c:657
+#: builtin.c:1941
 #, c-format
-msgid "illegal type (%s) in tree_eval"
-msgstr "tree_eval ¤ÎÃæ¤ËÉÔÀµ¤Ê¥¿¥¤¥× (%s) ¤¬»ÈÍÑ¤µ¤ì¤Æ¤¤¤Ş¤¹¡£"
+msgid "reference to uninitialized field `$%d'"
+msgstr "åˆæœŸåŒ–ã•ã‚Œã¦ã„ãªã„ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ `$%d' ã¸ã®å‚ç…§ã§ã™"
 
-#: eval.c:1572
-msgid "division by zero attempted in `/='"
-msgstr "`/=' ¤Ç¥¼¥í¤Ç¤Î½ü»»¤ò¹Ô¤¤¤Ş¤·¤¿¡£"
+#: builtin.c:2028
+msgid "tolower: received non-string argument"
+msgstr "tolower: éæ–‡å­—åˆ—å¼•æ•°ã‚’å—ã‘å–ã‚Šã¾ã—ãŸ"
 
-#: eval.c:1594
+#: builtin.c:2062
+msgid "toupper: received non-string argument"
+msgstr "toupper: éæ–‡å­—åˆ—å¼•æ•°ã‚’å—ã‘å–ã‚Šã¾ã—ãŸ"
+
+#: builtin.c:2098
+msgid "atan2: received non-numeric first argument"
+msgstr "atan2: éæ•°å€¤ã®ç¬¬ä¸€å¼•æ•°ã‚’å—ã‘å–ã‚Šã¾ã—ãŸ"
+
+#: builtin.c:2100
+msgid "atan2: received non-numeric second argument"
+msgstr "atan2: éæ•°å€¤ã®ç¬¬äºŒå¼•æ•°ã‚’å—ã‘å–ã‚Šã¾ã—ãŸ"
+
+#: builtin.c:2119
+msgid "sin: received non-numeric argument"
+msgstr "sin: éæ•°å€¤ã®å¼•æ•°ã‚’å—ã‘å–ã‚Šã¾ã—ãŸ"
+
+#: builtin.c:2135
+msgid "cos: received non-numeric argument"
+msgstr "cos: éæ•°å€¤ã®å¼•æ•°ã‚’å—ã‘å–ã‚Šã¾ã—ãŸ"
+
+#: builtin.c:2188
+msgid "srand: received non-numeric argument"
+msgstr "srand: éæ•°å€¤ã®å¼•æ•°ã‚’å—ã‘å–ã‚Šã¾ã—ãŸ"
+
+#: builtin.c:2219
+msgid "match: third argument is not an array"
+msgstr "match: ç¬¬ä¸‰å¼•æ•°ãŒé…åˆ—ã§ã¯ã‚ã‚Šã¾ã›ã‚“"
+
+#: builtin.c:2483
+msgid "gensub: third argument of 0 treated as 1"
+msgstr "gensub: ç¬¬ä¸‰å¼•æ•°ãŒ 0 ã§ã™ã€‚1 ã‚’ä»£ã‚ã‚Šã«ä½¿ç”¨ã—ã¾ã™"
+
+#: builtin.c:2776
+msgid "lshift: received non-numeric first argument"
+msgstr "lshift: éæ•°å€¤ã®ç¬¬ä¸€å¼•æ•°ã‚’å—ã‘å–ã‚Šã¾ã—ãŸ"
+
+#: builtin.c:2778
+msgid "lshift: received non-numeric second argument"
+msgstr "lshift: éæ•°å€¤ã®ç¬¬äºŒå¼•æ•°ã‚’å—ã‘å–ã‚Šã¾ã—ãŸ"
+
+#: builtin.c:2784
 #, c-format
-msgid "division by zero attempted in `%%='"
-msgstr "`%%=' ¤Ç¥¼¥í¤Ç¤Î½ü»»¤ò¹Ô¤¤¤Ş¤·¤¿¡£"
+msgid "lshift(%lf, %lf): negative values will give strange results"
+msgstr "lshift(%lf, %lf): è² ã®æ•°å€¤ã‚’ä½¿ç”¨ã™ã‚‹ã¨ç•°å¸¸ãªçµæœã«ãªã‚Šã¾ã™"
 
-#: eval.c:1859
+#: builtin.c:2786
 #, c-format
-msgid "function `%s' called with more arguments than declared"
-msgstr "Àë¸À¤µ¤ì¤Æ¤¤¤ë¿ô¤è¤êÂ¿¤¤°ú¿ô¤ò»È¤Ã¤Æ´Ø¿ô `%s' ¤ò¸Æ¤Ó½Ğ¤·¤Ş¤·¤¿¡£"
+msgid "lshift(%lf, %lf): fractional values will be truncated"
+msgstr "lshift(%lf, %lf): å°æ•°ç‚¹ä»¥ä¸‹ã¯åˆ‡ã‚Šæ¨ã¦ã‚‰ã‚Œã¾ã™"
 
-#: eval.c:1904
+#: builtin.c:2788
 #, c-format
-msgid "function `%s' not defined"
-msgstr "´Ø¿ô `%s' ¤ÏÄêµÁ¤µ¤ì¤Æ¤¤¤Ş¤»¤ó¡£"
+msgid "lshift(%lf, %lf): too large shift value will give strange results"
+msgstr "lshift(%lf, %lf): ã‚·ãƒ•ãƒˆå€¤ãŒå¤§ãéãã‚‹ã¨ç•°å¸¸ãªçµæœã«ãªã‚Šã¾ã™"
 
-#: eval.c:1971
+#: builtin.c:2813
+msgid "rshift: received non-numeric first argument"
+msgstr "rshift: éæ•°å€¤ã®ç¬¬ä¸€å¼•æ•°ã‚’å—ã‘å–ã‚Šã¾ã—ãŸ"
+
+#: builtin.c:2815
+msgid "rshift: received non-numeric second argument"
+msgstr "rshift: éæ•°å€¤ã®ç¬¬äºŒå¼•æ•°ã‚’å—ã‘å–ã‚Šã¾ã—ãŸ"
+
+#: builtin.c:2821
+#, c-format
+msgid "rshift(%lf, %lf): negative values will give strange results"
+msgstr "rshift(%lf, %lf): è² ã®æ•°å€¤ã‚’ä½¿ç”¨ã™ã‚‹ã¨ç•°å¸¸ãªçµæœã«ãªã‚Šã¾ã™"
+
+#: builtin.c:2823
+#, c-format
+msgid "rshift(%lf, %lf): fractional values will be truncated"
+msgstr "rshift(%lf, %lf): å°æ•°ç‚¹ä»¥ä¸‹ã¯åˆ‡ã‚Šæ¨ã¦ã‚‰ã‚Œã¾ã™"
+
+#: builtin.c:2825
+#, c-format
+msgid "rshift(%lf, %lf): too large shift value will give strange results"
+msgstr "rshift(%lf, %lf): ã‚·ãƒ•ãƒˆå€¤ãŒå¤§ãéãã‚‹ã¨ç•°å¸¸ãªçµæœã«ãªã‚Šã¾ã™"
+
+#: builtin.c:2850
+msgid "and: received non-numeric first argument"
+msgstr "and: éæ•°å€¤ã®ç¬¬ä¸€å¼•æ•°ã‚’å—ã‘å–ã‚Šã¾ã—ãŸ"
+
+#: builtin.c:2852
+msgid "and: received non-numeric second argument"
+msgstr "and: éæ•°å€¤ã®ç¬¬äºŒå¼•æ•°ã‚’å—ã‘å–ã‚Šã¾ã—ãŸ"
+
+#: builtin.c:2858
+#, c-format
+msgid "and(%lf, %lf): negative values will give strange results"
+msgstr "and(%lf, %lf): è² ã®æ•°å€¤ã‚’ä½¿ç”¨ã™ã‚‹ã¨ç•°å¸¸ãªçµæœã«ãªã‚Šã¾ã™"
+
+#: builtin.c:2860
+#, c-format
+msgid "and(%lf, %lf): fractional values will be truncated"
+msgstr "and(%lf, %lf): å°æ•°ç‚¹ä»¥ä¸‹ã¯åˆ‡ã‚Šæ¨ã¦ã‚‰ã‚Œã¾ã™"
+
+#: builtin.c:2885
+msgid "or: received non-numeric first argument"
+msgstr "or: éæ•°å€¤ã®ç¬¬ä¸€å¼•æ•°ã‚’å—ã‘å–ã‚Šã¾ã—ãŸ"
+
+#: builtin.c:2887
+msgid "or: received non-numeric second argument"
+msgstr "or: éæ•°å€¤ã®ç¬¬äºŒå¼•æ•°ã‚’å—ã‘å–ã‚Šã¾ã—ãŸ"
+
+#: builtin.c:2893
+#, c-format
+msgid "or(%lf, %lf): negative values will give strange results"
+msgstr "or(%lf, %lf): è² ã®æ•°å€¤ã‚’ä½¿ç”¨ã™ã‚‹ã¨ç•°å¸¸ãªçµæœã«ãªã‚Šã¾ã™"
+
+#: builtin.c:2895
+#, c-format
+msgid "or(%lf, %lf): fractional values will be truncated"
+msgstr "or(%lf, %lf): å°æ•°ç‚¹ä»¥ä¸‹ã¯åˆ‡ã‚Šæ¨ã¦ã‚‰ã‚Œã¾ã™"
+
+#: builtin.c:2923
+msgid "xor: received non-numeric first argument"
+msgstr "xor: éæ•°å€¤ã®ç¬¬ä¸€å¼•æ•°ã‚’å—ã‘å–ã‚Šã¾ã—ãŸ"
+
+#: builtin.c:2925
+msgid "xor: received non-numeric second argument"
+msgstr "xor: éæ•°å€¤ã®ç¬¬äºŒå¼•æ•°ã‚’å—ã‘å–ã‚Šã¾ã—ãŸ"
+
+#: builtin.c:2931
+#, c-format
+msgid "xor(%lf, %lf): negative values will give strange results"
+msgstr "xor(%lf, %lf): è² ã®æ•°å€¤ã‚’ä½¿ç”¨ã™ã‚‹ã¨ç•°å¸¸ãªçµæœã«ãªã‚Šã¾ã™"
+
+#: builtin.c:2933
+#, c-format
+msgid "xor(%lf, %lf): fractional values will be truncated"
+msgstr "xor(%lf, %lf): å°æ•°ç‚¹ä»¥ä¸‹ã¯åˆ‡ã‚Šæ¨ã¦ã‚‰ã‚Œã¾ã™"
+
+#: builtin.c:2957 builtin.c:2963
+msgid "compl: received non-numeric argument"
+msgstr "compl: éæ•°å€¤ã®å¼•æ•°ã‚’å—ã‘å–ã‚Šã¾ã—ãŸ"
+
+#: builtin.c:2965
+#, c-format
+msgid "compl(%lf): negative value will give strange results"
+msgstr "compl(%lf): è² ã®æ•°å€¤ã‚’ä½¿ç”¨ã™ã‚‹ã¨ç•°å¸¸ãªçµæœã«ãªã‚Šã¾ã™"
+
+#: builtin.c:2967
+#, c-format
+msgid "compl(%lf): fractional value will be truncated"
+msgstr "compl(%lf): å°æ•°ç‚¹ä»¥ä¸‹ã¯åˆ‡ã‚Šæ¨ã¦ã‚‰ã‚Œã¾ã™"
+
+#: builtin.c:3136
+#, c-format
+msgid "dcgettext: `%s' is not a valid locale category"
+msgstr "dcgettext: `%s' ã¯ç„¡åŠ¹ãªãƒ­ã‚±ãƒ¼ãƒ«åŒºåˆ†ã§ã™"
+
+#: eval.c:412
+#, c-format
+msgid "unknown nodetype %d"
+msgstr "ä¸æ˜ãªãƒãƒ¼ãƒ‰å‹ %d ã§ã™"
+
+#: eval.c:423 eval.c:437
+#, c-format
+msgid "unknown opcode %d"
+msgstr "ä¸æ˜ãªã‚ªãƒšã‚³ãƒ¼ãƒ‰ %d ã§ã™"
+
+#: eval.c:434
+#, c-format
+msgid "opcode %s not an operator or keyword"
+msgstr "ã‚ªãƒšã‚³ãƒ¼ãƒ‰ %s ã¯æ¼”ç®—å­ã¾ãŸã¯äºˆç´„èªã§ã¯ã‚ã‚Šã¾ã›ã‚“"
+
+#: eval.c:488
+msgid "buffer overflow in genflags2str"
+msgstr "genflags2str å†…ã§ãƒãƒƒãƒ•ã‚¡ã‚ªãƒ¼ãƒãƒ¼ãƒ•ãƒ­ãƒ¼ãŒç™ºç”Ÿã—ã¾ã—ãŸ"
+
+#: eval.c:698
 #, c-format
 msgid ""
 "\n"
@@ -936,699 +978,824 @@ msgid ""
 "\n"
 msgstr ""
 "\n"
-"\t# ¸Æ½Ğ´Ø¿ô¥¹¥¿¥Ã¥¯:\n"
+"\t# å‘¼å‡ºé–¢æ•°ã‚¹ã‚¿ãƒƒã‚¯:\n"
 "\n"
 
-#: eval.c:1974
-#, c-format
-msgid "\t# -- main --\n"
-msgstr "\t# -- ¥á¥¤¥ó --\n"
-
-#: eval.c:2129
-msgid "attempt to field reference from non-numeric value"
-msgstr "¿ôÃÍ°Ê³°¤ÎÃÍ¤ò»È¤Ã¤Æ¥Õ¥¤¡¼¥ë¥É¤ò»²¾È¤·¤Æ¤¤¤Ş¤¹¡£"
-
-#: eval.c:2131
-msgid "attempt to reference from null string"
-msgstr "¶õÎó¤ò»È¤Ã¤Æ»²¾È¤·¤Æ¤¤¤Ş¤¹¡£"
-
-#: eval.c:2137
-#, c-format
-msgid "attempt to access field %d"
-msgstr "¥Õ¥£¡¼¥ë¥É %d ¤ò»²¾È¤·¤Æ¤¤¤Ş¤¹¡£"
-
-#: eval.c:2158 eval.c:2165 profile.c:836
-msgid "assignment is not allowed to result of builtin function"
-msgstr "ÁÈ¹ş´Ø¿ô¤ÎÌá¤êÃÍ¤ËÂåÆş¤Ï¤Ç¤­¤Ş¤»¤ó¡£"
-
-#: eval.c:2229
+#: eval.c:725
 msgid "`IGNORECASE' is a gawk extension"
-msgstr "`IGNORECASE' ¤Ï gawk ÆÃÍ­¤Î³ÈÄ¥¤Ç¤¹¡£"
+msgstr "`IGNORECASE' ã¯ gawk æ‹¡å¼µã§ã™"
 
-#: eval.c:2258
+#: eval.c:754
 msgid "`BINMODE' is a gawk extension"
-msgstr "`BINMODE' ¤Ï gawk ÆÃÍ­¤Î³ÈÄ¥¤Ç¤¹¡£"
+msgstr "`BINMODE' ã¯ gawk æ‹¡å¼µã§ã™"
 
-#: eval.c:2316
+#: eval.c:812
 #, c-format
 msgid "BINMODE value `%s' is invalid, treated as 3"
-msgstr ""
+msgstr "BINMODE å€¤ `%s' ã¯ç„¡åŠ¹ã§ã™ã€‚ä»£ã‚ã‚Šã« 3 ã‚’ä½¿ç”¨ã—ã¾ã™"
 
-#: eval.c:2406
+#: eval.c:902
 #, c-format
 msgid "bad `%sFMT' specification `%s'"
-msgstr "`%sFMT' ¤Î»ØÄê `%s' ¤¬´Ö°ã¤Ã¤Æ¤¤¤Ş¤¹¡£"
+msgstr "èª¤ã£ãŸ `%sFMT' æŒ‡å®š `%s' ã§ã™"
 
-#: eval.c:2484
+#: eval.c:980
 msgid "turning off `--lint' due to assignment to `LINT'"
-msgstr "`LINT' ¤Ø¤ÎÂåÆş¤Ë½¾¤¤ `--lint' ¤òÌµ¸ú¤Ë¤·¤Ş¤¹¡£"
+msgstr "`LINT' ã¸ã®ä»£å…¥ã«å¾“ã„ `--lint' ã‚’ç„¡åŠ¹ã«ã—ã¾ã™"
 
-#: ext.c:62 ext.c:67
+#: eval.c:1127 eval.c:1777
+#, c-format
+msgid "can't use function name `%s' as variable or array"
+msgstr "é–¢æ•°å `%s' ã¯å¤‰æ•°ã¾ãŸã¯é…åˆ—ã¨ã—ã¦ä½¿ç”¨å‡ºæ¥ã¾ã›ã‚“"
+
+#: eval.c:1158 eval.c:1789 eval.c:1802
+#, c-format
+msgid "reference to uninitialized argument `%s'"
+msgstr "åˆæœŸåŒ–ã•ã‚Œã¦ã„ãªã„å¼•æ•° `%s' ã¸ã®å‚ç…§ã§ã™"
+
+#: eval.c:1177
+msgid "attempt to field reference from non-numeric value"
+msgstr "éæ•°å€¤ã‚’ä½¿ç”¨ã—ãŸãƒ•ã‚¤ãƒ¼ãƒ«ãƒ‰å‚ç…§ã®è©¦ã¿ã§ã™"
+
+#: eval.c:1179
+msgid "attempt to field reference from null string"
+msgstr "NULL æ–‡å­—åˆ—ã‚’ä½¿ç”¨ã—ã¦ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã®å‚ç…§ã‚’è©¦ã¿ã¦ã„ã¾ã™"
+
+#: eval.c:1185
+#, c-format
+msgid "attempt to access field %ld"
+msgstr "ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ %ld ã¸ã®ã‚¢ã‚¯ã‚»ã‚¹ã®è©¦ã¿ã§ã™"
+
+#: eval.c:1194
+#, c-format
+msgid "reference to uninitialized field `$%ld'"
+msgstr "åˆæœŸåŒ–ã•ã‚Œã¦ã„ãªã„ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ `$%ld' ã¸ã®å‚ç…§ã§ã™"
+
+#: eval.c:1256
+#, c-format
+msgid "function `%s' called with more arguments than declared"
+msgstr "å®£è¨€ã•ã‚Œã¦ã„ã‚‹æ•°ã‚ˆã‚Šå¤šã„å¼•æ•°ã‚’ä½¿ã£ã¦é–¢æ•° `%s' ã‚’å‘¼ã³å‡ºã—ã¾ã—ãŸ"
+
+#: eval.c:1437
+#, c-format
+msgid "unwind_stack: unexpected type `%s'"
+msgstr "unwind_stack: äºˆæœŸã—ãªã„å‹ `%s' ã§ã™"
+
+#: eval.c:1532
+msgid "division by zero attempted in `/='"
+msgstr "`/=' å†…ã§ã‚¼ãƒ­ã«ã‚ˆã‚‹é™¤ç®—ãŒè¡Œã‚ã‚Œã¾ã—ãŸ"
+
+#: eval.c:1539
+#, c-format
+msgid "division by zero attempted in `%%='"
+msgstr "`%%=' å†…ã§ã‚¼ãƒ­ã«ã‚ˆã‚‹é™¤ç®—ãŒè¡Œã‚ã‚Œã¾ã—ãŸ"
+
+#: eval.c:1876 eval.c:2122
+#, c-format
+msgid "attempt to use array `%s[\"%.*s\"]' in a scalar context"
+msgstr "ã‚¹ã‚«ãƒ©ãƒ¼ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆå†…ã§é…åˆ— `%s[\"%.*s\"]' ã®ä½¿ç”¨ã®è©¦ã¿ã§ã™"
+
+#: eval.c:1907
+msgid "assignment used in conditional context"
+msgstr "æ¡ä»¶ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆå†…ã§ä»£å…¥ãŒä½¿ç”¨ã•ã‚Œã¾ã—ãŸ"
+
+#: eval.c:1911
+msgid "statement has no effect"
+msgstr "æ–‡ã«åŠ¹æœãŒã‚ã‚Šã¾ã›ã‚“"
+
+#: eval.c:2343
+#, c-format
+msgid "for loop: array `%s' changed size from %ld to %ld during loop execution"
+msgstr ""
+"for ãƒ«ãƒ¼ãƒ—: ãƒ«ãƒ¼ãƒ—å®Ÿè¡Œä¸­ã«é…åˆ— `%s' ã®ã‚µã‚¤ã‚ºãŒ %ld ã‹ã‚‰ %ld ã¸å¤‰æ›´ã•ã‚Œã¾ã—ãŸ"
+
+#: eval.c:2458
+#, c-format
+msgid "function called indirectly through `%s' does not exist"
+msgstr "`%s' ã‚’é€šã—ã¦é–“æ¥çš„ã«å‘¼ã³å‡ºã•ã‚ŒãŸé–¢æ•°ãŒå­˜åœ¨ã—ã¾ã›ã‚“"
+
+#: eval.c:2470
+#, c-format
+msgid "function `%s' not defined"
+msgstr "é–¢æ•° `%s' ã¯å®šç¾©ã•ã‚Œã¦ã„ã¾ã›ã‚“"
+
+#: eval.c:2511
+#, c-format
+msgid "non-redirected `getline' invalid inside `%s' rule"
+msgstr "`%s' ãƒ«ãƒ¼ãƒ«ã®å†…å´ã§ã¯ãƒªãƒ€ã‚¤ãƒ¬ã‚¯ãƒˆã•ã‚Œã¦ã„ãªã„ `getline' ã¯ç„¡åŠ¹ã§ã™"
+
+#: eval.c:2600
+#, c-format
+msgid "error reading input file `%s': %s"
+msgstr "å…¥åŠ›ãƒ•ã‚¡ã‚¤ãƒ« `%s' ã‚’èª­ã¿è¾¼ã¿ä¸­ã«ã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã—ã¾ã—ãŸ: %s"
+
+#: eval.c:2614
+#, c-format
+msgid "`nextfile' cannot be called from a `%s' rule"
+msgstr "`nextfile' ã¯ `%s' ãƒ«ãƒ¼ãƒ«ã‹ã‚‰å‘¼ã³å‡ºã™ã“ã¨ãŒå‡ºæ¥ã¾ã›ã‚“"
+
+#: eval.c:2661
+#, fuzzy
+msgid "`exit' cannot be called in the current context"
+msgstr "`next' ã¯ `%s' ã‹ã‚‰å‘¼ã³å‡ºã™ã“ã¨ãŒå‡ºæ¥ã¾ã›ã‚“"
+
+#: eval.c:2700
+#, c-format
+msgid "`next' cannot be called from a `%s' rule"
+msgstr "`next' ã¯ `%s' ã‹ã‚‰å‘¼ã³å‡ºã™ã“ã¨ãŒå‡ºæ¥ã¾ã›ã‚“"
+
+#: eval.c:2766
+#, c-format
+msgid "Sorry, don't know how to interpret `%s'"
+msgstr "ç”³ã—è¨³ã‚ã‚Šã¾ã›ã‚“ãŒ `%s' ã‚’ã©ã®ã‚ˆã†ã«è§£é‡ˆã™ã‚‹ã‹åˆ†ã‹ã‚Šã¾ã›ã‚“"
+
+#: ext.c:54
+msgid "extensions are not allowed in sandbox mode"
+msgstr "ã‚µãƒ³ãƒ‰ãƒœãƒƒã‚¯ã‚¹ãƒ¢ãƒ¼ãƒ‰å†…ã§ã¯æ‹¡å¼µã¯è¨±å¯ã•ã‚Œã¦ã„ã¾ã›ã‚“"
+
+#: ext.c:60 ext.c:65
 msgid "`extension' is a gawk extension"
-msgstr "`extension' ¤Ï gawk ÆÃÍ­¤Î³ÈÄ¥¤Ç¤¹¡£"
+msgstr "`extension' ã¯ gawk æ‹¡å¼µã§ã™"
 
-#: ext.c:77
+#: ext.c:75
 #, c-format
-msgid "extension: cannot open `%s' (%s)\n"
-msgstr "extension: `%s' ¤ò³«¤±¤Ş¤»¤ó (%s)¡£\n"
+msgid "fatal: extension: cannot open `%s' (%s)\n"
+msgstr "è‡´å‘½çš„: extension: `%s' ã‚’é–‹ãã“ã¨ãŒå‡ºæ¥ã¾ã›ã‚“ (%s)\n"
 
-#: ext.c:85
+#: ext.c:84
 #, c-format
-msgid "extension: library `%s': cannot call function `%s' (%s)\n"
-msgstr "extension: ¥é¥¤¥Ö¥é¥ê `%s': ´Ø¿ô `%s' ¤ò¸Æ¤Ó½Ğ¤»¤Ş¤»¤ó (%s)¡£\n"
+msgid ""
+"fatal: extension: library `%s': does not define "
+"`plugin_is_GPL_compatible' (%s)\n"
+msgstr ""
+"è‡´å‘½çš„: extension: ãƒ©ã‚¤ãƒ–ãƒ©ãƒª `%s': `plugin_is_GPL_compatible' ãŒå®šç¾©ã•ã‚Œã¦ã„"
+"ã¾ã›ã‚“ (%s)\n"
 
-#: ext.c:105
-msgid "extension: missing function name"
-msgstr "extension: ´Ø¿ôÌ¾¤¬¤¢¤ê¤Ş¤»¤ó¡£"
-
-#: ext.c:110
+#: ext.c:93
 #, c-format
-msgid "extension: illegal character `%c' in function name `%s'"
-msgstr "extension: ´Ø¿ôÌ¾ `%2$s' ¤ÎÃæ¤ËÉÔÀµ¤ÊÊ¸»ú `%1$c' ¤¬»È¤ï¤ì¤Æ¤¤¤Ş¤¹¡£"
-
-#: ext.c:116
-#, c-format
-msgid "extension: can't redefine function `%s'"
-msgstr "extension: ´Ø¿ô `%s' ¤òºÆÄêµÁ¤Ç¤­¤Ş¤»¤ó¡£"
-
-#: ext.c:120
-#, c-format
-msgid "extension: function `%s' already defined"
-msgstr "extension: ´Ø¿ô `%s' ¤Ï´û¤ËÄêµÁ¤µ¤ì¤Æ¤¤¤Ş¤¹¡£"
-
-#: ext.c:125
-#, c-format
-msgid "extension: can't use gawk built-in `%s' as function name"
-msgstr "extension: ÁÈ¤ß¹ş¤ß´Ø¿ô `%s' ¤Ï´Ø¿ôÌ¾¤Ë»È¤¨¤Ş¤»¤ó¡£"
+msgid "fatal: extension: library `%s': cannot call function `%s' (%s)\n"
+msgstr ""
+"è‡´å‘½çš„: extension: ãƒ©ã‚¤ãƒ–ãƒ©ãƒª `%s': é–¢æ•° `%s' ã‚’å‘¼ã³å‡ºã™ã“ã¨ãŒå‡ºæ¥ã¾ã›ã‚“ "
+"(%s)\n"
 
 #: ext.c:127
+msgid "extension: missing function name"
+msgstr "extension: é–¢æ•°åãŒã‚ã‚Šã¾ã›ã‚“"
+
+#: ext.c:132
+#, c-format
+msgid "extension: illegal character `%c' in function name `%s'"
+msgstr "extension: é–¢æ•°å `%2$s' ã®ä¸­ã§ä¸æ­£ãªæ–‡å­— `%1$c' ãŒä½¿ç”¨ã•ã‚Œã¦ã„ã¾ã™"
+
+#: ext.c:141
+#, c-format
+msgid "extension: can't redefine function `%s'"
+msgstr "extension: é–¢æ•° `%s' ã‚’å†å®šç¾©ã§ãã¾ã›ã‚“"
+
+#: ext.c:145
+#, c-format
+msgid "extension: function `%s' already defined"
+msgstr "extension: é–¢æ•° `%s' ã¯æ—¢ã«å®šç¾©ã•ã‚Œã¦ã„ã¾ã™"
+
+#: ext.c:150
 #, c-format
 msgid "extension: function name `%s' previously defined"
-msgstr "extension: ´Ø¿ôÌ¾ `%s' ¤Ï´û¤ËÄêµÁ¤µ¤ì¤Æ¤¤¤Ş¤¹¡£"
+msgstr "extension: é–¢æ•°å `%s' ã¯å‰ã«å®šç¾©ã•ã‚Œã¦ã„ã¾ã™"
 
-#: ext.c:204
+#: ext.c:152
+#, c-format
+msgid "extension: can't use gawk built-in `%s' as function name"
+msgstr "extension: gawk ã«çµ„ã¿è¾¼ã¾ã‚Œã¦ã„ã‚‹ `%s' ã¯é–¢æ•°åã¨ã—ã¦ä½¿ç”¨å‡ºæ¥ã¾ã›ã‚“"
+
+#: ext.c:156
+#, c-format
+msgid "make_builtin: negative argument count for function `%s'"
+msgstr "make_builtin: é–¢æ•° `%s' ã®å¼•æ•°ã®æ•°ãŒè² ã§ã™"
+
+#: ext.c:259
 #, c-format
 msgid "function `%s' defined to take no more than %d argument(s)"
-msgstr "´Ø¿ô `%s' ¤Ë»È¤¨¤ë°ú¿ô¤Î¿ô¤Ï `%d' °Ê²¼¤ÈÄêµÁ¤µ¤ì¤Æ¤¤¤Ş¤¹¡£"
+msgstr "é–¢æ•° `%s' ã«ä½¿ãˆã‚‹å¼•æ•°ã®æ•°ã¯ `%d' ä»¥ä¸‹ã¨å®šç¾©ã•ã‚Œã¦ã„ã¾ã™"
 
-#: ext.c:207
+#: ext.c:262
 #, c-format
 msgid "function `%s': missing argument #%d"
-msgstr "´Ø¿ô `%s': °ú¿ô #%d ¤¬¤¢¤ê¤Ş¤»¤ó¡£"
+msgstr "é–¢æ•° `%s': å¼•æ•° #%d ãŒã‚ã‚Šã¾ã›ã‚“"
 
-#: ext.c:217
+#: ext.c:279
 #, c-format
 msgid "function `%s': argument #%d: attempt to use scalar as an array"
-msgstr "´Ø¿ô `%s': °ú¿ô #%d: ¥¹¥«¥é¡¼¤òÇÛÎó¤È¤·¤Æ»ÈÍÑ¤·¤Æ¤¤¤Ş¤¹¡£"
+msgstr "é–¢æ•° `%s': å¼•æ•° #%d: ã‚¹ã‚«ãƒ©ãƒ¼ã‚’é…åˆ—ã¨ã—ã¦ä½¿ç”¨ã™ã‚‹è©¦ã¿ã§ã™"
 
-#: ext.c:221
+#: ext.c:283
 #, c-format
 msgid "function `%s': argument #%d: attempt to use array as a scalar"
-msgstr "´Ø¿ô `%s': °ú¿ô #%d: ÇÛÎó¤ò¥¹¥«¥é¡¼¤È¤·¤Æ»ÈÍÑ¤·¤Æ¤¤¤Ş¤¹¡£"
+msgstr "é–¢æ•° `%s': å¼•æ•° #%d: é…åˆ—ã‚’ã‚¹ã‚«ãƒ©ãƒ¼ã¨ã—ã¦ä½¿ç”¨ã™ã‚‹è©¦ã¿ã§ã™"
 
-#: ext.c:246
+#: ext.c:296
 msgid "Operation Not Supported"
-msgstr "¤³¤ÎÁàºî¤Ï¼ÂÁõ¤µ¤ì¤Æ¤¤¤Ş¤»¤ó¡£"
+msgstr "ã“ã®æ“ä½œã¯ã‚µãƒãƒ¼ãƒˆã•ã‚Œã¦ã„ã¾ã›ã‚“"
 
-#: field.c:330
+#: field.c:328
 msgid "NF set to negative value"
-msgstr "NF ¤¬Éé¤ÎÃÍ¤Ç¤¹¡£"
+msgstr "NF ãŒè² ã®å€¤ã«è¨­å®šã•ã‚Œã¦ã„ã¾ã™"
 
-#: field.c:875
+#: field.c:951 field.c:958 field.c:962
+msgid "split: fourth argument is a gawk extension"
+msgstr "split: ç¬¬å››å¼•æ•°ã¯ gawk æ‹¡å¼µã§ã™"
+
+#: field.c:955
+msgid "split: fourth argument is not an array"
+msgstr "split: ç¬¬å››å¼•æ•°ãŒé…åˆ—ã§ã¯ã‚ã‚Šã¾ã›ã‚“"
+
+#: field.c:969
 msgid "split: second argument is not an array"
-msgstr "split: ÂèÆó°ú¿ô¤¬ÇÛÎó¤Ç¤Ï¤¢¤ê¤Ş¤»¤ó¡£"
+msgstr "split: ç¬¬äºŒå¼•æ•°ãŒé…åˆ—ã§ã¯ã‚ã‚Šã¾ã›ã‚“"
 
-#: field.c:909
+#: field.c:973
+msgid "split: cannot use the same array for second and fourth args"
+msgstr "split: ç¬¬äºŒå¼•æ•°ã¨ç¬¬å››å¼•æ•°ã«åŒã˜é…åˆ—ã‚’ä½¿ç”¨ã™ã‚‹ã“ã¨ã¯å‡ºæ¥ã¾ã›ã‚“"
+
+#: field.c:978
+msgid "split: cannot use a subarray of second arg for fourth arg"
+msgstr "split: ç¬¬å››å¼•æ•°ã«ç¬¬äºŒå¼•æ•°ã®éƒ¨åˆ†é…åˆ—ã‚’ä½¿ç”¨ã™ã‚‹ã“ã¨ã¯å‡ºæ¥ã¾ã›ã‚“"
+
+#: field.c:981
+msgid "split: cannot use a subarray of fourth arg for second arg"
+msgstr "split: ç¬¬äºŒå¼•æ•°ã«ç¬¬å››å¼•æ•°ã®éƒ¨åˆ†é…åˆ—ã‚’ä½¿ç”¨ã™ã‚‹ã“ã¨ã¯å‡ºæ¥ã¾ã›ã‚“"
+
+#: field.c:1010
 msgid "split: null string for third arg is a gawk extension"
-msgstr "split: Âè»°°ú¿ô¤Ë¶õÎó¤ò»ÈÍÑ¤¹¤ë¤Î¤Ï gawk ÆÃÍ­¤Î³ÈÄ¥¤Ç¤¹¡£"
+msgstr "split: ç¬¬ä¸‰å¼•æ•°ã« NULL æ–‡å­—åˆ—ã‚’ä½¿ç”¨ã™ã‚‹ã“ã¨ã¯ gawk æ‹¡å¼µã§ã™"
 
-#: field.c:961
+#: field.c:1050
+msgid "patsplit: fourth argument is not an array"
+msgstr "patsplit: ç¬¬å››å¼•æ•°ãŒé…åˆ—ã§ã¯ã‚ã‚Šã¾ã›ã‚“"
+
+#: field.c:1055
+msgid "patsplit: second argument is not an array"
+msgstr "patsplit: ç¬¬äºŒå¼•æ•°ãŒé…åˆ—ã§ã¯ã‚ã‚Šã¾ã›ã‚“"
+
+#: field.c:1061
+msgid "patsplit: third argument must be non-null"
+msgstr "patsplit: ç¬¬ä¸‰å¼•æ•°ã¯é NULL ã§ãªã‘ã‚Œã°ã„ã‘ã¾ã›ã‚“"
+
+#: field.c:1065
+msgid "patsplit: cannot use the same array for second and fourth args"
+msgstr "patsplit: ç¬¬äºŒå¼•æ•°ã¨ç¬¬å››å¼•æ•°ã«åŒã˜é…åˆ—ã‚’ä½¿ç”¨ã™ã‚‹ã“ã¨ã¯å‡ºæ¥ã¾ã›ã‚“"
+
+#: field.c:1070
+msgid "patsplit: cannot use a subarray of second arg for fourth arg"
+msgstr "patsplit: ç¬¬å››å¼•æ•°ã«ç¬¬äºŒå¼•æ•°ã®éƒ¨åˆ†é…åˆ—ã‚’ä½¿ç”¨ã™ã‚‹ã“ã¨ã¯å‡ºæ¥ã¾ã›ã‚“"
+
+#: field.c:1073
+msgid "patsplit: cannot use a subarray of fourth arg for second arg"
+msgstr "patsplit: ç¬¬äºŒå¼•æ•°ã«ç¬¬å››å¼•æ•°ã®éƒ¨åˆ†é…åˆ—ã‚’ä½¿ç”¨ã™ã‚‹ã“ã¨ã¯å‡ºæ¥ã¾ã›ã‚“"
+
+#: field.c:1110
 msgid "`FIELDWIDTHS' is a gawk extension"
-msgstr "`FIELDWIDTHS' ¤Ï gawk ÆÃÍ­¤Î³ÈÄ¥¤Ç¤¹¡£"
+msgstr "`FIELDWIDTHS' ã¯ gawk æ‹¡å¼µã§ã™"
 
-#: field.c:991 field.c:1005
+#: field.c:1173
 #, c-format
 msgid "invalid FIELDWIDTHS value, near `%s'"
-msgstr "`%s' ÉÕ¶á¤Î FIELDWIDTHS ÃÍ¤¬ÉÔÀµ¤Ç¤¹¡£"
+msgstr "`%s' ä»˜è¿‘ã® FIELDWIDTHS å€¤ãŒç„¡åŠ¹ã§ã™"
 
-#: field.c:1088
+#: field.c:1246
 msgid "null string for `FS' is a gawk extension"
-msgstr "`FS' ¤Ë¶õÎó¤ò»ÈÍÑ¤¹¤ë¤Î¤Ï gawk ÆÃÍ­¤Î³ÈÄ¥¤Ç¤¹¡£"
+msgstr "`FS' ã« NULL æ–‡å­—åˆ—ã‚’ä½¿ç”¨ã™ã‚‹ã®ã¯ gawk æ‹¡å¼µã§ã™"
 
-#: field.c:1092
-#, fuzzy
+#: field.c:1250
 msgid "old awk does not support regexps as value of `FS'"
-msgstr "±é»»»Ò `**' ¤Ï¸Å¤¤ awk ¤Ç»È¤¨¤Ş¤»¤ó¡£"
+msgstr "å¤ã„ awk ã¯ `FS' ã®å€¤ã¨ã—ã¦æ­£è¦è¡¨ç¾ã‚’ã‚µãƒãƒ¼ãƒˆã—ã¾ã›ã‚“"
 
-#: getopt.c:570 getopt.c:586
-#, fuzzy, c-format
-msgid "%s: option '%s' is ambiguous\n"
-msgstr "%s: ¥ª¥×¥·¥ç¥ó `%s' ¤ÏÛ£Ëæ¤Ç¤¹¡£\n"
+#: field.c:1369
+msgid "`FPAT' is a gawk extension"
+msgstr "`FPAT' ã¯ gawk æ‹¡å¼µã§ã™"
 
-#: getopt.c:619 getopt.c:623
+#: getopt.c:604 getopt.c:633
 #, fuzzy, c-format
+msgid "%s: option '%s' is ambiguous; possibilities:"
+msgstr "%s: ã‚ªãƒ—ã‚·ãƒ§ãƒ³ '%s' ã¯æ›–æ˜§ã§ã™\n"
+
+#: getopt.c:679 getopt.c:683
+#, c-format
 msgid "%s: option '--%s' doesn't allow an argument\n"
-msgstr "%s: ¥ª¥×¥·¥ç¥ó `--%s' ¤Ë°ú¿ô¤Ï¤¢¤ê¤Ş¤»¤ó¡£\n"
+msgstr "%s: ã‚ªãƒ—ã‚·ãƒ§ãƒ³ '--%s' ã¯å¼•æ•°ã‚’å–ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“\n"
 
-#: getopt.c:632 getopt.c:637
-#, fuzzy, c-format
+#: getopt.c:692 getopt.c:697
+#, c-format
 msgid "%s: option '%c%s' doesn't allow an argument\n"
-msgstr "%s: ¥ª¥×¥·¥ç¥ó `%c%s' ¤Ë°ú¿ô¤Ï¤¢¤ê¤Ş¤»¤ó¡£\n"
+msgstr "%s: ã‚ªãƒ—ã‚·ãƒ§ãƒ³ '%c%s' ã¯å¼•æ•°ã‚’å–ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“\n"
 
-#: getopt.c:680 getopt.c:699 getopt.c:1002 getopt.c:1021
-#, fuzzy, c-format
-msgid "%s: option '%s' requires an argument\n"
-msgstr "%s: ¥ª¥×¥·¥ç¥ó `%s' ¤Ë¤Ï°ú¿ô¤¬É¬Í×¤Ç¤¹¡£\n"
+#: getopt.c:740 getopt.c:759
+#, c-format
+msgid "%s: option '--%s' requires an argument\n"
+msgstr "%s: ã‚ªãƒ—ã‚·ãƒ§ãƒ³ '--%s' ã«ã¯å¼•æ•°ãŒå¿…è¦ã§ã™\n"
 
-#: getopt.c:737 getopt.c:740
-#, fuzzy, c-format
+#: getopt.c:797 getopt.c:800
+#, c-format
 msgid "%s: unrecognized option '--%s'\n"
-msgstr "%s: Ç§¼±¤Ç¤­¤Ê¤¤¥ª¥×¥·¥ç¥ó `--%s'\n"
+msgstr "%s: ã‚ªãƒ—ã‚·ãƒ§ãƒ³ '--%s' ã‚’èªè­˜ã§ãã¾ã›ã‚“\n"
 
-#: getopt.c:748 getopt.c:751
-#, fuzzy, c-format
+#: getopt.c:808 getopt.c:811
+#, c-format
 msgid "%s: unrecognized option '%c%s'\n"
-msgstr "%s: Ç§¼±¤Ç¤­¤Ê¤¤¥ª¥×¥·¥ç¥ó `%c%s'\n"
+msgstr "%s: ã‚ªãƒ—ã‚·ãƒ§ãƒ³ '%c%s' ã‚’èªè­˜ã§ãã¾ã›ã‚“\n"
 
-#: getopt.c:800 getopt.c:803
-#, fuzzy, c-format
+#: getopt.c:860 getopt.c:863
+#, c-format
 msgid "%s: invalid option -- '%c'\n"
-msgstr "%s: Ìµ¸ú¤Ê¥ª¥×¥·¥ç¥ó -- %c\n"
+msgstr "%s: ç„¡åŠ¹ãªã‚ªãƒ—ã‚·ãƒ§ãƒ³ -- '%c'\n"
 
-#: getopt.c:853 getopt.c:870 getopt.c:1073 getopt.c:1091
-#, fuzzy, c-format
+#: getopt.c:916 getopt.c:933 getopt.c:1143 getopt.c:1161
+#, c-format
 msgid "%s: option requires an argument -- '%c'\n"
-msgstr "%s: °ú¿ô¤¬É¬Í×¤Ê¥ª¥×¥·¥ç¥ó -- %c\n"
+msgstr "%s: ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã«ã¯å¼•æ•°ãŒå¿…è¦ã§ã™ -- '%c'\n"
 
-#: getopt.c:923 getopt.c:939
-#, fuzzy, c-format
+#: getopt.c:989 getopt.c:1005
+#, c-format
 msgid "%s: option '-W %s' is ambiguous\n"
-msgstr "%s: ¥ª¥×¥·¥ç¥ó `-W %s' ¤ÏÛ£Ëæ¤Ç¤¹¡£\n"
+msgstr "%s: ã‚ªãƒ—ã‚·ãƒ§ãƒ³ '-W %s' ã¯æ›–æ˜§ã§ã™\n"
 
-#: getopt.c:963 getopt.c:981
-#, fuzzy, c-format
+#: getopt.c:1029 getopt.c:1047
+#, c-format
 msgid "%s: option '-W %s' doesn't allow an argument\n"
-msgstr "%s: ¥ª¥×¥·¥ç¥ó `-W %s' ¤Ë°ú¿ô¤Ï¤¢¤ê¤Ş¤»¤ó¡£\n"
+msgstr "%s: ã‚ªãƒ—ã‚·ãƒ§ãƒ³ '-W %s' ã¯å¼•æ•°ã‚’å–ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“\n"
 
-#: io.c:322 io.c:352
+#: getopt.c:1068 getopt.c:1086
+#, c-format
+msgid "%s: option '-W %s' requires an argument\n"
+msgstr "%s: ã‚ªãƒ—ã‚·ãƒ§ãƒ³ '-W %s' ã«ã¯å¼•æ•°ãŒå¿…è¦ã§ã™\n"
+
+#: io.c:280
+#, c-format
+msgid "command line argument `%s' is a directory: skipped"
+msgstr "ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³å¼•æ•° `%s' ã¯ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã§ã™: ã‚¹ã‚­ãƒƒãƒ—ã•ã‚Œã¾ã—ãŸ"
+
+#: io.c:283 io.c:385
 #, c-format
 msgid "cannot open file `%s' for reading (%s)"
-msgstr "¥Õ¥¡¥¤¥ë `%s' ¤òÆÉ¤ß¹ş¤à¤¿¤á¤Ë³«¤±¤Ş¤»¤ó (%s)¡£"
+msgstr "ãƒ•ã‚¡ã‚¤ãƒ« `%s' ã‚’èª­ã¿è¾¼ã¿ç”¨ã«é–‹ã‘ã¾ã›ã‚“ (%s)"
 
-#: io.c:443
+#: io.c:501
 #, c-format
 msgid "close of fd %d (`%s') failed (%s)"
-msgstr "fd %d (`%s') ¤òÊÄ¤¸¤ë¤³¤È¤¬¤Ç¤­¤Ş¤»¤ó (%s)¡£"
+msgstr "fd %d (`%s') ã‚’é–‰ã˜ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“ (%s)"
 
-#: io.c:583
-#, c-format
-msgid "invalid tree type %s in redirect()"
-msgstr "redirect() ¤ÎÃæ¤ÇÉÔÀµ¤Ê¥Ä¥ê¡¼¥¿¥¤¥× %s ¤ò»ÈÍÑ¤·¤Æ¤¤¤Ş¤¹¡£"
+#: io.c:578
+msgid "redirection not allowed in sandbox mode"
+msgstr "ã‚µãƒ³ãƒ‰ãƒœãƒƒã‚¯ã‚¹ãƒ¢ãƒ¼ãƒ‰å†…ã§ã¯ãƒªãƒ€ã‚¤ãƒ¬ã‚¯ãƒˆã¯è¨±å¯ã•ã‚Œã¦ã„ã¾ã›ã‚“"
 
-#: io.c:589
+#: io.c:612
 #, c-format
 msgid "expression in `%s' redirection only has numeric value"
-msgstr "`%s' ¥ê¥À¥¤¥ì¥¯¥È¤ÎÌ¿Îá¼°¤Ë¿ôÃÍ¤·¤«µ­½Ò¤µ¤ì¤Æ¤¤¤Ş¤»¤ó¡£"
+msgstr "`%s' ãƒªãƒ€ã‚¤ãƒ¬ã‚¯ãƒˆã®å‘½ä»¤å¼ã«æ•°å€¤ã—ã‹è¨˜è¿°ã•ã‚Œã¦ã„ã¾ã›ã‚“ã€‚"
 
-#: io.c:595
+#: io.c:618
 #, c-format
 msgid "expression for `%s' redirection has null string value"
-msgstr "`%s' ¥ê¥À¥¤¥ì¥¯¥È¤ÎÌ¿Îá¼°¤¬¶õÎó¤Ç¤¹¡£"
+msgstr "`%s' ãƒªãƒ€ã‚¤ãƒ¬ã‚¯ãƒˆã®å‘½ä»¤å¼ãŒç©ºåˆ—ã§ã™ã€‚"
 
-#: io.c:600
+#: io.c:623
 #, c-format
 msgid "filename `%s' for `%s' redirection may be result of logical expression"
 msgstr ""
-"`%2$s' ¥ê¥À¥¤¥ì¥¯¥È¤ËÏÀÍı±é»»¤Î·ë²Ì¤È»×¤ï¤ì¤ë¥Õ¥¡¥¤¥ëÌ¾ `%1$s' ¤¬»È¤ï¤ì¤Æ¤¤¤Ş"
-"¤¹¡£"
+"`%2$s' ãƒªãƒ€ã‚¤ãƒ¬ã‚¯ãƒˆã«è«–ç†æ¼”ç®—ã®çµæœã¨æ€ã‚ã‚Œã‚‹ãƒ•ã‚¡ã‚¤ãƒ«å `%1$s' ãŒä½¿ã‚ã‚Œã¦ã„ã¾"
+"ã™ã€‚"
 
-#: io.c:638
+#: io.c:666
 #, c-format
 msgid "unnecessary mixing of `>' and `>>' for file `%.*s'"
-msgstr "¥Õ¥¡¥¤¥ë `%.*s' ¤ÇÉ¬Í×°Ê¾å¤Ë `>' ¤È `>>' ¤òÁÈ¹ç¤»¤Æ¤¤¤Ş¤¹¡£"
+msgstr "ãƒ•ã‚¡ã‚¤ãƒ« `%.*s' ã§å¿…è¦ä»¥ä¸Šã« `>' ã¨ `>>' ã‚’çµ„åˆã›ã¦ã„ã¾ã™ã€‚"
 
-#: io.c:685
+#: io.c:719
 #, c-format
 msgid "can't open pipe `%s' for output (%s)"
-msgstr "½ĞÎÏÍÑ¤Ë¥Ñ¥¤¥× `%s' ¤ò³«¤±¤Ş¤»¤ó (%s)¡£"
+msgstr "å‡ºåŠ›ç”¨ã«ãƒ‘ã‚¤ãƒ— `%s' ã‚’é–‹ã‘ã¾ã›ã‚“ (%s)"
 
-#: io.c:694
+#: io.c:729
 #, c-format
 msgid "can't open pipe `%s' for input (%s)"
-msgstr "ÆşÎÏÍÑ¤Ë¥Ñ¥¤¥× `%s' ¤ò³«¤±¤Ş¤»¤ó (%s)¡£"
+msgstr "å…¥åŠ›ç”¨ã«ãƒ‘ã‚¤ãƒ— `%s' ã‚’é–‹ã‘ã¾ã›ã‚“ (%s)"
 
-#: io.c:712
-#, c-format
-msgid "can't open two way socket `%s' for input/output (%s)"
-msgstr "Æş½ĞÎÏÍÑ¤ÎÁĞÊı¸ş¥½¥±¥Ã¥È `%s' ¤¬³«¤±¤Ş¤»¤ó (%s)¡£"
-
-#: io.c:716
+#: io.c:752
 #, c-format
 msgid "can't open two way pipe `%s' for input/output (%s)"
-msgstr "Æş½ĞÎÏÍÑ¤ÎÁĞÊı¸ş¥Ñ¥¤¥× `%s' ¤¬³«¤±¤Ş¤»¤ó (%s)¡£"
+msgstr "å…¥å‡ºåŠ›ç”¨ã®åŒæ–¹å‘ãƒ‘ã‚¤ãƒ— `%s' ãŒé–‹ã‘ã¾ã›ã‚“ (%s)"
 
-#: io.c:793
+#: io.c:834
 #, c-format
 msgid "can't redirect from `%s' (%s)"
-msgstr "`%s' ¤«¤é¥ê¥À¥¤¥ì¥¯¥È¤Ç¤­¤Ş¤»¤ó (%s)¡£"
+msgstr "`%s' ã‹ã‚‰ãƒªãƒ€ã‚¤ãƒ¬ã‚¯ãƒˆã§ãã¾ã›ã‚“ (%s)"
 
-#: io.c:796
+#: io.c:837
 #, c-format
 msgid "can't redirect to `%s' (%s)"
-msgstr "`%s' ¤Ë¥ê¥À¥¤¥ì¥¯¥È¤Ç¤­¤Ş¤»¤ó (%s)¡£"
+msgstr "`%s' ã«ãƒªãƒ€ã‚¤ãƒ¬ã‚¯ãƒˆã§ãã¾ã›ã‚“ (%s)"
 
-#: io.c:849
+#: io.c:888
 msgid ""
 "reached system limit for open files: starting to multiplex file descriptors"
 msgstr ""
-"³«¤¤¤Æ¤¤¤ë¥Õ¥¡¥¤¥ë¤Î¿ô¤¬¥·¥¹¥Æ¥àÀ©¸Â¤ËÃ£¤·¤Ş¤·¤¿¡£¥Õ¥¡¥¤¥ëµ­½Ò»Ò¤òÂ¿½Å²½¤·¤Ş"
-"¤¹¡£"
+"é–‹ã„ã¦ã„ã‚‹ãƒ•ã‚¡ã‚¤ãƒ«ã®æ•°ãŒã‚·ã‚¹ãƒ†ãƒ åˆ¶é™ã«é”ã—ã¾ã—ãŸã€‚ãƒ•ã‚¡ã‚¤ãƒ«è¨˜è¿°å­ã‚’å¤šé‡åŒ–ã—ã¾"
+"ã™ã€‚"
 
-#: io.c:865
+#: io.c:904
 #, c-format
 msgid "close of `%s' failed (%s)."
-msgstr "`%s' ¤¬ÊÄ¤¸¤é¤ì¤Ş¤»¤ó (%s)¡£"
+msgstr "`%s' ã‚’é–‰ã˜ã‚‹ã®ã«å¤±æ•—ã—ã¾ã—ãŸ (%s)"
 
-#: io.c:873
+#: io.c:912
 msgid "too many pipes or input files open"
-msgstr "³«¤¤¤Æ¤¤¤ë¥Ñ¥¤¥×¤Ş¤¿¤ÏÆşÎÏ¥Õ¥¡¥¤¥ë¤Î¿ô¤¬Â¿²á¤®¤Ş¤¹¡£"
+msgstr "é–‹ã„ã¦ã„ã‚‹ãƒ‘ã‚¤ãƒ—ã¾ãŸã¯å…¥åŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã®æ•°ãŒå¤šéãã¾ã™ã€‚"
 
-#: io.c:896
+#: io.c:934
 msgid "close: second argument must be `to' or `from'"
-msgstr "close: ÂèÆó°ú¿ô¤Ë»ÈÍÑ¤Ç¤­¤ë¤Î¤Ï `to' ¤Ş¤¿¤Ï `from' ¤Ç¤¹¡£"
+msgstr "close: ç¬¬äºŒå¼•æ•°ã¯ `to' ã¾ãŸã¯ `from' ã§ãªã‘ã‚Œã°ã„ã‘ã¾ã›ã‚“"
 
-#: io.c:910
+#: io.c:951
 #, c-format
 msgid "close: `%.*s' is not an open file, pipe or co-process"
-msgstr ""
-"close:  `%.*s' ¤Ï¥Õ¥¡¥¤¥ë¡¢¥Ñ¥¤¥×¡¢ÊÂ¹Ô¥×¥í¥»¥¹¤Î¤¤¤º¤ì¤Ç¤â¤¢¤ê¤Ş¤»¤ó¡£"
+msgstr "close: `%.*s' ã¯é–‹ã„ã¦ã„ã‚‹ãƒ•ã‚¡ã‚¤ãƒ«ã€ãƒ‘ã‚¤ãƒ—ã€ãƒ—ãƒ­ã‚»ã‚¹å…±æœ‰ã§ã¯ã‚ã‚Šã¾ã›ã‚“"
 
-#: io.c:915
+#: io.c:956
 msgid "close of redirection that was never opened"
-msgstr "³«¤¤¤Æ¤Ê¤¤¥ê¥À¥¤¥ì¥¯¥È¤òÊÄ¤¸¤è¤¦¤È¤·¤Æ¤¤¤Ş¤¹¡£"
+msgstr "é–‹ã„ã¦ãªã„ãƒªãƒ€ã‚¤ãƒ¬ã‚¯ãƒˆã‚’é–‰ã˜ã‚ˆã†ã¨ã—ã¦ã„ã¾ã™"
 
-#: io.c:1012
+#: io.c:1053
 #, c-format
 msgid "close: redirection `%s' not opened with `|&', second argument ignored"
 msgstr ""
-"close: ¥ê¥À¥¤¥ì¥¯¥È `%s' ¤Ï `|&' ¤ò»È¤Ã¤Æ¤¤¤Ş¤»¤ó¡£ÂèÆó°ú¿ô¤ÏÌµ»ë¤·¤Ş¤¹¡£"
+"close: ãƒªãƒ€ã‚¤ãƒ¬ã‚¯ãƒˆ `%s' ã¯ `|&' ã‚’ä½¿ç”¨ã—ã¦é–‹ã‹ã‚Œã¦ã„ã¾ã›ã‚“ã€‚ç¬¬äºŒå¼•æ•°ã¯ç„¡è¦–ã•"
+"ã‚Œã¾ã—ãŸ"
 
-#: io.c:1028
+#: io.c:1069
 #, c-format
 msgid "failure status (%d) on pipe close of `%s' (%s)"
-msgstr "¥Ñ¥¤¥× `%2$s' ¤òÊÄ¤¸¤¿¤È¤­¤Î¾õÂÖ¥³¡¼¥É¤¬¼ºÇÔ (%1$d) ¤Ç¤·¤¿ (%3$s)¡£"
+msgstr "ãƒ‘ã‚¤ãƒ— `%2$s' ã‚’é–‰ã˜ãŸã¨ãã®çŠ¶æ…‹ã‚³ãƒ¼ãƒ‰ãŒå¤±æ•— (%1$d) ã§ã—ãŸ (%3$s)ã€‚"
 
-#: io.c:1031
+#: io.c:1072
 #, c-format
 msgid "failure status (%d) on file close of `%s' (%s)"
-msgstr "¥Õ¥¡¥¤¥ë `%2$s' ¤òÊÄ¤¸¤¿¤È¤­¤Î¾õÂÖ¥³¡¼¥É¤¬¼ºÇÔ (%1$d) ¤Ç¤·¤¿ (%3$s)¡£"
+msgstr "ãƒ•ã‚¡ã‚¤ãƒ« `%2$s' ã‚’é–‰ã˜ãŸã¨ãã®çŠ¶æ…‹ã‚³ãƒ¼ãƒ‰ãŒå¤±æ•— (%1$d) ã§ã—ãŸ (%3$s)ã€‚"
 
-#: io.c:1051
+#: io.c:1092
 #, c-format
 msgid "no explicit close of socket `%s' provided"
-msgstr "¥½¥±¥Ã¥È `%s' ¤òÌÀ¼¨¤·¤ÆÊÄ¤¸¤Æ¤¤¤Ş¤»¤ó¡£"
+msgstr "ã‚½ã‚±ãƒƒãƒˆ `%s' ã‚’æ˜ç¤ºã—ã¦é–‰ã˜ã¦ã„ã¾ã›ã‚“ã€‚"
 
-#: io.c:1054
+#: io.c:1095
 #, c-format
 msgid "no explicit close of co-process `%s' provided"
-msgstr "ÊÂ¹Ô¥×¥í¥»¥¹ `%s' ¤òÌÀ¼¨¤·¤ÆÊÄ¤¸¤Æ¤¤¤Ş¤»¤ó¡£"
+msgstr "ä¸¦è¡Œãƒ—ãƒ­ã‚»ã‚¹ `%s' ã‚’æ˜ç¤ºã—ã¦é–‰ã˜ã¦ã„ã¾ã›ã‚“ã€‚"
 
-#: io.c:1057
+#: io.c:1098
 #, c-format
 msgid "no explicit close of pipe `%s' provided"
-msgstr "¥Ñ¥¤¥× `%s' ¤òÌÀ¼¨¤·¤ÆÊÄ¤¸¤Æ¤¤¤Ş¤»¤ó¡£"
+msgstr "ãƒ‘ã‚¤ãƒ— `%s' ã‚’æ˜ç¤ºã—ã¦é–‰ã˜ã¦ã„ã¾ã›ã‚“ã€‚"
 
-#: io.c:1060
+#: io.c:1101
 #, c-format
 msgid "no explicit close of file `%s' provided"
-msgstr "¥Õ¥¡¥¤¥ë `%s' ¤òÌÀ¼¨¤·¤ÆÊÄ¤¸¤Æ¤¤¤Ş¤»¤ó¡£"
+msgstr "ãƒ•ã‚¡ã‚¤ãƒ« `%s' ã‚’æ˜ç¤ºã—ã¦é–‰ã˜ã¦ã„ã¾ã›ã‚“ã€‚"
 
-#: io.c:1088 io.c:1143 main.c:776 main.c:818
+#: io.c:1129 io.c:1184 main.c:794 main.c:831
 #, c-format
 msgid "error writing standard output (%s)"
-msgstr "É¸½à½ĞÎÏ¤Ø¤Î½ñ¹ş¤ß¥¨¥é¡¼ (%s)"
+msgstr "æ¨™æº–å‡ºåŠ›ã¸ã®æ›¸è¾¼ã¿ã‚¨ãƒ©ãƒ¼ (%s)"
 
-#: io.c:1092 io.c:1148
+#: io.c:1133 io.c:1189
 #, c-format
 msgid "error writing standard error (%s)"
-msgstr "É¸½à¥¨¥é¡¼¤Ø¤Î½ñ¹ş¤ß¥¨¥é¡¼ (%s)"
+msgstr "æ¨™æº–ã‚¨ãƒ©ãƒ¼ã¸ã®æ›¸è¾¼ã¿ã‚¨ãƒ©ãƒ¼ (%s)"
 
-#: io.c:1100
+#: io.c:1141
 #, c-format
 msgid "pipe flush of `%s' failed (%s)."
-msgstr "¥Ñ¥¤¥× `%s' ¤ò¥Õ¥é¥Ã¥·¥å¤Ç¤­¤Ş¤»¤ó (%s)¡£"
+msgstr "ãƒ‘ã‚¤ãƒ— `%s' ã‚’ãƒ•ãƒ©ãƒƒã‚·ãƒ¥ã§ãã¾ã›ã‚“ (%s)ã€‚"
 
-#: io.c:1103
+#: io.c:1144
 #, c-format
 msgid "co-process flush of pipe to `%s' failed (%s)."
-msgstr "`%s' ¤ØÀÜÂ³¤¹¤ë¥Ñ¥¤¥×¤òÊÂ¹Ô¥×¥í¥»¥¹¤«¤é¥Õ¥é¥Ã¥·¥å¤Ç¤­¤Ş¤»¤ó (%s)¡£"
+msgstr "`%s' ã¸æ¥ç¶šã™ã‚‹ãƒ‘ã‚¤ãƒ—ã‚’ä¸¦è¡Œãƒ—ãƒ­ã‚»ã‚¹ã‹ã‚‰ãƒ•ãƒ©ãƒƒã‚·ãƒ¥ã§ãã¾ã›ã‚“ (%s)ã€‚"
 
-#: io.c:1106
+#: io.c:1147
 #, c-format
 msgid "file flush of `%s' failed (%s)."
-msgstr "¥Õ¥¡¥¤¥ë `%s' ¤ò¥Õ¥é¥Ã¥·¥å¤Ç¤­¤Ş¤»¤ó (%s)¡£"
+msgstr "ãƒ•ã‚¡ã‚¤ãƒ« `%s' ã‚’ãƒ•ãƒ©ãƒƒã‚·ãƒ¥ã§ãã¾ã›ã‚“ (%s)ã€‚"
 
-#: io.c:1220
-#, fuzzy, c-format
+#: io.c:1262
+#, c-format
 msgid "local port %s invalid in `/inet'"
-msgstr "`%s' ¤Î¥í¡¼¥«¥ë¥İ¡¼¥È¤¬Ìµ¸ú¤Ç¤¹¡£"
+msgstr "`/inet' å†…ã®ãƒ­ãƒ¼ã‚«ãƒ«ãƒãƒ¼ãƒˆ %s ãŒç„¡åŠ¹ã§ã™"
 
-#: io.c:1237
+#: io.c:1279
 #, c-format
 msgid "remote host and port information (%s, %s) invalid"
-msgstr ""
+msgstr "ãƒªãƒ¢ãƒ¼ãƒˆã®ãƒ›ã‚¹ãƒˆãŠã‚ˆã³ãƒãƒ¼ãƒˆæƒ…å ± (%s, %s) ãŒç„¡åŠ¹ã§ã™"
 
-#: io.c:1272
-msgid "/inet/raw client not ready yet, sorry"
-msgstr "»ÄÇ°¤Ê¤¬¤é¡¢/inet/raw ¥¯¥é¥¤¥¢¥ó¥È¤Î½àÈ÷¤¬¤Ç¤­¤Æ¤¤¤Ş¤»¤ó¡£"
-
-#: io.c:1275 io.c:1311
-msgid "only root may use `/inet/raw'."
-msgstr "`/inet/raw' ¤Ï root ¥æ¡¼¥¶¡¼¤Î¤ß»ÈÍÑ¤Ç¤­¤Ş¤¹¡£"
-
-#: io.c:1309
-msgid "/inet/raw server not ready yet, sorry"
-msgstr "»ÄÇ°¤Ê¤¬¤é¡¢/inet/raw ¥µ¡¼¥Ğ¡¼¤Î½àÈ÷¤¬¤Ç¤­¤Æ¤¤¤Ş¤»¤ó¡£"
-
-#: io.c:1407
+#: io.c:1431
 #, c-format
 msgid "no (known) protocol supplied in special filename `%s'"
 msgstr ""
-"¥¹¥Ú¥·¥ã¥ë¥Õ¥¡¥¤¥ëÌ¾ `%s' ¤Ë¡ÊÇ§¼±¤Ç¤­¤ë¡Ë¥×¥í¥È¥³¥ë¤¬»ØÄê¤µ¤ì¤Æ¤¤¤Ş¤»¤ó¡£"
+"ã‚¹ãƒšã‚·ãƒ£ãƒ«ãƒ•ã‚¡ã‚¤ãƒ«å `%s' ã«ï¼ˆèªè­˜ã§ãã‚‹ï¼‰ãƒ—ãƒ­ãƒˆã‚³ãƒ«ãŒæŒ‡å®šã•ã‚Œã¦ã„ã¾ã›ã‚“"
 
-#: io.c:1421
+#: io.c:1445
 #, c-format
 msgid "special file name `%s' is incomplete"
-msgstr "¥¹¥Ú¥·¥ã¥ë¥Õ¥¡¥¤¥ëÌ¾ `%s' ¤ÏÉÔ´°Á´¤Ç¤¹¡£"
+msgstr "ã‚¹ãƒšã‚·ãƒ£ãƒ«ãƒ•ã‚¡ã‚¤ãƒ«å `%s' ã¯ä¸å®Œå…¨ã§ã™"
 
-#: io.c:1436
+#: io.c:1462
 msgid "must supply a remote hostname to `/inet'"
-msgstr "`/inet' ¤Ë¤Ï¥ê¥â¡¼¥È¥Û¥¹¥ÈÌ¾¤¬É¬Í×¤Ç¤¹¡£"
+msgstr "`/inet' ã«ã¯ãƒªãƒ¢ãƒ¼ãƒˆãƒ›ã‚¹ãƒˆåã‚’ä¸ãˆãªã‘ã‚Œã°ã„ã‘ã¾ã›ã‚“"
 
-#: io.c:1454
+#: io.c:1480
 msgid "must supply a remote port to `/inet'"
-msgstr "`/inet' ¤Ë¤Ï¥ê¥â¡¼¥È¥İ¡¼¥ÈÈÖ¹æ¤¬É¬Í×¤Ç¤¹¡£"
+msgstr "`/inet' ã«ã¯ãƒªãƒ¢ãƒ¼ãƒˆãƒãƒ¼ãƒˆç•ªå·ã‚’ä¸ãˆãªã‘ã‚Œã°ã„ã‘ã¾ã›ã‚“"
 
-#: io.c:1485
+#: io.c:1526
 msgid "TCP/IP communications are not supported"
-msgstr "TCP/IP ÀÜÂ³¤Ï»ÈÍÑ¤Ç¤­¤Ş¤»¤ó¡£"
+msgstr "TCP/IP é€šä¿¡ã¯ã‚µãƒãƒ¼ãƒˆã•ã‚Œã¦ã„ã¾ã›ã‚“"
 
-#: io.c:1494
-#, c-format
-msgid "file `%s' is a directory"
-msgstr "¥Õ¥¡¥¤¥ë `%s' ¤Ï¥Ç¥£¥ì¥¯¥È¥ê¤Ç¤¹¡£"
-
-#: io.c:1555
-#, c-format
-msgid "use `PROCINFO[\"%s\"]' instead of `%s'"
-msgstr "`%2$s' ¤ÎÂå¤ï¤ê¤Ë `PROCINFO[\"%1$s\"]' ¤ò»ÈÍÑ¤·¤Æ¤¯¤À¤µ¤¤¡£"
-
-#: io.c:1593
-msgid "use `PROCINFO[...]' instead of `/dev/user'"
-msgstr "`/dev/user' ¤ÎÂå¤ï¤ê¤Ë `PROCINFO[...]' ¤ò»ÈÍÑ¤·¤Æ¤¯¤À¤µ¤¤¡£"
-
-#: io.c:1658 io.c:1853
+#: io.c:1693
 #, c-format
 msgid "could not open `%s', mode `%s'"
-msgstr "`%s' (¥â¡¼¥É `%s') ¤ò³«¤±¤Ş¤»¤ó¡£"
+msgstr "`%s' ã‚’ãƒ¢ãƒ¼ãƒ‰ `%s' ã§é–‹ã‘ã¾ã›ã‚“"
 
-#: io.c:1904
+#: io.c:1747
 #, c-format
 msgid "close of master pty failed (%s)"
-msgstr "¥Ş¥¹¥¿¡¼ pty ¤òÊÄ¤¸¤é¤ì¤Ş¤»¤ó (%s)¡£"
+msgstr "ãƒã‚¹ã‚¿ãƒ¼ pty ã‚’é–‰ã˜ã‚‹ã®ã«å¤±æ•—ã—ã¾ã—ãŸ (%s)"
 
-#: io.c:1906 io.c:2058 io.c:2209
+#: io.c:1749 io.c:1917 io.c:2074
 #, c-format
 msgid "close of stdout in child failed (%s)"
-msgstr "»Ò¥×¥í¥»¥¹¤¬É¸½à½ĞÎÏ¤òÊÄ¤¸¤é¤ì¤Ş¤»¤ó (%s)¡£"
+msgstr "å­ãƒ—ãƒ­ã‚»ã‚¹ãŒæ¨™æº–å‡ºåŠ›ã‚’é–‰ã˜ã‚‹ã®ã«å¤±æ•—ã—ã¾ã—ãŸ (%s)"
 
-#: io.c:1909
+#: io.c:1752
 #, c-format
 msgid "moving slave pty to stdout in child failed (dup: %s)"
-msgstr "»Ò¥×¥í¥»¥¹¤¬¥¹¥ì¡¼¥Ö pty ¤òÉ¸½à½ĞÎÏ¤Ë°ÜÆ°¤Ç¤­¤Ş¤»¤ó (dup: %s)¡£"
+msgstr "å­ãƒ—ãƒ­ã‚»ã‚¹ãŒã‚¹ãƒ¬ãƒ¼ãƒ– pty ã‚’æ¨™æº–å‡ºåŠ›ã«ç§»å‹•ã§ãã¾ã›ã‚“ (dup: %s)ã€‚"
 
-#: io.c:1911 io.c:2063
+#: io.c:1754 io.c:1922
 #, c-format
 msgid "close of stdin in child failed (%s)"
-msgstr "»Ò¥×¥í¥»¥¹¤¬É¸½àÆşÎÏ¤òÊÄ¤¸¤é¤ì¤Ş¤»¤ó (%s)¡£"
+msgstr "å­ãƒ—ãƒ­ã‚»ã‚¹ãŒæ¨™æº–å…¥åŠ›ã‚’é–‰ã˜ã‚‰ã‚Œã¾ã›ã‚“ (%s)ã€‚"
 
-#: io.c:1914
+#: io.c:1757
 #, c-format
 msgid "moving slave pty to stdin in child failed (dup: %s)"
-msgstr "»Ò¥×¥í¥»¥¹¤¬¥¹¥ì¡¼¥Ö pty ¤òÉ¸½àÆşÎÏ¤Ë°ÜÆ°¤Ç¤­¤Ş¤»¤ó (dup: %s)¡£"
+msgstr "å­ãƒ—ãƒ­ã‚»ã‚¹ãŒã‚¹ãƒ¬ãƒ¼ãƒ– pty ã‚’æ¨™æº–å…¥åŠ›ã«ç§»å‹•ã§ãã¾ã›ã‚“ (dup: %s)ã€‚"
 
-#: io.c:1916 io.c:1935
+#: io.c:1759 io.c:1780
 #, c-format
 msgid "close of slave pty failed (%s)"
-msgstr "¥¹¥ì¡¼¥Ö pty ¤òÊÄ¤¸¤é¤ì¤Ş¤»¤ó (%s)¡£"
+msgstr "ã‚¹ãƒ¬ãƒ¼ãƒ– pty ã‚’é–‰ã˜ã‚‹ã®ã«å¤±æ•—ã—ã¾ã—ãŸ (%s)"
 
-#: io.c:2009 io.c:2061 io.c:2190 io.c:2212
+#: io.c:1858 io.c:1920 io.c:2052 io.c:2077
 #, c-format
 msgid "moving pipe to stdout in child failed (dup: %s)"
-msgstr "»Ò¥×¥í¥»¥¹¤¬¥Ñ¥¤¥×¤òÉ¸½à½ĞÎÏ¤Ë°ÜÆ°¤Ç¤­¤Ş¤»¤ó (dup: %s)¡£"
+msgstr "å­ãƒ—ãƒ­ã‚»ã‚¹ãŒãƒ‘ã‚¤ãƒ—ã‚’æ¨™æº–å‡ºåŠ›ã«ç§»å‹•ã§ãã¾ã›ã‚“ (dup: %s)ã€‚"
 
-#: io.c:2013 io.c:2066
+#: io.c:1865 io.c:1925
 #, c-format
 msgid "moving pipe to stdin in child failed (dup: %s)"
-msgstr "»Ò¥×¥í¥»¥¹¤¬¥Ñ¥¤¥×¤òÉ¸½àÆşÎÏ¤Ë°ÜÆ°¤Ç¤­¤Ş¤»¤ó (dup: %s)¡£"
+msgstr "å­ãƒ—ãƒ­ã‚»ã‚¹ãŒãƒ‘ã‚¤ãƒ—ã‚’æ¨™æº–å…¥åŠ›ã«ç§»å‹•ã§ãã¾ã›ã‚“ (dup: %s)ã€‚"
 
-#: io.c:2030 io.c:2203
+#: io.c:1885 io.c:2067
 msgid "restoring stdout in parent process failed\n"
-msgstr "¿Æ¥×¥í¥»¥¹¤¬É¸½à½ĞÎÏ¤òÉüµì¤Ç¤­¤Ş¤»¤ó¡£\n"
+msgstr "è¦ªãƒ—ãƒ­ã‚»ã‚¹ãŒæ¨™æº–å‡ºåŠ›ã‚’å¾©æ—§ã§ãã¾ã›ã‚“ã€‚\n"
 
-#: io.c:2035
+#: io.c:1893
 msgid "restoring stdin in parent process failed\n"
-msgstr "¿Æ¥×¥í¥»¥¹¤¬É¸½àÆşÎÏ¤òÉüµì¤Ç¤­¤Ş¤»¤ó¡£\n"
+msgstr "è¦ªãƒ—ãƒ­ã‚»ã‚¹ãŒæ¨™æº–å…¥åŠ›ã‚’å¾©æ—§ã§ãã¾ã›ã‚“ã€‚\n"
 
-#: io.c:2069 io.c:2214 io.c:2225
+#: io.c:1928 io.c:2079 io.c:2093
 #, c-format
 msgid "close of pipe failed (%s)"
-msgstr "¥Ñ¥¤¥×¤òÊÄ¤¸¤é¤ì¤Ş¤»¤ó (%s)¡£"
+msgstr "ãƒ‘ã‚¤ãƒ—ã‚’é–‰ã˜ã‚‰ã‚Œã¾ã›ã‚“ (%s)ã€‚"
 
-#: io.c:2114
+#: io.c:1973
 msgid "`|&' not supported"
-msgstr "`|&' ¤Ï»ÈÍÑ¤Ç¤­¤Ş¤»¤ó¡£"
+msgstr "`|&' ã¯ä½¿ç”¨ã§ãã¾ã›ã‚“ã€‚"
 
-#: io.c:2180
+#: io.c:2039
 #, c-format
 msgid "cannot open pipe `%s' (%s)"
-msgstr "¥Ñ¥¤¥× `%s' ¤¬³«¤±¤Ş¤»¤ó (%s)¡£"
+msgstr "ãƒ‘ã‚¤ãƒ— `%s' ãŒé–‹ã‘ã¾ã›ã‚“ (%s)ã€‚"
 
-#: io.c:2221
+#: io.c:2087
 #, c-format
 msgid "cannot create child process for `%s' (fork: %s)"
-msgstr "`%s' ÍÑ¤Î»Ò¥×¥í¥»¥¹¤ò¼Â¹Ô¤Ç¤­¤Ş¤»¤ó (fork: %s)¡£"
+msgstr "`%s' ç”¨ã®å­ãƒ—ãƒ­ã‚»ã‚¹ã‚’å®Ÿè¡Œã§ãã¾ã›ã‚“ (fork: %s)ã€‚"
 
-#: io.c:2603
+#: io.c:2520
 #, c-format
 msgid "data file `%s' is empty"
-msgstr "¥Ç¡¼¥¿¥Õ¥¡¥¤¥ë `%s' ¤Ï¶õ¤Ç¤¹¡£"
+msgstr "ãƒ‡ãƒ¼ã‚¿ãƒ•ã‚¡ã‚¤ãƒ« `%s' ã¯ç©ºã§ã™ã€‚"
 
-#: io.c:2644 io.c:2652
+#: io.c:2561 io.c:2569
 msgid "could not allocate more input memory"
-msgstr "ÆşÎÏÍÑ¥á¥â¥ê¡¼¤ò¤³¤ì°Ê¾å³ÎÊİ¤Ç¤­¤Ş¤»¤ó¡£"
+msgstr "å…¥åŠ›ç”¨ãƒ¡ãƒ¢ãƒªãƒ¼ã‚’ã“ã‚Œä»¥ä¸Šç¢ºä¿ã§ãã¾ã›ã‚“ã€‚"
 
-#: io.c:3020 io.c:3093
-#, c-format
-msgid "error reading input file `%s': %s"
-msgstr "ÆşÎÏ¥Õ¥¡¥¤¥ë `%s' ¤òÆÉ¤ß¹ş¤ßÃæ¤Ë¥¨¥é¡¼¤¬È¯À¸¤·¤Ş¤·¤¿: %s¡£"
-
-#: io.c:3218
+#: io.c:3127
 msgid "multicharacter value of `RS' is a gawk extension"
-msgstr "Ê£¿ô¤ÎÊ¸»ú¤ò `RS' ¤Ë»ÈÍÑ¤¹¤ë¤Î¤Ï gawk ÆÃÍ­¤Î³ÈÄ¥¤Ç¤¹¡£"
+msgstr "è¤‡æ•°ã®æ–‡å­—ã‚’ `RS' ã«ä½¿ç”¨ã™ã‚‹ã®ã¯ gawk ç‰¹æœ‰ã®æ‹¡å¼µã§ã™ã€‚"
 
-#: main.c:304
-msgid "out of memory"
-msgstr ""
+#: io.c:3232
+msgid "IPv6 communication is not supported"
+msgstr "IPv6 é€šä¿¡ã¯ã‚µãƒãƒ¼ãƒˆã•ã‚Œã¦ã„ã¾ã›ã‚“"
 
-#: main.c:373
+#: main.c:366
 msgid "`-m[fr]' option irrelevant in gawk"
-msgstr "gawk ¤Ç¤Ï¥ª¥×¥·¥ç¥ó `-m[fr]' ¤Ë¸ú²Ì¤Ï¤¢¤ê¤Ş¤»¤ó¡£"
+msgstr "gawk ã§ã¯ã‚ªãƒ—ã‚·ãƒ§ãƒ³ `-m[fr]' ã«åŠ¹æœã¯ã‚ã‚Šã¾ã›ã‚“ã€‚"
 
-#: main.c:375
+#: main.c:368
 msgid "-m option usage: `-m[fr] nnn'"
-msgstr "-m ¥ª¥×¥·¥ç¥ó¤Î»ÈÍÑË¡: `-m[fr] ¿ôÃÍ'"
+msgstr "-m ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã®ä½¿ç”¨æ³•: `-m[fr] æ•°å€¤'"
 
-#: main.c:392
+#: main.c:391
+msgid "empty argument to `-e/--source' ignored"
+msgstr "`-e/--source' ã¸ã®ç©ºã®å¼•æ•°ã¯ç„¡è¦–ã•ã‚Œã¾ã—ãŸ"
+
+#: main.c:462
 #, c-format
 msgid "%s: option `-W %s' unrecognized, ignored\n"
-msgstr "%s: ¥ª¥×¥·¥ç¥ó `-W %s' ¤ÏÇ§¼±¤Ç¤­¤Ş¤»¤ó¡£Ìµ»ë¤·¤Ş¤¹¡£\n"
+msgstr "%s: ã‚ªãƒ—ã‚·ãƒ§ãƒ³ `-W %s' ã¯èªè­˜ã§ãã¾ã›ã‚“ã€‚ç„¡è¦–ã•ã‚Œã¾ã—ãŸ\n"
 
-#: main.c:433
-msgid "empty argument to `--source' ignored"
-msgstr "¶õ°ú¿ô¤Î `--source' ¤ÏÌµ»ë¤µ¤ì¤Ş¤¹¡£"
-
-#: main.c:487
+#: main.c:515
 #, c-format
 msgid "%s: option requires an argument -- %c\n"
-msgstr "%s: °ú¿ô¤¬É¬Í×¤Ê¥ª¥×¥·¥ç¥ó -- %c\n"
+msgstr "%s: å¼•æ•°ãŒå¿…è¦ãªã‚ªãƒ—ã‚·ãƒ§ãƒ³ -- %c\n"
 
-#: main.c:506
+#: main.c:536
 msgid "environment variable `POSIXLY_CORRECT' set: turning on `--posix'"
 msgstr ""
-"´Ä¶­ÊÑ¿ô `POSIXLY_CORRECT' ¤¬»ØÄê¤µ¤ì¤Æ¤¤¤Ş¤¹¡£¥ª¥×¥·¥ç¥ó `--posix' ¤òÍ­¸ú¤Ë"
-"¤·¤Ş¤¹¡£"
+"ç’°å¢ƒå¤‰æ•° `POSIXLY_CORRECT' ãŒæŒ‡å®šã•ã‚Œã¦ã„ã¾ã™ã€‚ã‚ªãƒ—ã‚·ãƒ§ãƒ³ `--posix' ã‚’æœ‰åŠ¹ã«"
+"ã—ã¾ã™"
 
-#: main.c:512
+#: main.c:542
 msgid "`--posix' overrides `--traditional'"
-msgstr "¥ª¥×¥·¥ç¥ó `--posix' ¤Ï `--traditional' ¤òÌµ¸ú¤Ë¤·¤Ş¤¹¡£"
+msgstr "ã‚ªãƒ—ã‚·ãƒ§ãƒ³ `--posix' ã¯ `--traditional' ã‚’ç„¡åŠ¹ã«ã—ã¾ã™ã€‚"
 
-#: main.c:523
+#: main.c:553
 msgid "`--posix'/`--traditional' overrides `--non-decimal-data'"
 msgstr ""
-"¥ª¥×¥·¥ç¥ó `--posix'/`--traditional' ¤Ï `--non-decimal-data' ¤òÌµ¸ú¤Ë¤·¤Ş¤¹¡£"
+"ã‚ªãƒ—ã‚·ãƒ§ãƒ³ `--posix'/`--traditional' ã¯ `--non-decimal-data' ã‚’ç„¡åŠ¹ã«ã—ã¾ã™ã€‚"
 
-#: main.c:527
+#: main.c:557
 #, c-format
 msgid "running %s setuid root may be a security problem"
 msgstr ""
-"setuid root ¤Ç %s ¤ò¼Â¹Ô¤¹¤ë¤È¡¢¥»¥­¥å¥ê¥Æ¥£¾å¤ÎÌäÂê¤¬È¯À¸¤¹¤ë¾ì¹ç¤¬¤¢¤ê¤Ş"
-"¤¹¡£"
+"setuid root ã§ %s ã‚’å®Ÿè¡Œã™ã‚‹ã¨ã€ã‚»ã‚­ãƒ¥ãƒªãƒ†ã‚£ä¸Šã®å•é¡ŒãŒç™ºç”Ÿã™ã‚‹å ´åˆãŒã‚ã‚Šã¾"
+"ã™ã€‚"
 
-#: main.c:568
+#: main.c:562
+msgid "`--posix' overrides `--binary'"
+msgstr "`--posix' ã¯ `--binary' ã‚’ä¸Šæ›¸ãã—ã¾ã™"
+
+#: main.c:613
 #, c-format
 msgid "can't set binary mode on stdin (%s)"
-msgstr "É¸½àÆşÎÏ¤ò¥Ğ¥¤¥Ê¥ê¥â¡¼¥É¤ËÀßÄê¤Ç¤­¤Ş¤»¤ó (%s)¡£"
+msgstr "æ¨™æº–å…¥åŠ›ã‚’ãƒã‚¤ãƒŠãƒªãƒ¢ãƒ¼ãƒ‰ã«è¨­å®šã§ãã¾ã›ã‚“ (%s)"
 
-#: main.c:571
+#: main.c:616
 #, c-format
 msgid "can't set binary mode on stdout (%s)"
-msgstr "É¸½à½ĞÎÏ¤ò¥Ğ¥¤¥Ê¥ê¥â¡¼¥É¤ËÀßÄê¤Ç¤­¤Ş¤»¤ó (%s)¡£"
+msgstr "æ¨™æº–å‡ºåŠ›ã‚’ãƒã‚¤ãƒŠãƒªãƒ¢ãƒ¼ãƒ‰ã«è¨­å®šã§ãã¾ã›ã‚“ (%s)"
 
-#: main.c:573
+#: main.c:618
 #, c-format
 msgid "can't set binary mode on stderr (%s)"
-msgstr "É¸½à¥¨¥é¡¼¤ò¥Ğ¥¤¥Ê¥ê¥â¡¼¥É¤ËÀßÄê¤Ç¤­¤Ş¤»¤ó (%s)¡£"
+msgstr "æ¨™æº–ã‚¨ãƒ©ãƒ¼ã‚’ãƒã‚¤ãƒŠãƒªãƒ¢ãƒ¼ãƒ‰ã«è¨­å®šã§ãã¾ã›ã‚“ (%s)"
 
-#: main.c:612
+#: main.c:657
 msgid "no program text at all!"
-msgstr "¥×¥í¥°¥é¥àÊ¸¤¬Á´¤¯¤¢¤ê¤Ş¤»¤ó!"
+msgstr "ãƒ—ãƒ­ã‚°ãƒ©ãƒ æ–‡ãŒå…¨ãã‚ã‚Šã¾ã›ã‚“!"
 
-#: main.c:716
+#: main.c:734
 #, c-format
 msgid "Usage: %s [POSIX or GNU style options] -f progfile [--] file ...\n"
 msgstr ""
-"»È¤¤Êı: %s [POSIX ¤Ş¤¿¤Ï GNU ·Á¼°¥ª¥×¥·¥ç¥ó] -f ¥×¥í¥°¥é¥à¥Õ¥¡¥¤¥ë [--] ÆşÎÏ"
-"¥Õ¥¡¥¤¥ë ¡Ä\n"
+"ä½¿ç”¨æ³•: %s [POSIX ã¾ãŸã¯ GNU å½¢å¼ã®ã‚ªãƒ—ã‚·ãƒ§ãƒ³] -f progfile [--] file ...\n"
 
-#: main.c:718
+#: main.c:736
 #, c-format
 msgid "Usage: %s [POSIX or GNU style options] [--] %cprogram%c file ...\n"
 msgstr ""
-"»È¤¤Êı: %s [POSIX ¤Ş¤¿¤Ï GNU ·Á¼°¥ª¥×¥·¥ç¥ó] [--] %c¥×¥í¥°¥é¥à%c ÆşÎÏ¥Õ¥¡¥¤"
-"¥ë ¡Ä\n"
+"ä½¿ç”¨æ³•: %s [POSIX ã¾ãŸã¯ GNU å½¢å¼ã®ã‚ªãƒ—ã‚·ãƒ§ãƒ³] [--] %cprogram%c file ...\n"
 
-#: main.c:723
-msgid "POSIX options:\t\tGNU long options:\n"
-msgstr "POSIX ¥ª¥×¥·¥ç¥ó:\t\tGNU Ä¹·Á¼°¥ª¥×¥·¥ç¥ó\n"
+#: main.c:741
+msgid "POSIX options:\t\tGNU long options: (standard)\n"
+msgstr "POSIX ã‚ªãƒ—ã‚·ãƒ§ãƒ³:\t\tGNU é•·ã„å½¢å¼ã®ã‚ªãƒ—ã‚·ãƒ§ãƒ³: (æ¨™æº–)\n"
 
-#: main.c:724
+#: main.c:742
 msgid "\t-f progfile\t\t--file=progfile\n"
-msgstr "\t-f ¥×¥í¥°¥é¥à¥Õ¥¡¥¤¥ë\t\t--file=¥×¥í¥°¥é¥à¥Õ¥¡¥¤¥ë\n"
+msgstr "\t-f progfile\t\t--file=progfile\n"
 
-#: main.c:725
+#: main.c:743
 msgid "\t-F fs\t\t\t--field-separator=fs\n"
-msgstr ""
-"\t-F ¥Õ¥£¡¼¥ë¥É¥»¥Ñ¥ì¡¼¥¿\t\t\t--field-separator=¥Õ¥£¡¼¥ë¥É¥»¥Ñ¥ì¡¼¥¿\n"
+msgstr "\t-F fs\t\t\t--field-separator=fs\n"
 
-#: main.c:726
+#: main.c:744
 msgid "\t-v var=val\t\t--assign=var=val\n"
-msgstr "\t-v ÊÑ¿ô=ÂåÆşÃÍ\t\t--assign=ÊÑ¿ô=ÂåÆşÃÍ\n"
+msgstr "\t-v var=val\t\t--assign=var=val\n"
 
-#: main.c:727
-msgid "\t-m[fr] val\n"
-msgstr "\t-m[fr] ¿ôÃÍ\n"
+#: main.c:745
+msgid "Short options:\t\tGNU long options: (extensions)\n"
+msgstr "çŸ­ã„ã‚ªãƒ—ã‚·ãƒ§ãƒ³:\t\tGNU é•·ã„å½¢å¼ã®ã‚ªãƒ—ã‚·ãƒ§ãƒ³: (æ‹¡å¼µ)\n"
 
-#: main.c:728
+#: main.c:746
+msgid "\t-b\t\t\t--characters-as-bytes\n"
+msgstr "\t-b\t\t\t--characters-as-bytes\n"
+
+#: main.c:747
+msgid "\t-c\t\t\t--traditional\n"
+msgstr "\t-c\t\t\t--traditional\n"
+
+#: main.c:748
+msgid "\t-C\t\t\t--copyright\n"
+msgstr "\t-C\t\t\t--copyright\n"
+
+#: main.c:749
+msgid "\t-d[file]\t\t--dump-variables[=file]\n"
+msgstr "\t-d[file]\t\t--dump-variables[=file]\n"
+
+#: main.c:750
+msgid "\t-e 'program-text'\t--source='program-text'\n"
+msgstr "\t-e 'program-text'\t--source='program-text'\n"
+
+#: main.c:751
+msgid "\t-E file\t\t\t--exec=file\n"
+msgstr "\t-E file\t\t\t--exec=file\n"
+
+#: main.c:752
+msgid "\t-g\t\t\t--gen-pot\n"
+msgstr "\t-g\t\t\t--gen-pot\n"
+
+#: main.c:753
+msgid "\t-h\t\t\t--help\n"
+msgstr "\t-h\t\t\t--help\n"
+
+#: main.c:754
+msgid "\t-L [fatal]\t\t--lint[=fatal]\n"
+msgstr "\t-L [fatal]\t\t--lint[=fatal]\n"
+
+#: main.c:755
+msgid "\t-n\t\t\t--non-decimal-data\n"
+msgstr "\t-n\t\t\t--non-decimal-data\n"
+
+#: main.c:756
+msgid "\t-N\t\t\t--use-lc-numeric\n"
+msgstr "\t-N\t\t\t--use-lc-numeric\n"
+
+#: main.c:757
 msgid "\t-O\t\t\t--optimize\n"
-msgstr ""
+msgstr "\t-O\t\t\t--optimize\n"
 
-#: main.c:729
-msgid "\t-W compat\t\t--compat\n"
-msgstr "\t-W compat\t\t--compat\n"
+#: main.c:758
+msgid "\t-p[file]\t\t--profile[=file]\n"
+msgstr "\t-p[file]\t\t--profile[=file]\n"
 
-#: main.c:730
-msgid "\t-W copyleft\t\t--copyleft\n"
-msgstr "\t-W copyleft\t\t--copyleft\n"
+#: main.c:759
+msgid "\t-P\t\t\t--posix\n"
+msgstr "\t-P\t\t\t--posix\n"
 
-#: main.c:731
-msgid "\t-W copyright\t\t--copyright\n"
-msgstr "\t-W copyright\t\t--copyright\n"
+#: main.c:760
+msgid "\t-r\t\t\t--re-interval\n"
+msgstr "\t-r\t\t\t--re-interval\n"
 
-#: main.c:732
-msgid "\t-W dump-variables[=file]\t--dump-variables[=file]\n"
-msgstr "\t-W dump-variables[=¥Õ¥¡¥¤¥ë]\t--dump-variables[=¥Õ¥¡¥¤¥ë]\n"
+#: main.c:762
+msgid "\t-R file\t\t\t--command=file\n"
+msgstr "\t-R file\t\t\t--command=file\n"
 
-#: main.c:733
-msgid "\t-W exec=file\t\t--exec=file\n"
-msgstr "\t-W exec=¥Õ¥¡¥¤¥ë\t\t--exec=¥Õ¥¡¥¤¥ë\n"
+#: main.c:763
+msgid "\t-S\t\t\t--sandbox\n"
+msgstr "\t-S\t\t\t--sandbox\n"
 
-#: main.c:734
-msgid "\t-W gen-po\t\t--gen-po\n"
-msgstr "\t-W gen-po\t\t--gen-po\n"
+#: main.c:764
+msgid "\t-t\t\t\t--lint-old\n"
+msgstr "\t-t\t\t\t--lint-old\n"
 
-#: main.c:735
-msgid "\t-W help\t\t\t--help\n"
-msgstr "\t-W help\t\t\t--help\n"
+#: main.c:765
+msgid "\t-V\t\t\t--version\n"
+msgstr "\t-V\t\t\t--version\n"
 
-#: main.c:736
-msgid "\t-W lint[=fatal]\t\t--lint[=fatal]\n"
-msgstr "\t-W lint[=fatal]\t\t--lint[=fatal]\n"
-
-#: main.c:737
-msgid "\t-W lint-old\t\t--lint-old\n"
-msgstr "\t-W lint-old\t\t--lint-old\n"
-
-#: main.c:738
-msgid "\t-W non-decimal-data\t--non-decimal-data\n"
-msgstr "\t-W non-decimal-data\t--non-decimal-data\n"
-
-#: main.c:740
+#: main.c:767
 msgid "\t-W nostalgia\t\t--nostalgia\n"
 msgstr "\t-W nostalgia\t\t--nostalgia\n"
 
-#: main.c:743
-msgid "\t-W parsedebug\t\t--parsedebug\n"
-msgstr "\t-W parsedebug\t\t--parsedebug\n"
-
-#: main.c:745
-msgid "\t-W profile[=file]\t--profile[=file]\n"
-msgstr "\t-W profile[=¥Õ¥¡¥¤¥ë]\t--profile[=¥Õ¥¡¥¤¥ë]\n"
-
-#: main.c:746
-msgid "\t-W posix\t\t--posix\n"
-msgstr "\t-W posix\t\t--posix\n"
-
-#: main.c:747
-msgid "\t-W re-interval\t\t--re-interval\n"
-msgstr "\t-W re-interval\t\t--re-interval\n"
-
-#: main.c:748
-msgid "\t-W source=program-text\t--source=program-text\n"
-msgstr "\t-W source=¥×¥í¥°¥é¥àÊ¸\t--source=¥×¥í¥°¥é¥àÊ¸\n"
-
-#: main.c:749
-msgid "\t-W traditional\t\t--traditional\n"
-msgstr "\t-W traditional\t\t--traditional\n"
-
-#: main.c:750
-msgid "\t-W usage\t\t--usage\n"
-msgstr "\t-W usage\t\t--usage\n"
-
-#: main.c:751
-msgid "\t-W use-lc-numeric\t--use-lc-numeric\n"
-msgstr ""
-
-#: main.c:752
-msgid "\t-W version\t\t--version\n"
-msgstr "\t-W version\t\t--version\n"
+#: main.c:770
+msgid "\t-Y\t\t--parsedebug\n"
+msgstr "\t-Y\t\t--parsedebug\n"
 
 #. TRANSLATORS: --help output 5 (end)
 #. TRANSLATORS: the placeholder indicates the bug-reporting address
 #. for this application.  Please add _another line_ with the
 #. address for translation bugs.
 #. no-wrap
-#: main.c:761
+#: main.c:779
 msgid ""
 "\n"
 "To report bugs, see node `Bugs' in `gawk.info', which is\n"
@@ -1636,33 +1803,35 @@ msgid ""
 "\n"
 msgstr ""
 "\n"
-"¥Ğ¥°¤òÊó¹ğ¤¹¤ë¤Ë¤Ï¡¢`gawk.info¡Ê±ÑÊ¸¡Ë' ¤Î `Bugs' ¥Î¡¼¥É¤ò\n"
-"»²¾È¤·¤Æ¤¯¤À¤µ¤¤¡£ °õºş¤µ¤ì¤¿¥Ş¥Ë¥å¥¢¥ë¤ÇÂĞ±ş¤¹¤ë¥»¥¯¥·¥ç¥ó\n"
-"¤Ï¡¢`Reporting Problems and Bugs' ¤Ç¤¹¡£\n"
+"ãƒã‚°ã‚’å ±å‘Šã™ã‚‹ã«ã¯ã€`gawk.infoï¼ˆè‹±æ–‡ï¼‰' ã® `Bugs' ãƒãƒ¼ãƒ‰ã‚’\n"
+"å‚ç…§ã—ã¦ãã ã•ã„ã€‚ å°åˆ·ã•ã‚ŒãŸãƒãƒ‹ãƒ¥ã‚¢ãƒ«ã§å¯¾å¿œã™ã‚‹ã‚»ã‚¯ã‚·ãƒ§ãƒ³\n"
+"ã¯ã€`Reporting Problems and Bugs' ã§ã™ã€‚\n"
 "\n"
+"ç¿»è¨³ã«é–¢ã™ã‚‹ãƒã‚°ã¯<translation-team-ja@lists.sourceforge.net>ã«å ±å‘Šã—ã¦ãã ã•"
+"ã„ã€‚\n"
 
-#: main.c:765
+#: main.c:783
 msgid ""
 "gawk is a pattern scanning and processing language.\n"
 "By default it reads standard input and writes standard output.\n"
 "\n"
 msgstr ""
-"gawk ¤Ï¡¢¥Ñ¥¿¡¼¥ó¤ò¸¡º÷¡¢¤½¤·¤Æ½èÍı¤¹¤ë¸À¸ì¤Ç¤¹¡£\n"
-"¥Ç¥Õ¥©¥ë¥ÈÀßÄê¤Ç¤Ï¡¢É¸½àÆşÎÏ¤òÆÉ¤ß¹ş¤ß¡¢É¸½à½ĞÎÏ¤Ë½ñ¤­½Ğ¤·¤Ş¤¹¡£\n"
+"gawk ã¯ã€ãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’æ¤œç´¢ã‚’ã—ã¦ã€ãã‚Œã‚’å‡¦ç†ã™ã‚‹è¨€èªã§ã™ã€‚\n"
+"ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆè¨­å®šã§ã¯ã€æ¨™æº–å…¥åŠ›ã‚’èª­ã¿è¾¼ã¿ã€æ¨™æº–å‡ºåŠ›ã«æ›¸ãå‡ºã—ã¾ã™ã€‚\n"
 "\n"
 
-#: main.c:769
+#: main.c:787
 msgid ""
 "Examples:\n"
 "\tgawk '{ sum += $1 }; END { print sum }' file\n"
 "\tgawk -F: '{ print $1 }' /etc/passwd\n"
 msgstr ""
-"»ÈÍÑÎã:\n"
-"\tgawk '{ sum += $1 }; END { print sum }' ÆşÎÏ¥Õ¥¡¥¤¥ë\n"
+"ä½¿ç”¨ä¾‹:\n"
+"\tgawk '{ sum += $1 }; END { print sum }' file\n"
 "\tgawk -F: '{ print $1 }' /etc/passwd\n"
 
-#: main.c:789
-#, fuzzy, c-format
+#: main.c:807
+#, c-format
 msgid ""
 "Copyright (C) 1989, 1991-%d Free Software Foundation.\n"
 "\n"
@@ -1674,12 +1843,13 @@ msgid ""
 msgstr ""
 "Copyright (C) 1989, 1991-%d Free Software Foundation.\n"
 "\n"
-"ËÜ¥×¥í¥°¥é¥à¤Ï¥Õ¥ê¡¼¡¦¥½¥Õ¥È¥¦¥¨¥¢¤Ç¤¹¡£Free Software Foundation ¸øÉ½¤Î\n"
-"GNU General Public License¡Ê¥Ğ¡¼¥¸¥ç¥ó£²¡¢¤Ş¤¿¤Ï¡¢¤³¤ì°Ê¸å¤Î¥Ğ¡¼¥¸¥ç¥ó¡Ë\n"
-"¤Ë½¾¤¤ºÆÇÛÉÛ¡¢µÚ¤Ó/¤Ş¤¿¤Ï¡¢ÊÑ¹¹¤ò²Ã¤¨¤ë¤³¤È¤¬¤Ç¤­¤Ş¤¹¡£\n"
+"This program is free software; you can redistribute it and/or modify\n"
+"it under the terms of the GNU General Public License as published by\n"
+"the Free Software Foundation; either version 3 of the License, or\n"
+"(at your option) any later version.\n"
 "\n"
 
-#: main.c:797
+#: main.c:815
 msgid ""
 "This program is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -1687,281 +1857,277 @@ msgid ""
 "GNU General Public License for more details.\n"
 "\n"
 msgstr ""
-"ËÜ¥×¥í¥°¥é¥à¤Ï¡¢ÍøÍÑ²ÁÃÍ¤¬¤¢¤ë¤³¤È¤ò´üÂÔ¤·¤ÆÇÛÉÛ¤µ¤ì¤Æ¤¤¤Ş¤¹¤¬¡¢\n"
-"¤³¤ì¤Ï¡¢ÆÃÄêÌÜÅª¤Ë»ÈÍÑ²ÄÇ½¤Ç¤¢¤ë¤³¤È¡¢µÚ¤Ó¡¢¾¦ÍÑÌÜÅª¤Ë»ÈÍÑ¤Ç¤­¤ë\n"
-"¤³¤È¤ò°Å¼¨¤¹¤ë¤â¤Î¤Ç¤Ï¤Ê¤¯¡¢¤¤¤«¤Ê¤ëÊİ¾Ú¤â°ìÀÚ¤¢¤ê¤Ş¤»¤ó¡£\n"
-"¾Ü¤·¤¯¤Ï¡¢GNU General Public License ¤ò»²¾È¤·¤Æ¤¯¤À¤µ¤¤¡£\n"
+"This program is distributed in the hope that it will be useful,\n"
+"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+"GNU General Public License for more details.\n"
 "\n"
 
-#: main.c:808
-#, fuzzy
+#: main.c:821
 msgid ""
 "You should have received a copy of the GNU General Public License\n"
 "along with this program. If not, see http://www.gnu.org/licenses/.\n"
 msgstr ""
-"ËÜ¥×¥í¥°¥é¥à¤Ë¤Ï¡¢GNU General Public License ¤¬ÅºÉÕ¤µ¤ì¤Æ¤¤¤ë¤Ï¤º¤Ç¤¹¡£\n"
-"¤â¤·¡¢ËÜ¥×¥í¥°¥é¥à¤È°ì½ï¤Ë GNU General Public License ¤òÆş¼ê¤·¤Ê¤«¤Ã¤¿\n"
-"¾ì¹ç¤Ë¤Ï¡¢\n"
-"\tFree Software Foundation, Inc.,\n"
-"\t59 Temple Place - Suite 330, Boston, MA 02111-1307, USA\n"
-"¤Ø½ñÌÌ¤Ç¤ªÃÎ¤é¤»¤¯¤À¤µ¤¤¡£\n"
+"You should have received a copy of the GNU General Public License\n"
+"along with this program. If not, see http://www.gnu.org/licenses/.\n"
 
-#: main.c:843
+#: main.c:856
 msgid "-Ft does not set FS to tab in POSIX awk"
-msgstr "POSIX »ÅÍÍ¤Î awk ¤Ç¤Ï -Ft ¤Ç FS ¤ò¥¿¥Ö¤ËÀßÄê¤Ç¤­¤Ş¤»¤ó¡£"
+msgstr "POSIX awk ã§ã¯ -Ft ã¯ FS ã‚’ã‚¿ãƒ–ã«è¨­å®šã—ã¾ã›ã‚“"
 
-#: main.c:1117
+#: main.c:1090
+#, c-format
+msgid "unknown value for field spec: %d\n"
+msgstr "ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰æŒ‡å®šã«ä¸æ˜ãªå€¤ãŒã‚ã‚Šã¾ã™: %d\n"
+
+#: main.c:1171
 #, c-format
 msgid ""
 "%s: `%s' argument to `-v' not in `var=value' form\n"
 "\n"
 msgstr ""
-"%s: ¥ª¥×¥·¥ç¥ó `-v' ¤Î°ú¿ô `%s' ¤¬ `ÊÑ¿ô=ÂåÆşÃÍ' ¤Î·Á¼°¤Ë¤Ê¤Ã¤Æ¤¤¤Ş¤»¤ó¡£\n"
+"%s: ã‚ªãƒ—ã‚·ãƒ§ãƒ³ `-v' ã®å¼•æ•° `%s' ãŒ `å¤‰æ•°=ä»£å…¥å€¤' ã®å½¢å¼ã«ãªã£ã¦ã„ã¾ã›ã‚“ã€‚\n"
 "\n"
 
-#: main.c:1137
+#: main.c:1197
 #, c-format
 msgid "`%s' is not a legal variable name"
-msgstr "`%s' ¤ÏÉÔÀµ¤ÊÊÑ¿ôÌ¾¤Ç¤¹¡£"
-
-#: main.c:1140
-#, c-format
-msgid "`%s' is not a variable name, looking for file `%s=%s'"
-msgstr "`%s' ¤ÏÊÑ¿ôÌ¾¤Ç¤Ï¤¢¤ê¤Ş¤»¤ó¡£`%s=%s' ¤Î¥Õ¥¡¥¤¥ë¤òÃµ¤·¤Ş¤¹¡£"
-
-#: main.c:1179
-msgid "floating point exception"
-msgstr "ÉâÆ°¾®¿ôÅÀÎã³°"
-
-#: main.c:1186
-msgid "fatal error: internal error"
-msgstr "Ã×Ì¿Åª¥¨¥é¡¼: ÆâÉô¥¨¥é¡¼"
+msgstr "`%s' ã¯ä¸æ­£ãªå¤‰æ•°åã§ã™"
 
 #: main.c:1200
-#, fuzzy
+#, c-format
+msgid "`%s' is not a variable name, looking for file `%s=%s'"
+msgstr "`%s' ã¯å¤‰æ•°åã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚`%s=%s' ã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚’æ¢ã—ã¾ã™ã€‚"
+
+#: main.c:1204
+#, c-format
+msgid "cannot use gawk builtin `%s' as variable name"
+msgstr "gawk ã«çµ„ã¿è¾¼ã¿ã® `%s' ã¯å¤‰æ•°åã¨ã—ã¦ä½¿ç”¨å‡ºæ¥ã¾ã›ã‚“"
+
+#: main.c:1209
+#, c-format
+msgid "cannot use function `%s' as variable name"
+msgstr "é–¢æ•° `%s' ã¯å¤‰æ•°åã¨ã—ã¦ä½¿ç”¨å‡ºæ¥ã¾ã›ã‚“"
+
+#: main.c:1262
+msgid "floating point exception"
+msgstr "æµ®å‹•å°æ•°ç‚¹ä¾‹å¤–"
+
+#: main.c:1269
+msgid "fatal error: internal error"
+msgstr "è‡´å‘½çš„ã‚¨ãƒ©ãƒ¼: å†…éƒ¨ã‚¨ãƒ©ãƒ¼"
+
+#: main.c:1284
 msgid "fatal error: internal error: segfault"
-msgstr "Ã×Ì¿Åª¥¨¥é¡¼: ÆâÉô¥¨¥é¡¼"
+msgstr "è‡´å‘½çš„ã‚¨ãƒ©ãƒ¼: å†…éƒ¨ã‚¨ãƒ©ãƒ¼: ã‚»ã‚°ãƒ¡ãƒ³ãƒ†ãƒ¼ã‚·ãƒ§ãƒ³é•å"
 
-#: main.c:1212
-#, fuzzy
+#: main.c:1296
 msgid "fatal error: internal error: stack overflow"
-msgstr "Ã×Ì¿Åª¥¨¥é¡¼: ÆâÉô¥¨¥é¡¼"
+msgstr "è‡´å‘½çš„ã‚¨ãƒ©ãƒ¼: å†…éƒ¨ã‚¨ãƒ©ãƒ¼: ã‚¹ã‚¿ãƒƒã‚¯ã‚ªãƒ¼ãƒãƒ¼ãƒ•ãƒ­ãƒ¼"
 
-#: main.c:1261
+#: main.c:1346
 #, c-format
 msgid "no pre-opened fd %d"
-msgstr "fd %d ¤¬»öÁ°¤Ë³«¤¤¤Æ¤¤¤Ş¤»¤ó¡£"
+msgstr "fd %d ãŒäº‹å‰ã«é–‹ã„ã¦ã„ã¾ã›ã‚“ã€‚"
 
-#: main.c:1268
+#: main.c:1353
 #, c-format
 msgid "could not pre-open /dev/null for fd %d"
-msgstr "»öÁ°¤Ë fd %d ÍÑ¤Ë /dev/null ¤ò³«¤±¤Ş¤»¤ó¡£"
+msgstr "äº‹å‰ã« fd %d ç”¨ã« /dev/null ã‚’é–‹ã‘ã¾ã›ã‚“ã€‚"
 
-#: main.c:1291 main.c:1300
-#, c-format
-msgid "could not find groups: %s"
-msgstr "¥°¥ë¡¼¥×¤¬¸«¤Ä¤«¤ê¤Ş¤»¤ó: %s"
-
-#: msg.c:54
+#: msg.c:63
 #, c-format
 msgid "cmd. line:"
-msgstr "¥³¥Ş¥ó¥É¥é¥¤¥ó:"
+msgstr "ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³:"
 
-#: msg.c:120
-msgid "warning: "
-msgstr "·Ù¹ğ: "
-
-#: msg.c:142
+#: msg.c:107
 msgid "error: "
-msgstr "¥¨¥é¡¼: "
+msgstr "ã‚¨ãƒ©ãƒ¼: "
 
-#: msg.c:178
-msgid "fatal: "
-msgstr "Ã×Ì¿Åª: "
-
-#: node.c:63 node.c:78 node.c:105 node.c:121 node.c:151
-msgid "can't convert string to float"
-msgstr "Ê¸»úÎó¤«¤éÉâÆ°¾®¿ô¤ËÊÑ´¹¤Ç¤­¤Ş¤»¤ó¡£"
-
-#: node.c:462
+#: node.c:406
 msgid "backslash at end of string"
-msgstr "Ê¸»úÎó¤Î½ª¤ê¤Ë¥Ğ¥Ã¥¯¥¹¥é¥Ã¥·¥å¤¬»È¤ï¤ì¤Æ¤¤¤Ş¤¹¡£"
+msgstr "æ–‡å­—åˆ—ã®çµ‚ã‚Šã«ãƒãƒƒã‚¯ã‚¹ãƒ©ãƒƒã‚·ãƒ¥ãŒä½¿ã‚ã‚Œã¦ã„ã¾ã™ã€‚"
 
-#: node.c:606
-#, fuzzy, c-format
+#: node.c:517
+#, c-format
 msgid "old awk does not support the `\\%c' escape sequence"
-msgstr "±é»»»Ò `**' ¤Ï¸Å¤¤ awk ¤Ç»È¤¨¤Ş¤»¤ó¡£"
+msgstr "å¤ã„ awk ã¯ `\\%c' ã‚¨ã‚¹ã‚±ãƒ¼ãƒ—ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã‚’ã‚µãƒãƒ¼ãƒˆã—ã¾ã›ã‚“"
 
-#: node.c:657
+#: node.c:568
 msgid "POSIX does not allow `\\x' escapes"
-msgstr "POSIX ¤Ï `\\x' ¥¨¥¹¥±¡¼¥×¤òµö²Ä¤·¤Ş¤»¤ó¡£"
+msgstr "POSIX ã§ã¯ `\\x' ã‚¨ã‚¹ã‚±ãƒ¼ãƒ—ã¯è¨±å¯ã•ã‚Œã¦ã„ã¾ã›ã‚“"
 
-#: node.c:663
+#: node.c:574
 msgid "no hex digits in `\\x' escape sequence"
-msgstr "`\\x' ¥¨¥¹¥±¡¼¥×¥·¡¼¥±¥ó¥¹¤Ë 16 ¿Ê¿ô¤¬¤¢¤ê¤Ş¤»¤ó¡£"
+msgstr "`\\x' ã‚¨ã‚¹ã‚±ãƒ¼ãƒ—ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã«åå…­é€²æ•°ãŒã‚ã‚Šã¾ã›ã‚“"
 
-#: node.c:685
+#: node.c:596
 #, c-format
 msgid ""
 "hex escape \\x%.*s of %d characters probably not interpreted the way you "
 "expect"
 msgstr ""
+"åå…­é€²ã‚¨ã‚¹ã‚±ãƒ¼ãƒ— \\x%.*s (%d æ–‡å­—) ã¯ãŠãã‚‰ãäºˆæœŸã—ãŸã‚ˆã†ã«ã¯è§£é‡ˆã•ã‚Œãªã„ã§"
+"ã—ã‚‡ã†"
 
-#: node.c:700
+#: node.c:611
 #, c-format
 msgid "escape sequence `\\%c' treated as plain `%c'"
-msgstr "¥¨¥¹¥±¡¼¥×¥·¡¼¥±¥ó¥¹ `\\%c' ¤Ï `%c' ¤ÈÆ±Åù¤Ë°·¤ï¤ì¤Ş¤¹¡£"
+msgstr "ã‚¨ã‚¹ã‚±ãƒ¼ãƒ—ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ `\\%c' ã¯ `%c' ã¨åŒç­‰ã«æ‰±ã‚ã‚Œã¾ã™"
 
-#: posix/gawkmisc.c:172
+#: node.c:750
+msgid ""
+"Invalid multibyte data detected. There may be a mismatch between your data "
+"and your locale."
+msgstr ""
+"ç„¡åŠ¹ãªãƒãƒ«ãƒãƒã‚¤ãƒˆãƒ‡ãƒ¼ã‚¿ãŒæ¤œå‡ºã•ã‚Œã¾ã—ãŸã€‚ãƒ‡ãƒ¼ã‚¿ã¨ãƒ­ã‚±ãƒ¼ãƒ«ãŒä¸€è‡´ã—ã¦ã„ãªã„ã‚ˆ"
+"ã†ã§ã™ã€‚"
+
+#: posix/gawkmisc.c:176
 #, c-format
-msgid "%s %s `%s': could not set close-on-exec: (fcntl: %s)"
-msgstr "%s %s `%s': close-on-exec ¤òÀßÄê¤Ç¤­¤Ş¤»¤ó: (fcntl: %s)"
+msgid "%s %s `%s': could not get fd flags: (fcntl F_GETFD: %s)"
+msgstr "%s %s `%s': fd ãƒ•ãƒ©ã‚°ã‚’å–å¾—ã§ãã¾ã›ã‚“: (fcntl F_GETFD: %s)"
 
-#: profile.c:93
+#: posix/gawkmisc.c:188
+#, c-format
+msgid "%s %s `%s': could not set close-on-exec: (fcntl F_SETFD: %s)"
+msgstr "%s %s `%s': close-on-exec ã‚’è¨­å®šã§ãã¾ã›ã‚“: (fcntl F_SETFD: %s)"
+
+#: profile.c:83
 #, c-format
 msgid "could not open `%s' for writing: %s"
-msgstr "`%s' ¤ò½ñ¹ş¤ßÍÑ¤Ë³«¤±¤Ş¤»¤ó¤Ç¤·¤¿: %s"
+msgstr "`%s' ã‚’æ›¸è¾¼ã¿ç”¨ã«é–‹ã‘ã¾ã›ã‚“ã§ã—ãŸ: %s"
 
-#: profile.c:453
-#, c-format
-msgid "internal error: %s with null vname"
-msgstr "ÆâÉô¥¨¥é¡¼: %s ¤Î vname ¤¬Ìµ¸ú¤Ç¤¹¡£"
+#: profile.c:85
+msgid "sending profile to standard error"
+msgstr "ãƒ—ãƒ­ãƒ•ã‚¡ã‚¤ãƒ«ã‚’æ¨™æº–ã‚¨ãƒ©ãƒ¼ã«é€ã£ã¦ã„ã¾ã™"
 
-#: profile.c:517
-#, fuzzy
-msgid "# treated internally as `delete'"
-msgstr "# ÆâÉô¤Ç¤Ï `delete' ¤È¤·¤Æ°·¤ï¤ì¤Ş¤·¤¿¡£"
-
-#: profile.c:1069
-#, c-format
-msgid "# this is a dynamically loaded extension function"
-msgstr "# ¤³¤ì¤ÏÆ°Åª¤Ë¥í¡¼¥É¤µ¤ì¤¿³ÈÄ¥µ¡Ç½¤Ç¤¹¡£"
-
-#: profile.c:1100
-#, c-format
-msgid "\t# gawk profile, created %s\n"
-msgstr "\t# gawk ¥×¥í¥Õ¥¡¥¤¥ë¡¢ºîÀ®Æü»ş %s\n"
-
-#: profile.c:1103
+#: profile.c:203
 #, c-format
 msgid ""
-"\t# BEGIN block(s)\n"
+"\t# %s block(s)\n"
 "\n"
 msgstr ""
-"\t# BEGIN ¥Ö¥í¥Ã¥¯\n"
+"\t# %s ãƒ–ãƒ­ãƒƒã‚¯\n"
 "\n"
 
-#: profile.c:1113
+#: profile.c:208
 #, c-format
 msgid ""
 "\t# Rule(s)\n"
 "\n"
 msgstr ""
-"\t# ¥ë¡¼¥ë\n"
+"\t# ãƒ«ãƒ¼ãƒ«\n"
 "\n"
 
-#: profile.c:1119
+#: profile.c:279
 #, c-format
-msgid ""
-"\t# END block(s)\n"
-"\n"
-msgstr ""
-"\t# END ¥Ö¥í¥Ã¥¯\n"
-"\n"
+msgid "internal error: %s with null vname"
+msgstr "å†…éƒ¨ã‚¨ãƒ©ãƒ¼: %s ã® vname ãŒç„¡åŠ¹ã§ã™ã€‚"
 
-#: profile.c:1139
+#: profile.c:952
+#, c-format
+msgid "\t# gawk profile, created %s\n"
+msgstr "\t# gawk ãƒ—ãƒ­ãƒ•ã‚¡ã‚¤ãƒ«ã€ä½œæˆæ—¥æ™‚ %s\n"
+
+#: profile.c:1331
 #, c-format
 msgid ""
 "\n"
 "\t# Functions, listed alphabetically\n"
 msgstr ""
 "\n"
-"\t# ´Ø¿ô°ìÍ÷¡Ê¥¢¥ë¥Õ¥¡¥Ù¥Ã¥È½ç¡Ë\n"
+"\t# é–¢æ•°ä¸€è¦§ï¼ˆã‚¢ãƒ«ãƒ•ã‚¡ãƒ™ãƒƒãƒˆé †ï¼‰\n"
 
-#: profile.c:1400
+#: profile.c:1370
 #, c-format
-msgid "unexpected type %s in prec_level"
-msgstr "prec_level Ãæ¤Î %s ¤ÏÍ½ÁÛ³°¤Î¥¿¥¤¥×¤Ç¤¹¡£"
+msgid "redir2str: unknown redirection type %d"
+msgstr "redir2str: ä¸æ˜ãªãƒªãƒ€ã‚¤ãƒ¬ã‚¯ãƒˆå‹ %d ã§ã™"
 
-#: profile.c:1500
+#: re.c:573
 #, fuzzy, c-format
-msgid "Unknown node type %s in pp_var"
-msgstr "¥Î¡¼¥É %d ¤Î¼ïÎà¤¬ÉÔÌÀ¤Ç¤¹¡£"
+msgid "range of the form `[%c-%c]' is locale dependent"
+msgstr "`[%c-%c]' å½¢å¼ã®ç¯„å›²ã¯ãƒ­ã‚±ãƒ¼ãƒ«ä¾å­˜ã§ã™"
 
-#: regcomp.c:133
+#: re.c:600
+#, c-format
+msgid "regexp component `%.*s' should probably be `[%.*s]'"
+msgstr "æ­£è¦è¡¨ç¾ã®è¦ç´  `%.*s' ã¯ãŠãã‚‰ã `[%.*s]' ã§ã‚ã‚‹ã¹ãã§ã™"
+
+#: regcomp.c:131
 msgid "Success"
-msgstr "À®¸ù"
+msgstr "æˆåŠŸã§ã™"
 
-#: regcomp.c:136
+#: regcomp.c:134
 msgid "No match"
-msgstr "³ºÅöÌµ¤·"
+msgstr "ä¸€è‡´ã—ã¾ã›ã‚“"
 
-#: regcomp.c:139
+#: regcomp.c:137
 msgid "Invalid regular expression"
-msgstr "Ìµ¸ú¤ÊÀµµ¬É½¸½"
+msgstr "ç„¡åŠ¹ãªæ­£è¦è¡¨ç¾ã§ã™"
 
-#: regcomp.c:142
+#: regcomp.c:140
 msgid "Invalid collation character"
-msgstr "Ìµ¸ú¤Ê¾È¹çÊ¸»ú"
+msgstr "ç„¡åŠ¹ãªç…§åˆæ–‡å­—ã§ã™"
 
-#: regcomp.c:145
+#: regcomp.c:143
 msgid "Invalid character class name"
-msgstr "Ìµ¸ú¤ÊÊ¸»ú¥¯¥é¥¹Ì¾"
+msgstr "ç„¡åŠ¹ãªæ–‡å­—ã‚¯ãƒ©ã‚¹åã§ã™"
 
-#: regcomp.c:148
+#: regcomp.c:146
 msgid "Trailing backslash"
-msgstr "ºÇ¸å¤Ë¥Ğ¥Ã¥¯¥¹¥é¥Ã¥·¥å¤¬ÉÕ¤¤¤Æ¤¤¤Ş¤¹¡£"
+msgstr "çµ‚ç«¯ã®ãƒãƒƒã‚¯ã‚¹ãƒ©ãƒƒã‚·ãƒ¥"
 
-#: regcomp.c:151
+#: regcomp.c:149
 msgid "Invalid back reference"
-msgstr "¸åÊı¤Ø¤Î»²¾È¤¬Ìµ¸ú¤Ç¤¹¡£"
+msgstr "ç„¡åŠ¹ãªå‰æ–¹å‚ç…§ã§ã™"
 
-#: regcomp.c:154
+#: regcomp.c:152
 msgid "Unmatched [ or [^"
-msgstr "[ ¤Ş¤¿¤Ï [^ ¤¬ÂĞ±ş¤·¤Ş¤»¤ó¡£"
+msgstr "[ ã¾ãŸã¯ [^ ãŒä¸ä¸€è‡´ã§ã™"
 
-#: regcomp.c:157
+#: regcomp.c:155
 msgid "Unmatched ( or \\("
-msgstr "( ¤Ş¤¿¤Ï \\( ¤¬ÂĞ±ş¤·¤Ş¤»¤ó¡£"
+msgstr "( ã¾ãŸã¯ \\( ãŒä¸ä¸€è‡´ã§ã™"
 
-#: regcomp.c:160
+#: regcomp.c:158
 msgid "Unmatched \\{"
-msgstr "\\{ ¤¬ÂĞ±ş¤·¤Ş¤»¤ó¡£"
+msgstr "\\{ ãŒä¸ä¸€è‡´ã§ã™"
 
-#: regcomp.c:163
+#: regcomp.c:161
 msgid "Invalid content of \\{\\}"
-msgstr "\\{\\} ¤ÎÆâÍÆ¤¬Ìµ¸ú¤Ç¤¹¡£"
+msgstr "\\{\\} ã®ä¸­èº«ãŒç„¡åŠ¹ã§ã™"
 
-#: regcomp.c:166
+#: regcomp.c:164
 msgid "Invalid range end"
-msgstr "ÈÏ°Ï»ØÄê¤Î½ªÃ¼¤¬Ìµ¸ú¤Ç¤¹¡£"
+msgstr "ç„¡åŠ¹ãªç¯„å›²çµ‚äº†ã§ã™"
 
-#: regcomp.c:169
+#: regcomp.c:167
 msgid "Memory exhausted"
-msgstr "¥á¥â¥ê¡¼¤¬Â­¤ê¤Ş¤»¤ó¡£"
+msgstr "ãƒ¡ãƒ¢ãƒªã‚’ä½¿ã„æœãŸã—ã¾ã—ãŸ"
 
-#: regcomp.c:172
+#: regcomp.c:170
 msgid "Invalid preceding regular expression"
-msgstr "Àè¹Ô¤ÎÀµµ¬É½¸½¤¬Ìµ¸ú¤Ç¤¹¡£"
+msgstr "ç„¡åŠ¹ãªå‰æ–¹æ­£è¦è¡¨ç¾ã§ã™"
 
-#: regcomp.c:175
+#: regcomp.c:173
 msgid "Premature end of regular expression"
-msgstr "Àµµ¬É½¸½¤¬½ªÃ¼¤µ¤ì¤Æ¤¤¤Ş¤»¤ó¡£"
+msgstr "æ­£è¦è¡¨ç¾ãŒé€”ä¸­ã§çµ‚äº†ã—ã¾ã—ãŸ"
 
-#: regcomp.c:178
+#: regcomp.c:176
 msgid "Regular expression too big"
-msgstr "Àµµ¬É½¸½¤¬Ä¹²á¤®¤Ş¤¹¡£"
+msgstr "æ­£è¦è¡¨ç¾ãŒå¤§ãã™ãã¾ã™"
 
-#: regcomp.c:181
+#: regcomp.c:179
 msgid "Unmatched ) or \\)"
-msgstr ") ¤Ş¤¿¤Ï \\) ¤¬ÂĞ±ş¤·¤Ş¤»¤ó¡£"
+msgstr ") ã¾ãŸã¯ \\) ãŒä¸ä¸€è‡´ã§ã™"
 
 #: regcomp.c:700
 msgid "No previous regular expression"
-msgstr "¤³¤ì¤è¤êÁ°¤Ë»ÈÍÑ¤·¤¿Àµµ¬É½¸½¤Ï¤¢¤ê¤Ş¤»¤ó¡£"
+msgstr "ä»¥å‰ã«æ­£è¦è¡¨ç¾ãŒã‚ã‚Šã¾ã›ã‚“"
 
-#~ msgid "%s: illegal option -- %c\n"
-#~ msgstr "%s: ÉÔÀµ¤Ê¥ª¥×¥·¥ç¥ó -- %c\n"
+#~ msgid "could not find groups: %s"
+#~ msgstr "ã‚°ãƒ«ãƒ¼ãƒ—ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“: %s"
 
-#~ msgid "remote port invalid in `%s'"
-#~ msgstr "`%s' ¤Î¥ê¥â¡¼¥È¥İ¡¼¥È¤¬Ìµ¸ú¤Ç¤¹¡£"
+#~ msgid "assignment is not allowed to result of builtin function"
+#~ msgstr "çµ„è¾¼é–¢æ•°ã®æˆ»ã‚Šå€¤ã¸ã®ä»£å…¥ã¯è¨±å¯ã•ã‚Œã¦ã„ã¾ã›ã‚“"

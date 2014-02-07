@@ -3,7 +3,7 @@
  */
 
 /* 
- * Copyright (C) 2004, 2005 the Free Software Foundation, Inc.
+ * Copyright (C) 2004, 2005, 2011, 2012 the Free Software Foundation, Inc.
  * 
  * This file is part of GAWK, the GNU implementation of the
  * AWK Programming Language.
@@ -36,8 +36,11 @@
 #include <stdlib.h>
 #endif
 
+#ifndef NO_MBSUPPORT
+
 #if    defined(HAVE_ISWCTYPE) \
     && defined(HAVE_LOCALE_H) \
+    && (defined(HAVE_BTOWC) || defined(ZOS_USS)) \
     && defined(HAVE_MBRLEN) \
     && defined(HAVE_MBRTOWC) \
     && defined(HAVE_WCHAR_H) \
@@ -55,5 +58,37 @@
 /* We can handle multibyte strings.  */
 # define MBS_SUPPORT 1
 #else
-# undef MBS_SUPPORT
+# define MBS_SUPPORT 0
+#endif
+
+#else /* NO_MBSUPPORT is defined */
+# define MBS_SUPPORT 0
+#endif
+
+#if ! MBS_SUPPORT
+# undef MB_CUR_MAX
+# define MB_CUR_MAX 1
+
+/* All this glop is for dfa.c. Bleah. */
+
+#ifndef DJGPP
+#define wchar_t         char
+#endif
+
+#define wctype_t	int
+#define wint_t		int
+#define mbstate_t	int
+#define WEOF		EOF
+#define towupper	toupper
+#define towlower	tolower
+#ifndef DJGPP
+#define btowc(x)	((int)x)
+#endif
+#define iswalnum	isalnum
+#define iswalpha	isalpha
+#define iswupper	isupper
+
+extern wctype_t wctype(const char *name);
+extern int iswctype(wint_t wc, wctype_t desc);
+extern int wcscoll(const wchar_t *ws1, const wchar_t *ws2);
 #endif

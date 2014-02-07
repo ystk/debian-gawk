@@ -1,6 +1,6 @@
 # uniq.awk --- do uniq in awk
 #
-# Requires getopt and join library functions
+# Requires getopt() and join() library functions
 #
 # Arnold Robbins, arnold@skeeve.com, Public Domain
 # May 1993
@@ -14,7 +14,7 @@ function usage(    e)
 
 # -c    count lines. overrides -d and -u
 # -d    only repeated lines
-# -u    only non-repeated lines
+# -u    only nonrepeated lines
 # -n    skip n fields
 # +n    skip n characters, skip fields first
 
@@ -33,7 +33,7 @@ BEGIN   \
         else if (index("0123456789", c) != 0) {
             # getopt requires args to options
             # this messes us up for things like -5
-            if (Optarg ~ /^[0-9]+$/)
+            if (Optarg ~ /^[[:digit:]]+$/)
                 fcount = (c Optarg) + 0
             else {
                 fcount = c + 0
@@ -43,7 +43,7 @@ BEGIN   \
             usage()
     }
 
-    if (ARGV[Optind] ~ /^\+[0-9]+$/) {
+    if (ARGV[Optind] ~ /^\+[[:digit:]]+$/) {
         charcount = substr(ARGV[Optind], 2) + 0
         Optind++
     }
@@ -116,4 +116,5 @@ END {
     else if ((repeated_only && count > 1) ||
             (non_repeated_only && count == 1))
         print last > outputfile
+    close(outputfile)
 }

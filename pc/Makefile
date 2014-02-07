@@ -1,35 +1,37 @@
-# Makefile for gawk (GNU awk)                                      Dec 2000
+# Makefile for gawk (GNU awk)                                      Dec 2010
 #
-# - for GNU C (djgpp)         [32bit executable for DOS]
+# - for GNU C (djgpp)         [32bit protected-mode executable for DOS]
 # - for GNU C (emx)           [32bit executable for OS/2 or DOS or Windows32]
-# - for GNU C (mingw32)	      [Windows32 executable for Windows 9x/NT]
-# - for MS-Visual C/C++ 4.x   [Windows32 executable for Windows 9x/NT]
-# - for Microsoft C 7         [16bit ececutable for DOS]
-# - for Microsoft C 6.00A     [16bit executable for OS/2 or DOS]
+# - for GNU C (mingw32)	      [Windows32 executable for Windows 9x/NT/2K/XP/7]
 
-# Tested with GNU make and dmake-3.8 under OS/2 and DOS, and ndmake and
-# Microsoft nmake under DOS.  Compiling with dmake under DOS may require the 
-# DOS-only version of dmake (so that swapping works).  nmake requires a
-# few edits in the configuration section below.
+# Tested with GNU make on Windows, OS/2 and DOS.
 
 default:
 	@echo "Enter $(MAK) target "
-	@echo " where 'target' is chosen from                          " 
+	@echo " where 'target' is chosen from                          "
 	@echo "  djgpp ... DOS 32-bit exe [GNU C, Delorie, v2]         "
-	@echo "  djgppv1 . DOS 32-bit exe [GNU C, Delorie, v1]         "
 	@echo "  emx ..... OS/2 32-bit exe [emx/gcc; uses emxlibc.dll] "
 	@echo "  emxnt ... NT exe [emx/gcc with RSXNT]                 "
 	@echo "  emxbnd .. OS/2 and DOS 32-bit exe [emx/gcc]           "
-	@echo "  mingw32 . Windows32 exe [Mingw32 GNU C]                   "
-	@echo "  msc ..... DOS exe [Microsoft C 7 & 8 (AKA 1.52)]      "
-	@echo "  msc6 .... DOS exe [Microsoft C 6.00a]                 "
-	@echo "  msc6os2 . OS/2 exe [Microsoft C 6.00a]                "
-	@echo "  msc6bnd . OS/2 and DOS exe [Microsoft C 6.00a]        "
-	@echo "  vcWin32 . Windows32 exe [Microsoft Visual C]              "
+	@echo "  mingw32 . Windows32 exe [Mingw32 GNU C]               "
+	@echo "  mingw32-readline . Like mingw32, but with readline    "
+	@echo "   [You will need to have GNU readline library installed.] "
 	@echo "  ----------------------------------------------------- "
 	@echo "  test .... Perform tests (see README_d/README.pc)      "
 	@echo "  install . Install gawk under $(prefix)/               "
+	@echo "  doc ..... Create documentation                        "
 
+# Support dropped in 4.0
+# - for DJGPP v1.x            [DOS 32bit protected-mode executable]
+# - for MS-Visual C/C++ 4.x   [Windows32 executable for Windows 9x/NT]
+# - for Microsoft C 7         [16bit ececutable for DOS]
+# - for Microsoft C 6.00A     [16bit executable for OS/2 or DOS]
+#	@echo "  djgppv1 . DOS 32-bit exe [GNU C, Delorie, v1]         "
+#	@echo "  msc ..... DOS exe [Microsoft C 7 & 8 (AKA 1.52)]      "
+#	@echo "  msc6 .... DOS exe [Microsoft C 6.00a]                 "
+#	@echo "  msc6os2 . OS/2 exe [Microsoft C 6.00a]                "
+#	@echo "  msc6bnd . OS/2 and DOS exe [Microsoft C 6.00a]        "
+#	@echo "  vcWin32 . Windows32 exe [Microsoft Visual C]          "
 # Support dropped in 3.0
 # - for Microsoft C 5.1       [16bit executable for OS/2 or DOS]
 #	@echo "  msc51     DOS exe [Microsoft C 5.1]                   "
@@ -38,6 +40,7 @@ default:
 #======================= Configuration ==================================
 RSPFILE = gawk.rsp
 PRSPFILE = pgawk.rsp
+DRSPFILE = dgawk.rsp
 #
 # Choose method for passing arguments to the linker.
 #
@@ -45,19 +48,13 @@ PRSPFILE = pgawk.rsp
 #LDRSP = $(GAWKOBJS)
 #LNKRSP = $(LDRSP)
 #
-# else if make == dmake
-# Response files for linker: dmake allows the macro expansion
-#   $(macro_name:modifier_list:modifier_list:...)
-# The macro mktmp creates a temporary file for the linker. 
-# The 't' modifier is for tokenization. 
-#LDRSP =   @$(mktmp $(<:t"\n"))
-#LNKRSP = @$(mktmp $(<:t"+\n") ) # Space before final paren req
-#
 # else use brain-dead approach (emxbnd will need 'tr').
 RSP = $(RSPFILE)
 PRSP = $(PRSPFILE)
+DRSP = $(DRSPFILE)
 LDRSP = @$(RSP)
 PLDRSP = @$(PRSP)
+DLDRSP = @$(DRSP)
 LNKRSP = $(LDRSP)
 #------------------------------------------------------------------------
 # Some makes do not define MAKE (and ndmake does not allow a define).
@@ -80,25 +77,13 @@ pkgdatadir = $(prefix)/lib/awk
 install = 1
 #------------------------------------------------------------------------
 # To work around command-line length problems, this makefile assumes
-# that $($X) can be expanded.  If using a make (such as nmake) which 
-# cannot handle such macros, define DO_LNK and DO_BIND for your target 
-# as $(L<target>) and $(B<target>), resp.; e.g.,
-#DO_LNK = $(LvcWin32)
-#DO_PLNK = $(PLvcWin32)
-# and then comment the following:
+# that $($X) can be expanded.
 DO_LNK = $($(LNK))
 DO_BIND= $($(BIND))
 DO_PLNK = $($(PLNK))
 DO_PBIND= $($(PBIND))
-#------------------------------------------------------------------------
-# For dynamic extension support, uncomment these lines
-# pick the appropriate .def file entry for your compiler
-#DYN_FLAGS=-DDYNAMIC
-#DYN_EXP=gawk.exp
-#DYN_OBJ=dlfcn$O $(DYN_EXP)
-#DYN_MAKEXP=$(DMEvcWin32)
-#DYN_MAKEXP=$(DMEmingw32)
-#
+DO_DLNK = $($(DLNK))
+DO_DBIND= $($(DBIND))
 #========================================================================
 # End of general configuration. Some platform-specific configuration
 # notes appear below.
@@ -113,29 +98,20 @@ pkgdatadir = $(prefix)/share/awk
 endif
 LDJG = $(CC) $(LF) -o gawk.exe $(LDRSP) $(LF2)
 PLDJG = $(CC) $(LF) -o pgawk.exe $(PLDRSP) $(LF2)
+DLDJG = $(CC) $(LF) -o dgawk.exe $(DLDRSP) $(LF2)
 BDJG = stubify -g awk.exe | stubedit awk.exe runfile=gawk
 
 djgpp:
 	$(MAK) all \
 	CC=gcc O=.o CF=-O2 \
-	LNK=LDJG PLNK=PLDJG LF=-s LF2=-lm \
-	BIND=BDJG PBIND=''
+	LNK=LDJG PLNK=PLDJG DLNK=DLDJG LF=-s LF2=-lm \
+	BIND=BDJG PBIND='' DBIND=''
 
 djgpp-debug:
 	$(MAK) all \
 	CC=gcc O=.o CF='-O2 -g' \
-	LNK=LDJG PLNK=PLDJG LF2=-lm \
-	BIND=BDJG PBIND=''
-
-LDJGv1 = $(CC) $(LF) -o gawk $(LDRSP) $(LF2)
-#BDJGv1 = coff2exe -s /djgpp/bin/go32.exe gawk
-BDJGv1 = coff2exe gawk
-
-djgppv1:
-	$(MAK) all \
-	CC=gcc O=.o CF=-O \
-	LNK=LDJGv1 LF=-s LF2=-lm \
-	BIND=BDJGv1
+	LNK=LDJG PLNK=PLDJG DLNK=DLDJG LF2=-lm \
+	BIND=BDJG PBIND='' DBIND=''
 
 #========================================================================
 #========================== EMX =========================================
@@ -181,132 +157,24 @@ emxbnd-debug:
 #========================== MINGW32 =====================================
 #========================================================================
 
-DMEmingw32 = dlltool -D gawk.exe -d gawkw32.def -e gawk.exp -l libgawk.a
-
 LMINGW32 = $(CC) $(LF) -o $@ $(GAWKOBJS) $(LF2)
 PLMINGW32 = $(CC) $(LF) -o $@ $(PGAWKOBJS) $(LF2)
+DLMINGW32 = $(CC) $(LF) -o $@ $(DGAWKOBJS) $(LF2)
 # The following might work around command-line length limitations:
 #LMINGW32 = $(CC) $(LF) -o $@ *.o $(LF2)
 
 mingw32:
 	$(MAK) all \
 	CC=gcc O=.o CF="-O2 -gdwarf-2 -g3" OBJ=popen.o \
-	LNK=LMINGW32 PLNK=PLMINGW32 LF="-gdwarf-2 -g3" LF2=-lmsvcp60 RSP=
+	LNK=LMINGW32 PLNK=PLMINGW32 DLNK=DLMINGW32 \
+	LF="-gdwarf-2 -g3" LF2=-lmsvcp60 RSP=
 
-#========================================================================
-#========================== MSC =========================================
-#========================================================================
-
-# stdargv, glob, and director are from Stewartson's sh. These provide
-# globbing and enhanced argument-passing. MSC setargv.obj is a 
-# more limited alternative (and it will permit a bound version).
-#STDARGV = stdargv.obj glob.obj director.obj 
-STDARGV = setargv.obj
-
-# Optimization and library options:
-# Os == optimize for size, Ot == optimize for speed, G2 == 286 or better
-#MSCOPT = -Gt3600 -Os -G2
-# MSC seems to be more stable with -Od than with -Ot, but then regexec.c gives
-# "code segment too large" error when compiling.  Adding -G2y fixes this and
-# lets us keep the -Od.
-MSCOPT = -Gt3600 -Od -G2y
-# Alternate lib, does not use math coprocessor.
-#MSCLIB = llibca
-#MSCCL = -FPa
-# Emulator lib, uses math coprocessor if present.
-MSCLIB = llibce
-MSCCL = -FPi
-#MSCCL = -FPc
-
-# If the stack gets much smaller than 3000, the "longwrds" test fails.
-LMSC = link $(LF) $(LNKRSP) $(STDARGV)/NOE,$@,,/NOD:llibce $(MSCLIB)$(LF2)/STACK:0x2eb0,nul
-
-
-# CLMSC-linking works when building under OS/2
-CLMSC = $(CC) -o $@ $(LF) $(GAWKOBJS) $(STDARGV) $(LF2) -link /NOE/NOI/STACK:0x6f00
-
-BMSC = bind $@ /n DOSMAKEPIPE DOSCWAIT
-
-
-# Ugly hack: config.h defines __STDC__ if not defined on command-line.
-# OS/2 versions can't use -Za in getid.c. MSC7 uses stub headers in pc/ 
-# due to ANSI conflicts. MSC 5.1 defines __STDC__=0 regardless of ANSI flag.
-
-# dmake-3.8 runs out of memory under DOS. Request that dmake
-# swap itself out on these targets. Note that this won't have
-# any affect on the bound OS/2 and DOS version of dmake-3.8.
-
-.SWAP: msc msc-debug msc6 msc6os2 msc6bnd msc51 check
-
-msc: 
+mingw32-readline:
 	$(MAK) all \
-	"CC=cl -nologo $(MSCCL)" O=.obj "CF=-AL -Ze -Ipc/include $(MSCOPT)" \
-	OBJ=popen.obj \
-	LNK=LMSC P=+
-Lmsc = $(LMSC)  # for broken makes (nmake) which cannot expand $($X)
-Bmsc =
-
-msc-debug: 
-	$(MAK) all \
-	"CC=cl $(MSCCL)" O=.obj "CF=-AL -Ze -Ipc/include -W2 -Zi -Od" \
-	OBJ=popen.obj \
-	LNK=LMSC LF2=/CO P=+
-
-msc6: 
-#	$(MAK) builtin.obj \
-#	"CC=cl -nologo $(MSCCL)" O=.obj "CF=-AL -Za $(MSCOPT) -Od"
-	$(MAK) all \
-	"CC=cl -nologo $(MSCCL)" O=.obj "CF=-AL -Za $(MSCOPT)" \
-	OBJ=popen.obj \
-	LNK=LMSC P=+
-Lmsc6 = $(LMSC)  # for broken makes (nmake) which cannot expand $($X)
-Bmsc6 =
-
-msc6os2: 
-#	$(MAK) builtin.obj \
-#	"CC=cl -nologo $(MSCCL)" O=.obj "CF=-AL -DOS2 -UMSDOS $(MSCOPT) -Od"
-	$(MAK) all \
-	"CC=cl $(MSCCL)" O=.obj "CF=-AL -DOS2 -UMSDOS $(MSCOPT)" \
-	LNK=LMSC "LF2=p,gawk.def" P=+
-
-msc6bnd:
-#	$(MAK) builtin.obj \
-#	"CC=cl -nologo $(MSCCL)" O=.obj "CF=-AL -DOS2 $(MSCOPT) -Od"
-	$(MAK) all \
-	"CC=cl $(MSCCL)" O=.obj "CF=-AL -DOS2 $(MSCOPT)" \
-	OBJ=popen.obj \
-	LNK=LMSC "LF2=p,gawk.def" P=+ \
-	BIND=BMSC
-Lmsc6bnd = $(LMSC)  # for broken makes (nmake) which cannot expand $($X)
-Bmsc6bnd = $(BMSC)
-
-
-# Windows '9x / NT 
-DMEvcWin32 = lib /def:gawkw32.def /name:gawk.exe /out:gawk.lib
-LvcWin32 = link -nologo -subsystem:console -release -out:$@ $(LNKRSP)
-PLvcWin32 = link -nologo -subsystem:console -release -out:$@ $(PLDRSP)
-
-vcWin32:
-	$(MAK) all \
-	"CC=cl -nologo" O=.obj "CF=-o2 -DWIN32 -D__STDC__=0" \
-	OBJ=popen.obj \
-	LNK=LvcWin32
-
-
-# Support dropped in 3.0
-#msc51: 
-#	$(MAK) all \
-#	"CC=cl $(MSCCL)" O=.obj "CF=-AL -Za -D_MSC_VER=510 $(MSCOPT)" \
-#	OBJ=popen.obj \
-#	LNK=LMSC P=+
-#
-#msc51bnd:
-#	$(MAK) all \
-#	"CC=cl -AL ($MSCCL)" O=.obj "CF=-DOS2 -D_MSC_VER=510 $(MSCOPT)" \
-#	OBJ=popen.obj \
-#	LNK=CLMSC "LF=-Lp -Fb" "LF2=gawk.def"
-
-#========================================================================
+	CC=gcc O=.o CF="-DHAVE_LIBREADLINE -O2 -gdwarf-2 -g3" OBJ=popen.o \
+	LNK=LMINGW32 PLNK=PLMINGW32 DLNK=DLMINGW32 \
+	LF="-gdwarf-2 -g3" \
+	LF2="-lreadline -lmsvcp60 -Wl,--enable-auto-import" RSP=
 
 # Define BIND for BINDless compiles, otherwise $($(BIND)) may break.
 BIND = EMPTY
@@ -322,6 +190,8 @@ AWKOBJS1  = array$O builtin$O eval$O field$O floatcomp$O gawkmisc$O io$O main$O
 AWKOBJS2  = ext$O msg$O node$O profile$O re$O replace$O version$O $(DYN_OBJ)
 PAWKOBJS1 = array$O builtin$O eval_p$O field$O floatcomp$O gawkmisc$O io$O main$O
 PAWKOBJS2 = ext$O msg$O node$O profile_p$O re$O replace$O version$O $(DYN_OBJ)
+DAWKOBJS1  = array$O builtin$O debug$O eval_d$O field$O floatcomp$O gawkmisc$O io$O main$O
+DAWKOBJS2  = ext$O msg$O node$O profile$O re$O replace$O version$O command$O $(DYN_OBJ)
 AWKOBJS = $(AWKOBJS1) $(AWKOBJS2)
 
 ALLOBJS = $(AWKOBJS) awkgram$O getid$O $(OBJ)
@@ -332,6 +202,7 @@ LIBOBJS= getopt$O getopt1$O dfa$O regex$O random$O
 
 GAWKOBJS = $(ALLOBJS) $(LIBOBJS)
 PGAWKOBJS = $(PAWKOBJS1) $(PAWKOBJS2) $(LIBOBJS) awkgram$O getid$O $(OBJ)
+DGAWKOBJS = $(DAWKOBJS1) $(DAWKOBJS2) $(LIBOBJS) awkgram$O getid$O $(OBJ)
 
 # clear out suffixes list
 # .SUFFIXES:
@@ -341,7 +212,7 @@ PGAWKOBJS = $(PAWKOBJS1) $(PAWKOBJS2) $(LIBOBJS) awkgram$O getid$O $(OBJ)
 	$(CC) -c $(CFLAGS) $<
 
 # rules to build gawk
-all : gawk.exe pgawk.exe
+all : gawk.exe pgawk.exe dgawk.exe
 
 gawk.exe:: $(GAWKOBJS) $(RSP)
 	$(DO_LNK)
@@ -350,6 +221,10 @@ gawk.exe:: $(GAWKOBJS) $(RSP)
 pgawk.exe:: $(PGAWKOBJS) $(PRSP)
 	$(DO_PLNK)
 	$(DO_PBIND)
+
+dgawk.exe:: $(DGAWKOBJS) $(DRSP)
+	$(DO_DLNK)
+	$(DO_DBIND)
 
 $(RSPFILE) : $(GAWKOBJS)
 	echo $(AWKOBJS1)$P > $@
@@ -361,18 +236,36 @@ $(PRSPFILE) : $(PGAWKOBJS)
 	echo $(PAWKOBJS2)$P >> $@
 	echo awkgram$O getid$O $(OBJ) $(LIBOBJS)$P >> $@
 
-$(ALLOBJS) eval_p$O profile_p$O:	awk.h regex.h config.h
+$(DRSPFILE) : $(DGAWKOBJS)
+	echo $(DAWKOBJS1)$P > $@
+	echo $(DAWKOBJS2)$P >> $@
+	echo awkgram$O getid$O $(OBJ) $(LIBOBJS)$P >> $@
+
+# Notes to dependencies:
+# 1. The dependency on getopt.h is because unistd.h includes it,
+#    and we have -I. on the compiler command line.  unistd.h is
+#    included by awk.h.
+# 2. custom.h is not mentioned because pc ports don't use it.
+$(ALLOBJS) $(LIBOBJS) eval_p$O profile_p$O eval_d$O debug$O command$O: \
+  awk.h regex.h config.h gettext.h mbsupport.h protos.h dfa.h getopt.h
+
+builtin$O:	floatmagic.h random.h popen.h
+
+random$O:	floatmagic.h random.h
+
+debug$O:	floatmagic.h
+
+command$O debug$O:	cmd.h
+
+dfa$O:	xalloc.h
 
 gawkmisc$O:	pc/gawkmisc.pc
 
-getopt$O:	getopt.h
-
-getopt1$O:	getopt.h
+getopt$O getopt1$O :	getopt_int.h
 
 io$O:		popen.h
 
-gawk.exp: gawkw32.def
-	$(DYN_MAKEXP)
+regex$O:	regcomp.c regexec.c regex_internal.h
 
 eval_p$O:	eval.c
 
@@ -390,7 +283,7 @@ alloca$O:	alloca.c
 
 install: install$(install)
 
-install1: 
+install1:
 	echo extproc sh $(prefix)/bin/igawk.cmd > igawk.cmd
 	echo shift >> igawk.cmd
 	cat pc/awklib/igawk >> igawk.cmd
@@ -407,7 +300,7 @@ install2:
 	gawk -v prefix=$(prefix) -f install.awk
 
 clean:
-	rm -rf gawk pgawk *.exe gawk.map *.o *.obj core a.out $(RSPFILE) $(PRSPFILE) $(DYN_EXP)
+	rm -rf gawk pgawk dgawk *.exe gawk.map *.o *.obj core a.out $(RSPFILE) $(PRSPFILE) $(DRSPFILE) $(DYN_EXP)
 #	cd doc && $(MAKE) clean
 #	cd test && $(MAKE) clean
 #	cd awklib && $(MAKE) clean
@@ -432,3 +325,68 @@ TAGS:
 
 tags:
 	ctags awk.h *.y custom.h *.c *.h
+
+#========================================================================
+#================================= DOC ==================================
+#========================================================================
+
+DVIS = ./doc/gawk.dvi ./doc/gawkinet.dvi
+PDFS = ./doc/gawk.pdf ./doc/gawkinet.pdf
+PSS = ./doc/gawk.ps ./doc/gawkinet.ps
+HTMLS = ./doc/gawk.html ./doc/gawkinet.html
+INFOS = ./doc/gawk.info ./doc/gawkinet.info
+TEXINFOS = ./doc/gawk.texi ./doc/gawkinet.texi
+
+TEXI2DVI = texi2dvi --build-dir=./doc
+TEXI2PDF = $(TEXI2DVI) --pdf --batch
+DVIPS = dvips
+MAKEINFO = makeinfo --no-split --force
+MAKEINFOHTML = $(MAKEINFO) --html
+
+TROFF = groff -t -Tps -U
+#SEDME = sed -e "s/^level0 restore/level0 restore flashme 100 72 moveto (Copyright `date '+%m-%d-%y %T'`, FSF, Inc. (all)) show/" \
+#		-e "s/^\/level0 save def/\/level0 save def 30 -48 translate/"
+
+SEDME = sed "s/^\/level0 save def/\/level0 save def 30 -48 translate/"
+
+SEDME2 = sed "/%%Page: 10 10/,/0 Cg EP/d"
+
+.SUFFIXES: .dvi .html .info .pdf .ps .texi
+
+.texi.info:
+	$(MAKEINFO) -o $@ $<
+
+.texi.html:
+	$(MAKEINFOHTML) -o $@ $<
+
+.texi.dvi:
+	$(TEXI2DVI) -o $@ $<
+
+.texi.pdf:
+	$(TEXI2PDF) -o $@ $<
+
+.dvi.ps:
+	$(DVIPS) -o $@ $<
+
+./doc/awkcard.tr: ./doc/awkcard.in
+	cd doc
+	sed "s,SRCDIR,.," < awkcard.in > awkcard.tr
+	cd ..
+
+./doc/awkcard.nc: export GROFF_TMPDIR ?= .
+./doc/awkcard.nc: ./doc/macros ./doc/cardfonts ./doc/no.colors ./doc/awkcard.tr ./doc/ad.block ./doc/awkcard.in ./doc/setter.outline
+	cd doc
+	$(TROFF) ./macros ./cardfonts ./no.colors awkcard.tr | $(SEDME) | cat ./setter.outline - | $(SEDME2) > awkcard.ps
+	cd ..
+
+./doc/awkcard.ps: ./doc/awkcard.nc
+	cd doc
+	touch awkcard.nc
+	cd ..
+
+./doc/awkcard.pdf: ./doc/awkcard.ps
+	cd doc
+	ps2pdf ./awkcard.ps ./awkcard.pdf
+	cd ..
+
+doc: $(INFOS) $(DVIS) $(HTMLS) $(PSS) $(PDFS) ./doc/awkcard.ps ./doc/awkcard.pdf

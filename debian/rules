@@ -1,108 +1,61 @@
 #!/usr/bin/make -f
 
-QUILT_STAMPFN = patch-stamp
-include /usr/share/quilt/quilt.make
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 
-DEB_BUILD_GNU_TYPE	?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
-DEB_HOST_GNU_TYPE	?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
-DEB_HOST_ARCH		?= $(shell dpkg-architecture -qDEB_HOST_ARCH)
-
-distribution = $(shell dpkg-parsechangelog | awk '/^Distribution:/ {print $$2}')
-
-CFLAGS = -g -O2 -Wall
-ifeq (sh4,$(DEB_HOST_ARCH))
+ifeq (sh4,$(shell dpkg-architecture -qDEB_HOST_ARCH))
   # Renesas SH(sh4) need -mieee option.
   # If this option is not effective, fmtspcl test fails.
-  CFLAGS += -mieee
+  export DEB_CFLAGS_MAINT_APPEND = -mieee
 endif
 
-configure: configure-stamp
-configure-stamp: $(QUILT_STAMPFN)
-	dh_testdir
+%:
+	dh $@
+
+override_dh_auto_configure:
+	dh_auto_configure
+	# Add fake info files (see README.source).
 	touch --date="Jan 01 2000" doc/gawk.info doc/gawk.texi \
-		doc/gawkinet.info doc/gawkinet.texi
-	CFLAGS="$(CFLAGS)" ./configure --prefix=/usr --libexecdir=/usr/lib \
-		--host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) \
-		--enable-switch
-	touch $@
+                           doc/gawkinet.info doc/gawkinet.texi
 
-ok_tests := \
-	double1 double2 fmtspcl intformat
-	# machine-dependant tests
-ok_tests += \
-	asort asorti fmttest fnarydel fnparydl lc_num1 mbfw1 \
-	mbprintf1 mbprintf2 rebt8b2 sort1 sprintfc whiny
-	# locale-dependant tests
+override_dh_auto_build:
+	dh_auto_build
+	make -C po update-gmo
 
-build: build-stamp
-build-stamp: configure-stamp
-	dh_testdir
-	$(MAKE)
-ifeq ($(DEB_BUILD_GNU_TYPE),$(DEB_HOST_GNU_TYPE))
-	$(MAKE) check 2>&1 | tee log-check
-	# Display failed tests, if any
-	tests=$$(ls test/_* 2>/dev/null) ; \
-	if test -n "$$tests" ; then \
-	  echo "Failing tests: $$(echo $$tests | sed -e 's/test\/_//g')" ; \
-	  for test in $$(ls test/_* 2>/dev/null) ; \
-	    do echo ">>> $$test" && cat $$test ; \
-	  done ; \
-	fi
-  ifneq ($(distribution),experimental)
-	@cd test/ && for test in $$(ls _* 2>/dev/null) ; \
-	  do if test -z "$$(echo $(addprefix _,$(ok_tests)) | grep $$test)"; \
-	    then exit 1 ; \
-	  fi ; \
-	done
-  endif
-endif
-	touch $@
+override_dh_auto_test:
+	# Generate locales used in testsuite.
+	mkdir tmp-locales
+	localedef -i en_US -c -f ISO-8859-1 -A /usr/share/locale/locale.alias \
+          tmp-locales/en_US.ISO-8859-1
+	localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias \
+          tmp-locales/en_US.UTF-8
+	localedef -i ja_JP -c -f UTF-8 -A /usr/share/locale/locale.alias \
+          tmp-locales/ja_JP.UTF-8
+	localedef -i ru_RU -c -f UTF-8 -A /usr/share/locale/locale.alias \
+          tmp-locales/ru_RU.UTF-8
+	# Run actual test suite.
+	LOCPATH=$(CURDIR)/tmp-locales make check
+	# Display any failed tests.
+	tests=$$(ls test/_* 2>/dev/null); \
+        if [ -n "$$tests" ]; then \
+          echo "Failing tests: $$(echo $$tests | sed -e 's/test\/_//g')"; \
+          for test in $$(ls test/_* 2>/dev/null); do \
+            echo ">>> $$test" && cat $$test; \
+          done; \
+        fi
 
-clean: unpatch
-	dh_testdir
-	dh_testroot
-	rm -f doc/gawk.info doc/gawk.texi doc/gawkinet.info doc/gawkinet.texi
-	rm -f debian/substvars awkgram.c log-check test/_*
-	[ ! -f Makefile ] || $(MAKE) distclean
-	dh_clean
-
-install: build
-	dh_testdir
-	dh_prep
-	$(MAKE) install DESTDIR="$(CURDIR)/debian/gawk"
-	# Remove versioned binaries.
-	rm -f debian/gawk/usr/bin/*-*
-	# And this one.
+override_dh_auto_install:
+	dh_auto_install
+	# Remove unwanted files.
+	rm -f debian/gawk/usr/bin/*awk-*
 	rm -f debian/gawk/usr/bin/awk
-	# Remove duplicate manpage and link it to gawk.1.gz.
 	rm -f debian/gawk/usr/share/man/man1/pgawk.1
-	dh_link usr/share/man/man1/gawk.1 usr/share/man/man1/pgawk.1
-	# Install upstream changelog, examples and docs.
-	dh_installchangelogs ChangeLog
-	dh_installexamples awklib/eg/data awklib/eg/misc awklib/eg/network \
-		awklib/eg/prog # awklib/eg/lib is /usr/share/awk + some cruft.
-	dh_installdocs FUTURES POSIX.STD NEWS README AUTHORS LIMITATIONS PROBLEMS
-	# Install igawk script
-	dh_install awklib/igawk usr/bin
 	# Remove fake info files (see README.source).
 	rm -rf debian/gawk/usr/share/info
 
-binary-arch: build
+override_dh_auto_clean:
+	dh_auto_clean
+	rm -rf tmp-locales
 
-binary-arch: build install
-	dh_testdir
-	dh_testroot
-	dh_install --sourcedir=debian/gawk
-	dh_installchangelogs
-	dh_link
-	dh_strip
-	dh_compress
-	dh_fixperms
-	dh_installdeb
-	dh_shlibdeps
-	dh_gencontrol
-	dh_md5sums
-	dh_builddeb
-
-binary: binary-indep binary-arch
-.PHONY: configure build clean binary-indep binary-arch binary
+override_dh_compress:
+	# Don't compress awk examples.
+	dh_compress --exclude=.awk

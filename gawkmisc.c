@@ -3,7 +3,8 @@
  */
 
 /* 
- * Copyright (C) 1986, 1988, 1989, 1991-2004 the Free Software Foundation, Inc.
+ * Copyright (C) 1986, 1988, 1989, 1991-2004, 2010, 2011
+ * the Free Software Foundation, Inc.
  * 
  * This file is part of GAWK, the GNU implementation of the
  * AWK Programming Language.
@@ -31,44 +32,26 @@
 
 /* some old compilers don't grok #elif. sigh */
 
-#ifdef __EMX__
+#if defined(__EMX__) || defined(__DJGPP__) || defined(__MINGW32__)
 #include "pc/gawkmisc.pc"
-#else /* not __EMX__ */
-#if defined(MSDOS) || defined(OS2) || defined(WIN32)
-#include "gawkmisc.pc"
-#else /* not MSDOS, not OS2, not WIN32 */
+#else /* not __DJGPP__, not __MINGW32__ */
 #if defined(VMS)
 #include "vms/gawkmisc.vms"
 #else /* not VMS */
-#if defined(atarist)
-#include "unsupported/atari/gawkmisc.atr"
-#else /* not atarist */
-#if defined(TANDEM)
-#include "tmiscc"
-#else /* not TANDEM */
 #include "posix/gawkmisc.c"
-#endif /* not TANDEM */
-#endif /* not atarist */
 #endif /* not VMS */
-#endif /* not MSDOS, not OS2, not WIN32 */
-#endif /* not __EMX__ */
+#endif /* not __DJGPP__, not __MINGW32__ */
 
 /* xmalloc --- provide this so that other GNU library routines work */
 
-#if __STDC__
 typedef void *pointer;
-#else
-typedef char *pointer;
-#endif
 
-extern pointer xmalloc P((size_t bytes));	/* get rid of gcc warning */
+extern pointer xmalloc(size_t bytes);	/* get rid of gcc warning */
 
 pointer
 xmalloc(size_t bytes)
 {
 	pointer p;
-
 	emalloc(p, pointer, bytes, "xmalloc");
-
 	return p;
 }

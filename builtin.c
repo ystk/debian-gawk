@@ -1,9 +1,9 @@
 /*
- * builtin.c - Builtin functions and various utility procedures 
+ * builtin.c - Builtin functions and various utility procedures.
  */
 
 /* 
- * Copyright (C) 1986, 1988, 1989, 1991-2009 the Free Software Foundation, Inc.
+ * Copyright (C) 1986, 1988, 1989, 1991-2012 the Free Software Foundation, Inc.
  * 
  * This file is part of GAWK, the GNU implementation of the
  * AWK Programming Language.
@@ -32,6 +32,10 @@
 #include "random.h"
 #include "floatmagic.h"
 
+#if defined(HAVE_POPEN_H)
+#include "popen.h"
+#endif
+
 #ifndef CHAR_BIT
 # define CHAR_BIT 8
 #endif
@@ -55,34 +59,30 @@
 #define SIZE_MAX ((size_t) -1)
 #endif
 
-/* can declare these, since we always use the random shipped with gawk */
-extern char *initstate P((unsigned long seed, char *state, long n));
-extern char *setstate P((char *state));
-extern long random P((void));
-extern void srandom P((unsigned long seed));
-
-extern NODE **fields_arr;
-extern int output_is_tty;
-
-static NODE *sub_common P((NODE *tree, long how_many, int backdigs));
-
-#ifdef _CRAY
-/* Force the standard C compiler to use the library math functions. */
-extern double exp(double);
-double (*Exp)() = exp;
-#define exp(x) (*Exp)(x)
-extern double log(double);
-double (*Log)() = log;
-#define log(x) (*Log)(x)
-#endif
-
 #define DEFAULT_G_PRECISION 6
 
-#ifdef GFMT_WORKAROUND
-/* semi-temporary hack, mostly to gracefully handle VMS */
-static void sgfmt P((char *buf, const char *format, int alt,
-		     int fwidth, int precision, double value));
-#endif /* GFMT_WORKAROUND */
+static size_t mbc_byte_count(const char *ptr, size_t numchars);
+static size_t mbc_char_count(const char *ptr, size_t numbytes);
+
+/* Can declare these, since we always use the random shipped with gawk */
+extern char *initstate(unsigned long seed, char *state, long n);
+extern char *setstate(char *state);
+extern long random(void);
+extern void srandom(unsigned long seed);
+
+extern NODE **args_array;
+extern int max_args;
+extern NODE **fields_arr;
+extern int output_is_tty;
+extern FILE *output_fp;
+
+
+#define POP_TWO_SCALARS(s1, s2) \
+s2 = POP_SCALAR(); \
+s1 = POP(); \
+if ((s1)->type == Node_var_array) \
+    DEREF(s2), fatal(_("attempt to use array `%s' in a scalar context"), array_vname(s1)), 0
+
 
 /*
  * Since we supply the version of random(), we know what
@@ -90,10 +90,8 @@ static void sgfmt P((char *buf, const char *format, int alt,
  */
 #define GAWK_RANDOM_MAX 0x7fffffffL
 
-static void efwrite P((const void *ptr, size_t size, size_t count, FILE *fp,
-		       const char *from, struct redirect *rp, int flush));
-static size_t mbc_byte_count P((const char *ptr, size_t numchars));
-static size_t mbc_char_count P((const char *ptr, size_t numbytes));
+static void efwrite(const void *ptr, size_t size, size_t count, FILE *fp,
+		       const char *from, struct redirect *rp, int flush);
 
 /* efwrite --- like fwrite, but with error checking */
 
@@ -111,7 +109,7 @@ efwrite(const void *ptr,
 		goto wrerror;
 	if (flush
 	  && ((fp == stdout && output_is_tty)
-	   || (rp != NULL && (rp->flag & RED_NOBUF)))) {
+	      || (rp != NULL && (rp->flag & RED_NOBUF)))) {
 		fflush(fp);
 		if (ferror(fp))
 			goto wrerror;
@@ -127,21 +125,21 @@ wrerror:
 /* do_exp --- exponential function */
 
 NODE *
-do_exp(NODE *tree)
+do_exp(int nargs)
 {
 	NODE *tmp;
 	double d, res;
 
-	tmp = tree_eval(tree->lnode);
+	tmp = POP_SCALAR();
 	if (do_lint && (tmp->flags & (NUMCUR|NUMBER)) == 0)
 		lintwarn(_("exp: received non-numeric argument"));
 	d = force_number(tmp);
-	free_temp(tmp);
+	DEREF(tmp);
 	errno = 0;
 	res = exp(d);
 	if (errno == ERANGE)
 		warning(_("exp: argument %g is out of range"), d);
-	return tmp_number((AWKNUM) res);
+	return make_number((AWKNUM) res);
 }
 
 /* stdfile --- return fp for a standard file */
@@ -156,9 +154,9 @@ static FILE *
 stdfile(const char *name, size_t len)
 {
 	if (len == 11) {
-		if (STREQN(name, "/dev/stderr", 11))
+		if (strncmp(name, "/dev/stderr", 11) == 0)
 			return stderr;
-		else if (STREQN(name, "/dev/stdout", 11))
+		else if (strncmp(name, "/dev/stdout", 11) == 0)
 			return stdout;
 	}
 
@@ -168,7 +166,7 @@ stdfile(const char *name, size_t len)
 /* do_fflush --- flush output, either named file or pipe or everything */
 
 NODE *
-do_fflush(NODE *tree)
+do_fflush(int nargs)
 {
 	struct redirect *rp;
 	NODE *tmp;
@@ -177,20 +175,21 @@ do_fflush(NODE *tree)
 	const char *file;
 
 	/* fflush() --- flush stdout */
-	if (tree == NULL) {
+	if (nargs == 0) {
+		if (output_fp != stdout)
+			(void) fflush(output_fp);
 		status = fflush(stdout);
-		return tmp_number((AWKNUM) status);
+		return make_number((AWKNUM) status);
 	}
 
-	tmp = tree_eval(tree->lnode);
-	tmp = force_string(tmp);
+	tmp = POP_STRING();
 	file = tmp->stptr;
 
 	/* fflush("") --- flush all */
 	if (tmp->stlen == 0) {
 		status = flush_io();
-		free_temp(tmp);
-		return tmp_number((AWKNUM) status);
+		DEREF(tmp);
+		return make_number((AWKNUM) status);
 	}
 
 	rp = getredirect(tmp->stptr, tmp->stlen);
@@ -203,8 +202,8 @@ do_fflush(NODE *tree)
 			else
 				warning(_("fflush: cannot flush: file `%s' opened for reading, not writing"),
 					file);
-			free_temp(tmp);
-			return tmp_number((AWKNUM) status);
+			DEREF(tmp);
+			return make_number((AWKNUM) status);
 		}
 		fp = rp->fp;
 		if (fp != NULL)
@@ -215,37 +214,53 @@ do_fflush(NODE *tree)
 		status = -1;
 		warning(_("fflush: `%s' is not an open file, pipe or co-process"), file);
 	}
-	free_temp(tmp);
-	return tmp_number((AWKNUM) status);
+	DEREF(tmp);
+	return make_number((AWKNUM) status);
 }
 
-#ifdef MBS_SUPPORT
-/* strncasecmpmbs --- like strncasecmp(multibyte string version)  */
+#if MBS_SUPPORT
+/* strncasecmpmbs --- like strncasecmp (multibyte string version)  */
+
 int
-strncasecmpmbs(const char *s1, mbstate_t mbs1, const char *s2,
-			   mbstate_t mbs2, size_t n)
+strncasecmpmbs(const unsigned char *s1, const unsigned char *s2, size_t n)
 {
-	int i1, i2, mbclen1, mbclen2, gap;
+	size_t i1, i2, mbclen1, mbclen2, gap;
 	wchar_t wc1, wc2;
+	mbstate_t mbs1, mbs2;
+
+	memset(& mbs1, 0, sizeof(mbs1));
+	memset(& mbs2, 0, sizeof(mbs2));
 
 	for (i1 = i2 = 0 ; i1 < n && i2 < n ;i1 += mbclen1, i2 += mbclen2) {
-		mbclen1 = mbrtowc(&wc1, s1 + i1, n - i1, &mbs1);
-		if (mbclen1 == (size_t) -1 || mbclen1 == (size_t) -2 || mbclen1 == 0) {
-			/* We treat it as a singlebyte character.  */
+		if (is_valid_character(s1[i1])) {
 			mbclen1 = 1;
-			wc1 = s1[i1];
+			wc1 = btowc_cache(s1[i1]);
+		} else {
+			mbclen1 = mbrtowc(& wc1, (const char *)s1 + i1,
+					  n - i1, & mbs1);
+			if (mbclen1 == (size_t) -1 || mbclen1 == (size_t) -2 || mbclen1 == 0) {
+				/* We treat it as a singlebyte character. */
+				mbclen1 = 1;
+				wc1 = btowc_cache(s1[i1]);
+			}
 		}
-		mbclen2 = mbrtowc(&wc2, s2 + i2, n - i2, &mbs2);
-		if (mbclen2 == (size_t) -1 || mbclen2 == (size_t) -2 || mbclen2 == 0) {
-			/* We treat it as a singlebyte character.  */
+		if (is_valid_character(s2[i2])) {
 			mbclen2 = 1;
-			wc2 = s2[i2];
+			wc2 = btowc_cache(s2[i2]);
+		} else {
+			mbclen2 = mbrtowc(& wc2, (const char *)s2 + i2,
+					  n - i2, & mbs2);
+			if (mbclen2 == (size_t) -1 || mbclen2 == (size_t) -2 || mbclen2 == 0) {
+				/* We treat it as a singlebyte character. */
+				mbclen2 = 1;
+				wc2 = btowc_cache(s2[i2]);
+			}
 		}
 		if ((gap = towlower(wc1) - towlower(wc2)) != 0)
-			/* s1 and s2 are not equivalent.  */
+			/* s1 and s2 are not equivalent. */
 			return gap;
 	}
-	/* s1 and s2 are equivalent.  */
+	/* s1 and s2 are equivalent. */
 	return 0;
 }
 
@@ -260,12 +275,12 @@ index_multibyte_buffer(char* src, char* dest, int len)
 {
 	int idx, prev_idx;
 	mbstate_t mbs, prevs;
-	memset(&prevs, 0, sizeof(mbstate_t));
 
+	memset(& prevs, 0, sizeof(mbstate_t));
 	for (idx = prev_idx = 0 ; idx < len ; idx++) {
 		size_t mbclen;
 		mbs = prevs;
-		mbclen = mbrlen(src + prev_idx, idx - prev_idx + 1, &mbs);
+		mbclen = mbrlen(src + prev_idx, idx - prev_idx + 1, & mbs);
 		if (mbclen == (size_t) -1 || mbclen == 1 || mbclen == 0) {
 			/* singlebyte character.  */
 			mbclen = 1;
@@ -295,16 +310,24 @@ index_multibyte_buffer(char* src ATTRIBUTE_UNUSED, char* dest ATTRIBUTE_UNUSED, 
 /* do_index --- find index of a string */
 
 NODE *
-do_index(NODE *tree)
+do_index(int nargs)
 {
 	NODE *s1, *s2;
-	register const char *p1, *p2;
-	register size_t l1, l2;
+	const char *p1, *p2;
+	size_t l1, l2;
 	long ret;
+#if MBS_SUPPORT
 	int do_single_byte = FALSE;
+	mbstate_t mbs1, mbs2;
 
-	s1 = tree_eval(tree->lnode);
-	s2 = tree_eval(tree->rnode->lnode);
+	if (gawk_mb_cur_max > 1) {
+		memset(& mbs1, 0, sizeof(mbstate_t));
+		memset(& mbs2, 0, sizeof(mbstate_t));
+	}
+#endif
+
+	POP_TWO_SCALARS(s1, s2);
+
 	if (do_lint) {
 		if ((s1->flags & (STRING|STRCUR)) == 0)
 			lintwarn(_("index: received non-string first argument"));
@@ -329,7 +352,7 @@ do_index(NODE *tree)
 		goto out;
 	}
 
-#ifdef MBS_SUPPORT
+#if MBS_SUPPORT
 	if (gawk_mb_cur_max > 1) {
 		s1 = force_wstring(s1);
 		s2 = force_wstring(s2);
@@ -347,7 +370,7 @@ do_index(NODE *tree)
 		while (l1 > 0) {
 			if (l2 > l1)
 				break;
-#ifdef MBS_SUPPORT
+#if MBS_SUPPORT
 			if (! do_single_byte && gawk_mb_cur_max > 1) {
 				const wchar_t *pos;
 
@@ -360,8 +383,8 @@ do_index(NODE *tree)
 			} else {
 #endif
 			/*
-			 * Could use tolower(*p1) == tolower(*p2) here. See discussion
-			 * in eval.c as to why not.
+			 * Could use tolower(*p1) == tolower(*p2) here.
+			 * See discussion in eval.c as to why not.
 			 */
 			if (casetable[(unsigned char)*p1] == casetable[(unsigned char)*p2]
 			    && (l2 == 1 || strncasecmp(p1, p2, l2) == 0)) {
@@ -370,7 +393,7 @@ do_index(NODE *tree)
 			}
 			l1--;
 			p1++;
-#ifdef MBS_SUPPORT
+#if MBS_SUPPORT
 			}
 #endif
 		}
@@ -383,7 +406,7 @@ do_index(NODE *tree)
 				ret = 1 + s1->stlen - l1;
 				break;
 			}
-#ifdef MBS_SUPPORT
+#if MBS_SUPPORT
 			if (! do_single_byte && gawk_mb_cur_max > 1) {
 				const wchar_t *pos;
 
@@ -404,9 +427,9 @@ do_index(NODE *tree)
 		}
 	}
 out:
-	free_temp(s1);
-	free_temp(s2);
-	return tmp_number((AWKNUM) ret);
+	DEREF(s1);
+	DEREF(s2);
+	return make_number((AWKNUM) ret);
 }
 
 /* double_to_int --- convert double to int, used several places */
@@ -424,98 +447,103 @@ double_to_int(double d)
 /* do_int --- convert double to int for awk */
 
 NODE *
-do_int(NODE *tree)
+do_int(int nargs)
 {
 	NODE *tmp;
 	double d;
 
-	tmp = tree_eval(tree->lnode);
+	tmp = POP_SCALAR();
 	if (do_lint && (tmp->flags & (NUMCUR|NUMBER)) == 0)
 		lintwarn(_("int: received non-numeric argument"));
 	d = force_number(tmp);
 	d = double_to_int(d);
-	free_temp(tmp);
-	return tmp_number((AWKNUM) d);
+	DEREF(tmp);
+	return make_number((AWKNUM) d);
 }
 
-/* do_length --- length of a string or $0 */
+/* do_isarray --- check if argument is array */
 
 NODE *
-do_length(NODE *tree)
+do_isarray(int nargs)
+{
+	NODE *tmp;
+	int ret = 1;
+
+	tmp = POP();
+	if (tmp->type != Node_var_array) {
+		ret = 0;
+		DEREF(tmp);
+	}
+	return make_number((AWKNUM) ret);
+}
+
+/* do_length --- length of a string, array or $0 */
+
+NODE *
+do_length(int nargs)
 {
 	NODE *tmp;
 	size_t len;
-	NODE *n;
 
-	n = tree->lnode;
-	if (n->type == Node_param_list)
-		n = stack_ptr[n->param_cnt];
-
-	if (n->type == Node_var_array
-	    || n->type == Node_array_ref) {
-		NODE *array_var = n;
+	tmp = POP();
+	if (tmp->type == Node_var_array) {
 		static short warned = FALSE;
 
-		if (array_var->type == Node_array_ref)
-			array_var = array_var->orig_array;
-
-		if (do_lint && ! warned) {
+		if (do_posix)
+			fatal(_("length: received array argument"));
+   		if (do_lint && ! warned) {
 			warned = TRUE;
 			lintwarn(_("`length(array)' is a gawk extension"));
 		}
-		if (do_posix)
-			goto normal;	/* will die as fatal error */
-
-		return tmp_number((AWKNUM) array_var->table_size);
-	} else {
-normal:
-		if (do_lint && n->type == Node_var_new)
-			lintwarn(_("length: untyped argument will be forced to scalar"));
-
-		tmp = tree_eval(n);
-		if (do_lint && (tmp->flags & (STRING|STRCUR)) == 0)
-			lintwarn(_("length: received non-string argument"));
-		tmp = force_string(tmp);
-#ifdef MBS_SUPPORT
-		if (gawk_mb_cur_max > 1) {
-			tmp = force_wstring(tmp);
-			len = tmp->wstlen;
-			/*
-			 * If the bytes don't make a valid wide character
-			 * string, fall back to the bytes themselves.
-			 */
-			if (len == 0 && tmp->stlen > 0)
-				len = tmp->stlen;
-		} else
-#endif
-			len = tmp->stlen;
-
-		free_temp(tmp);
-		return tmp_number((AWKNUM) len);
+		return make_number((AWKNUM) tmp->table_size);
 	}
+
+	assert(tmp->type == Node_val);
+
+	if (do_lint && (tmp->flags & (STRING|STRCUR)) == 0)
+		lintwarn(_("length: received non-string argument"));
+	(void) force_string(tmp);
+
+#if MBS_SUPPORT
+	if (gawk_mb_cur_max > 1) {
+		tmp = force_wstring(tmp);
+		len = tmp->wstlen;
+		/*
+		 * If the bytes don't make a valid wide character
+		 * string, fall back to the bytes themselves.
+		 */
+		 if (len == 0 && tmp->stlen > 0)
+			 len = tmp->stlen;
+	} else
+#endif
+		len = tmp->stlen;
+
+	DEREF(tmp);
+	return make_number((AWKNUM) len);
 }
 
 /* do_log --- the log function */
 
 NODE *
-do_log(NODE *tree)
+do_log(int nargs)
 {
 	NODE *tmp;
 	double d, arg;
 
-	tmp = tree_eval(tree->lnode);
+	tmp = POP_SCALAR();
 	if (do_lint && (tmp->flags & (NUMCUR|NUMBER)) == 0)
 		lintwarn(_("log: received non-numeric argument"));
 	arg = (double) force_number(tmp);
 	if (arg < 0.0)
 		warning(_("log: received negative argument %g"), arg);
 	d = log(arg);
-	free_temp(tmp);
-	return tmp_number((AWKNUM) d);
+	DEREF(tmp);
+	return make_number((AWKNUM) d);
 }
 
+
 /*
- * format_tree() formats nodes of a tree, starting with a left node,
+ * format_tree() formats arguments of sprintf,
  * and accordingly to a fmt_string providing a format like in
  * printf family from C library.  Returns a string node which value
  * is a formatted string.  Called by  sprintf function.
@@ -528,7 +556,7 @@ NODE *
 format_tree(
 	const char *fmt_string,
 	size_t n0,
-	register NODE *carg,
+	NODE **the_args,
 	long num_args)
 {
 /* copy 'l' bytes from 's' to 'obufout' checking for space in the process */
@@ -569,15 +597,8 @@ format_tree(
 	osiz += delta; \
 }
 
-	static NODE **the_args = 0;
-	static size_t args_size = 0;
 	size_t cur_arg = 0;
-
-	auto NODE **save_args = 0;
-	auto size_t save_args_size = 0;
-	static int call_level = 0;
-
-	NODE *r;
+	NODE *r = NULL;
 	int i;
 	int toofew = FALSE;
 	char *obuf, *obufout;
@@ -588,14 +609,11 @@ format_tree(
 	NODE *arg;
 	long fw, prec, argnum;
 	int used_dollar;
-	int lj, alt, big, bigbig, small, have_prec, need_format;
+	int lj, alt, big_flag, bigbig_flag, small_flag, have_prec, need_format;
 	long *cur = NULL;
-#ifdef sun386		/* Can't cast unsigned (int/long) from ptr->value */
-	long tmp_uval;	/* on 386i 4.0.1 C compiler -- it just hangs */
-#endif
 	uintmax_t uval;
 	int sgn;
-	int base = 0;
+	int base;
 	/*
 	 * Although this is an array, the elements serve two different
 	 * purposes. The first element is the general buffer meant
@@ -632,6 +650,8 @@ format_tree(
 	osiz = INITIAL_OUT_SIZE;
 	ofre = osiz - 2;
 
+	cur_arg = 1;
+
 	{
 		size_t k;
 		for (k = 0; k < sizeof(cpbufs)/sizeof(cpbufs[0]); k++) {
@@ -654,56 +674,11 @@ format_tree(
 		       cpbufs[0].bufsize);	\
 		cpbufs[0].bufsize *= 2;	\
 		if (prev != cpbufs[0].stackbuf)	\
-			free(prev);	\
+			efree(prev);	\
 		cend = cpbufs[0].buf+cpbufs[0].bufsize;	\
 	}	\
 	*--cp = (CH);	\
 } while(0)
-
-	/*
-	 * Icky problem.  If the args make a nested call to printf/sprintf,
-	 * we end up clobbering the static variable `the_args'.  Not good.
-	 * We don't just malloc and free the_args each time, since most of the
-	 * time there aren't nested calls.  But if this is a nested call,
-	 * save the memory pointed to by the_args and allocate a fresh
-	 * array.  Then free it on end.
-	 */
-	if (++call_level > 1) {	/* nested */
-		save_args = the_args;
-		save_args_size = args_size;
-
-		args_size = 0;	/* force fresh allocation */
-	}
-
-	if (args_size == 0) {
-		/* allocate array */
-		emalloc(the_args, NODE **, (num_args+1) * sizeof(NODE *), "format_tree");
-		args_size = num_args + 1;
-	} else if (num_args + 1 > args_size) {
-		/* grow it */
-		erealloc(the_args, NODE **, (num_args+1) * sizeof(NODE *), "format_tree");
-		args_size = num_args + 1;
-	}
-
-
-	/* fill it in */
-	/*
-	 * We ignore the_args[0] since format strings use
-	 * 1-based numbers to indicate the arguments.  It's
-	 * easiest to just convert to int and index, without
-	 * having to remember to subtract 1.
-	 */
-	memset(the_args, '\0', num_args * sizeof(NODE *));
-	for (i = 1; carg != NULL; i++, carg = carg->rnode) {
-		NODE *tmp;
-
-		/* Here lies the wumpus's other brother. R.I.P. */
-		tmp = tree_eval(carg->lnode);
-		the_args[i] = dupnode(tmp);
-		free_temp(tmp);
-	}
-	assert(i == num_args);
-	cur_arg = 1;
 
 	/*
 	 * Check first for use of `count$'.
@@ -715,12 +690,15 @@ format_tree(
 	 */
 #define parse_next_arg() { \
 	if (argnum > 0) { \
-		if (cur_arg > 1) \
-			fatal(_("must use `count$' on all formats or none")); \
+		if (cur_arg > 1) { \
+			msg(_("fatal: must use `count$' on all formats or none")); \
+			goto out; \
+		} \
 		arg = the_args[argnum]; \
 	} else if (used_dollar) { \
-		fatal(_("must use `count$' on all formats or none")); \
+		msg(_("fatal: must use `count$' on all formats or none")); \
 		arg = 0; /* shutup the compiler */ \
+		goto out; \
 	} else if (cur_arg >= num_args) { \
 		arg = 0; /* shutup the compiler */ \
 		toofew = TRUE; \
@@ -746,12 +724,13 @@ format_tree(
 		cur = &fw;
 		fw = 0;
 		prec = 0;
+		base = 0;
 		argnum = 0;
 		have_prec = FALSE;
 		signchar = FALSE;
 		zero_flag = FALSE;
 		quote_flag = FALSE;
-		lj = alt = big = bigbig = small = FALSE;
+		lj = alt = big_flag = bigbig_flag = small_flag = FALSE;
 		fill = sp;
 		cp = cend;
 		chbuf = lchbuf;
@@ -780,14 +759,14 @@ check_pos:
 				const char *msg = NULL;
 
 				if (fw && ! have_prec)
-					msg = _("field width is ignored for `%%%%' specifier");
+					msg = _("field width is ignored for `%%' specifier");
 				else if (fw == 0 && have_prec)
-					msg = _("precision is ignored for `%%%%' specifier");
+					msg = _("precision is ignored for `%%' specifier");
 				else if (fw && have_prec)
-					msg = _("field width and precision are ignored for `%%%%' specifier");
+					msg = _("field width and precision are ignored for `%%' specifier");
 
 				if (msg != NULL)
-					lintwarn(msg);
+					lintwarn("%s", msg);
 			}
 			bchunk_one("%");
 			s0 = s1;
@@ -834,31 +813,42 @@ check_pos:
 				continue;
 			goto retry;
 		case '$':
-			if (do_traditional)
-				fatal(_("`$' is not permitted in awk formats"));
+			if (do_traditional) {
+				msg(_("fatal: `$' is not permitted in awk formats"));
+				goto out;
+			}
+
 			if (cur == &fw) {
 				argnum = fw;
 				fw = 0;
 				used_dollar = TRUE;
-				if (argnum <= 0)
-					fatal(_("arg count with `$' must be > 0"));
-				if (argnum >= num_args)
-					fatal(_("arg count %ld greater than total number of supplied arguments"), argnum);
-			} else
-				fatal(_("`$' not permitted after period in format"));
+				if (argnum <= 0) {
+					msg(_("fatal: arg count with `$' must be > 0"));
+					goto out;
+				}
+				if (argnum >= num_args) {
+					msg(_("fatal: arg count %ld greater than total number of supplied arguments"), argnum);
+					goto out;
+				}
+			} else {
+				msg(_("fatal: `$' not permitted after period in format"));
+				goto out;
+			}
+
 			goto retry;
 		case '*':
 			if (cur == NULL)
 				break;
-			if (! do_traditional && ISDIGIT(*s1)) {
+			if (! do_traditional && isdigit((unsigned char) *s1)) {
 				int val = 0;
 
-				for (; n0 > 0 && *s1 && ISDIGIT(*s1); s1++, n0--) {
+				for (; n0 > 0 && *s1 && isdigit((unsigned char) *s1); s1++, n0--) {
 					val *= 10;
 					val += *s1 - '0';
 				}
 				if (*s1 != '$') {
-					fatal(_("no `$' supplied for positional field width or precision"));
+					msg(_("fatal: no `$' supplied for positional field width or precision"));
+					goto out;
 				} else {
 					s1++;
 					n0--;
@@ -912,13 +902,17 @@ check_pos:
 		case '#':
 			alt = TRUE;
 			goto check_pos;
-#if defined(HAVE_LOCALE_H)
 		case '\'':
-			quote_flag = TRUE;
+#if defined(HAVE_LOCALE_H)       
+			/* allow quote_flag if there is a thousands separator. */
+			if (loc.thousands_sep[0] != '\0')
+				quote_flag = TRUE;
 			goto check_pos;
+#else
+			goto retry;  
 #endif
 		case 'l':
-			if (big)
+			if (big_flag)
 				break;
 			else {
 				static short warned = FALSE;
@@ -927,13 +921,15 @@ check_pos:
 					lintwarn(_("`l' is meaningless in awk formats; ignored"));
 					warned = TRUE;
 				}
-				if (do_posix)
-					fatal(_("`l' is not permitted in POSIX awk formats"));
+				if (do_posix) {
+					msg(_("fatal: `l' is not permitted in POSIX awk formats"));
+					goto out;
+				}
 			}
-			big = TRUE;
+			big_flag = TRUE;
 			goto retry;
 		case 'L':
-			if (bigbig)
+			if (bigbig_flag)
 				break;
 			else {
 				static short warned = FALSE;
@@ -942,13 +938,15 @@ check_pos:
 					lintwarn(_("`L' is meaningless in awk formats; ignored"));
 					warned = TRUE;
 				}
-				if (do_posix)
-					fatal(_("`L' is not permitted in POSIX awk formats"));
+				if (do_posix) {
+					msg(_("fatal: `L' is not permitted in POSIX awk formats"));
+					goto out;
+				}
 			}
-			bigbig = TRUE;
+			bigbig_flag = TRUE;
 			goto retry;
 		case 'h':
-			if (small)
+			if (small_flag)
 				break;
 			else {
 				static short warned = FALSE;
@@ -957,25 +955,46 @@ check_pos:
 					lintwarn(_("`h' is meaningless in awk formats; ignored"));
 					warned = TRUE;
 				}
-				if (do_posix)
-					fatal(_("`h' is not permitted in POSIX awk formats"));
+				if (do_posix) {
+					msg(_("fatal: `h' is not permitted in POSIX awk formats"));
+					goto out;
+				}
 			}
-			small = TRUE;
+			small_flag = TRUE;
 			goto retry;
 		case 'c':
 			need_format = FALSE;
-			if (zero_flag && ! lj)
-				fill = zero_string;
 			parse_next_arg();
 			/* user input that looks numeric is numeric */
 			if ((arg->flags & (MAYBE_NUM|NUMBER)) == MAYBE_NUM)
 				(void) force_number(arg);
 			if (arg->flags & NUMBER) {
-#ifdef sun386
-				tmp_uval = arg->numbr; 
-				uval = (unsigned long) tmp_uval;
-#else
 				uval = (uintmax_t) arg->numbr;
+#if MBS_SUPPORT
+				if (gawk_mb_cur_max > 1) {
+					char buf[100];
+					wchar_t wc;
+					mbstate_t mbs;
+					size_t count;
+
+					memset(& mbs, 0, sizeof(mbs));
+					wc = uval;
+
+					count = wcrtomb(buf, wc, & mbs);
+					if (count == 0
+					    || count == (size_t)-1
+					    || count == (size_t)-2)
+						goto out0;
+
+					memcpy(cpbuf, buf, count);
+					prec = count;
+					cp = cpbuf;
+					goto pr_tail;
+				}
+out0:
+				;
+				/* else,
+					fall through */
 #endif
 				if (do_lint && uval > 255) {
 					lintwarn("[s]printf: value %g is too big for %%c format",
@@ -992,13 +1011,32 @@ check_pos:
 			 * precision, forcing it to 1.  (Didn't this
 			 * used to work? 6/2003.)
 			 */
-			prec = 1;
 			cp = arg->stptr;
+#if MBS_SUPPORT
+			/*
+			 * First character can be multiple bytes if
+			 * it's a multibyte character. Grr.
+			 */
+			if (gawk_mb_cur_max > 1) {
+				mbstate_t state;
+				size_t count;
+
+				memset(& state, 0, sizeof(state));
+				count = mbrlen(cp, arg->stlen, & state);
+				if (count == 0
+				    || count == (size_t)-1
+				    || count == (size_t)-2)
+					goto out2;
+				prec = count;
+				goto pr_tail;
+			}
+out2:
+			;
+#endif
+			prec = 1;
 			goto pr_tail;
 		case 's':
 			need_format = FALSE;
-			if (zero_flag && ! lj)
-				fill = zero_string;
 			parse_next_arg();
 			arg = force_string(arg);
 			if (fw == 0 && ! have_prec)
@@ -1074,7 +1112,7 @@ check_pos:
 						jj = 0;		/* keep using current val in loc.grouping[ii] */
 					else if (loc.grouping[ii+1] == CHAR_MAX)
 						quote_flag = FALSE;
-					else {
+					else {                 
 						ii++;
 						jj = 0;
 					}
@@ -1164,7 +1202,6 @@ check_pos:
 			    && ((zero_flag && ! have_prec)
 				 || (fw == 0 && have_prec)))
 				fill = zero_string;
-
 			ii = jj = 0;
 			do {
 				PREPEND(chbuf[uval % base]);
@@ -1173,11 +1210,11 @@ check_pos:
 				if (base == 10 && quote_flag && loc.grouping[ii] && ++jj == loc.grouping[ii]) {
 					if (uval)	/* only add if more digits coming */
 						PREPEND(loc.thousands_sep[0]);	/* XXX --- assumption it's one char */
-					if (loc.grouping[ii+1] == 0)
-						jj = 0;		/* keep using current val in loc.grouping[ii] */
-					else if (loc.grouping[ii+1] == CHAR_MAX)
+					if (loc.grouping[ii+1] == 0)                                          
+						jj = 0;     /* keep using current val in loc.grouping[ii] */
+					else if (loc.grouping[ii+1] == CHAR_MAX)                        
 						quote_flag = FALSE;
-					else {
+					else {                 
 						ii++;
 						jj = 0;
 					}
@@ -1219,8 +1256,7 @@ check_pos:
 				;
 			else if (gawk_mb_cur_max > 1 && (cs1 == 's' || cs1 == 'c')) {
 				assert(cp == arg->stptr || cp == cpbuf);
-				copy_count = mbc_byte_count(arg->stptr,
-						cs1 == 's' ? arg->stlen : 1);
+				copy_count = mbc_byte_count(arg->stptr, prec);
 			}
 			bchunk(cp, copy_count);
 			while (fw > prec) {
@@ -1255,13 +1291,6 @@ check_pos:
 			if (! have_prec)
 				prec = DEFAULT_G_PRECISION;
 			chksize(fw + prec + 9);	/* 9 == slop */
-#ifdef VAXCRTL
-			/* pre-ANSI library doesn't handle '0' flag
-			   correctly in many cases; reject it */
-			if (zero_flag
-			    && (lj || (signchar && signchar != '+')))
-				zero_flag = FALSE;
-#endif
 			cp = cpbuf;
 			*cp++ = '%';
 			if (lj)
@@ -1278,7 +1307,6 @@ check_pos:
 			cp += 3;
 			*cp++ = cs1;
 			*cp = '\0';
-#ifndef GFMT_WORKAROUND
 #if defined(LC_NUMERIC)
 			if (quote_flag && ! use_lc_numeric)
 				setlocale(LC_NUMERIC, "");
@@ -1294,34 +1322,22 @@ check_pos:
 			if (quote_flag && ! use_lc_numeric)
 				setlocale(LC_NUMERIC, "C");
 #endif
-#else	/* GFMT_WORKAROUND */
-			if (cs1 == 'g' || cs1 == 'G')
-				sgfmt(obufout, cpbuf, (int) alt,
-				       (int) fw, (int) prec, (double) tmpval);
-			else {
-				int n;
-				while ((n = snprintf(obufout, ofre, cpbuf,
-						     (int) fw, (int) prec,
-						     (double) tmpval)) >= ofre)
-					chksize(n)
-			}
-#endif	/* GFMT_WORKAROUND */
 			len = strlen(obufout);
 			ofre -= len;
 			obufout += len;
 			s0 = s1;
 			break;
 		default:
-			if (do_lint && ISALPHA(cs1))
+			if (do_lint && isalpha(cs1))
 				lintwarn(_("ignoring unknown format specifier character `%c': no argument converted"), cs1);
 			break;
 		}
 		if (toofew) {
-			free(obuf);	/* silence valgrind */
-			fatal("%s\n\t`%s'\n\t%*s%s",
-			      _("not enough arguments to satisfy format string"),
+			msg("%s\n\t`%s'\n\t%*s%s",
+			      _("fatal: not enough arguments to satisfy format string"),
 			      fmt_string, (int) (s1 - fmt_string - 1), "",
 			      _("^ ran out for this one"));
+			goto out;
 		}
 	}
 	if (do_lint) {
@@ -1334,167 +1350,160 @@ check_pos:
 	}
 	bchunk(s0, s1 - s0);
 	r = make_str_node(obuf, obufout - obuf, ALREADY_MALLOCED);
-	r->flags |= TEMP;
-
-	for (i = 1; i < num_args; i++) {
-		unref(the_args[i]);
-	}
-
-	if (call_level-- > 1) {
-		free(the_args);
-		the_args = save_args;
-		args_size = save_args_size;
-	}
-
+	obuf = NULL;
+out:
 	{
 		size_t k;
 		size_t count = sizeof(cpbufs)/sizeof(cpbufs[0]);
 		for (k = 0; k < count; k++) {
 			if (cpbufs[k].buf != cpbufs[k].stackbuf)
-				free(cpbufs[k].buf);
+				efree(cpbufs[k].buf);
+		}
+		if (obuf != NULL)
+			efree(obuf);
+	}
+	if (r == NULL)
+		gawk_exit(EXIT_FATAL);
+	return r;
+}
+
+
+/* printf_common --- common code for sprintf and printf */
+
+static NODE *
+printf_common(int nargs)
+{
+	int i;
+	NODE *r, *tmp;
+
+	assert(nargs <= max_args);
+	for (i = 1; i <= nargs; i++) {
+		tmp = args_array[nargs - i] = POP();
+		if (tmp->type == Node_var_array) {
+			while (--i > 0)
+				DEREF(args_array[nargs - i]);
+			fatal(_("attempt to use array `%s' in a scalar context"), array_vname(tmp));
 		}
 	}
 
+	force_string(args_array[0]);
+	r = format_tree(args_array[0]->stptr, args_array[0]->stlen, args_array, nargs);
+	for (i = 0; i < nargs; i++)
+		DEREF(args_array[i]);
 	return r;
 }
 
 /* do_sprintf --- perform sprintf */
 
 NODE *
-do_sprintf(NODE *tree)
+do_sprintf(int nargs)
 {
 	NODE *r;
-	NODE *sfmt = force_string(tree_eval(tree->lnode));
-
-	r = format_tree(sfmt->stptr, sfmt->stlen, tree->rnode, tree->printf_count);
-	free_temp(sfmt);
+	r = printf_common(nargs);
+	if (r == NULL)
+		gawk_exit(EXIT_FATAL);
 	return r;
 }
 
-/*
- * redirect_to_fp --- return fp for redirection, NULL on failure
- * or stdout if no redirection, used by all print routines
- */
-
-static inline FILE *
-redirect_to_fp(NODE *tree, struct redirect **rpp)
-{
-	int errflg;	/* not used, sigh */
-	struct redirect *rp;
-
-	if (tree == NULL)
-		return stdout;
-
-	rp = redirect(tree, &errflg);
-	if (rp != NULL) {
-		*rpp = rp;
-		return rp->fp;
-	}
-
-	return NULL;
-}
 
 /* do_printf --- perform printf, including redirection */
 
 void
-do_printf(NODE *tree)
+do_printf(int nargs, int redirtype)
 {
+	FILE *fp = NULL;
+	NODE *tmp;
 	struct redirect *rp = NULL;
-	register FILE *fp;
+	int errflg;	/* not used, sigh */
+	NODE *redir_exp = NULL;
 
-	if (tree->lnode == NULL) {
+	if (nargs == 0) {
 		if (do_traditional) {
 			if (do_lint)
 				lintwarn(_("printf: no arguments"));
+			if (redirtype != 0) {
+				redir_exp = TOP();
+				if (redir_exp->type != Node_val)
+					fatal(_("attempt to use array `%s' in a scalar context"), array_vname(redir_exp));
+				rp = redirect(redir_exp, redirtype, & errflg);
+				DEREF(redir_exp);
+				decr_sp();
+			}
 			return;	/* bwk accepts it silently */
 		}
 		fatal(_("printf: no arguments"));
 	}
 
-	fp = redirect_to_fp(tree->rnode, & rp);
-	if (fp == NULL)
-		return;
-	tree->lnode->printf_count = tree->printf_count;
-	tree = do_sprintf(tree->lnode);
-	efwrite(tree->stptr, sizeof(char), tree->stlen, fp, "printf", rp, TRUE);
-	if (rp != NULL && (rp->flag & RED_TWOWAY) != 0)
-		fflush(rp->fp);
-	free_temp(tree);
+	if (redirtype != 0) {
+		redir_exp = PEEK(nargs);
+		if (redir_exp->type != Node_val)
+			fatal(_("attempt to use array `%s' in a scalar context"), array_vname(redir_exp));
+		rp = redirect(redir_exp, redirtype, & errflg);
+		if (rp != NULL)
+			fp = rp->fp;
+	} else
+		fp = output_fp;
+
+	tmp = printf_common(nargs);
+	if (redir_exp != NULL) {
+		DEREF(redir_exp);
+		decr_sp();
+	}
+	if (tmp != NULL) {
+		if (fp == NULL) {
+			DEREF(tmp);
+			return;
+		}
+		efwrite(tmp->stptr, sizeof(char), tmp->stlen, fp, "printf", rp, TRUE);
+		if (rp != NULL && (rp->flag & RED_TWOWAY) != 0)
+			fflush(rp->fp);
+		DEREF(tmp);
+	} else
+		gawk_exit(EXIT_FATAL);
 }
 
 /* do_sqrt --- do the sqrt function */
 
 NODE *
-do_sqrt(NODE *tree)
+do_sqrt(int nargs)
 {
 	NODE *tmp;
 	double arg;
 
-	tmp = tree_eval(tree->lnode);
+	tmp = POP_SCALAR();
 	if (do_lint && (tmp->flags & (NUMCUR|NUMBER)) == 0)
 		lintwarn(_("sqrt: received non-numeric argument"));
 	arg = (double) force_number(tmp);
-	free_temp(tmp);
+	DEREF(tmp);
 	if (arg < 0.0)
 		warning(_("sqrt: called with negative argument %g"), arg);
-	return tmp_number((AWKNUM) sqrt(arg));
+	return make_number((AWKNUM) sqrt(arg));
 }
 
 /* do_substr --- do the substr function */
 
 NODE *
-do_substr(NODE *tree)
+do_substr(int nargs)
 {
-	NODE *t1, *t2, *t3;
+	NODE *t1;
 	NODE *r;
-	register size_t indx;
-	size_t length;
-	double d_index, d_length;
+	size_t indx;
+	size_t length = 0;
+	double d_index = 0, d_length = 0;
 	size_t src_len;
 
-	t1 = force_string(tree_eval(tree->lnode));
-	t2 = tree_eval(tree->rnode->lnode);
-	d_index = force_number(t2);
-	free_temp(t2);
+	if (nargs == 3)
+		POP_NUMBER(d_length);
+	POP_NUMBER(d_index);
+	t1 = POP_STRING();
 
-	/* the weird `! (foo)' tests help catch NaN values. */
-	if (! (d_index >= 1)) {
-		if (do_lint)
-			lintwarn(_("substr: start index %g is invalid, using 1"),
-				 d_index);
-		d_index = 1;
-	}
-	if (do_lint && double_to_int(d_index) != d_index)
-		lintwarn(_("substr: non-integer start index %g will be truncated"),
-			 d_index);
-
-	/* awk indices are from 1, C's are from 0 */
-	if (d_index <= SIZE_MAX)
-		indx = d_index - 1;
-	else
-		indx = SIZE_MAX;
-
-	if (tree->rnode->rnode == NULL) {	/* third arg. missing */
-		/* use remainder of string */
-		length = t1->stlen - indx;	/* default to bytes */
-#ifdef MBS_SUPPORT
-		if (gawk_mb_cur_max > 1) {
-			t1 = force_wstring(t1);
-			if (t1->wstlen > 0)	/* use length of wide char string if we have one */
-				length = t1->wstlen - indx;
-		}
-#endif
-		d_length = length;	/* set here in case used in diagnostics, below */
-	} else {
-		t3 = tree_eval(tree->rnode->rnode->lnode);
-		d_length = force_number(t3);
-		free_temp(t3);
+	if (nargs == 3) {
 		if (! (d_length >= 1)) {
 			if (do_lint == LINT_ALL)
 				lintwarn(_("substr: length %g is not >= 1"), d_length);
 			else if (do_lint == LINT_INVALID && ! (d_length >= 0))
 				lintwarn(_("substr: length %g is not >= 0"), d_length);
-			free_temp(t1);
+			DEREF(t1);
 			return Nnull_string;
 		}
 		if (do_lint) {
@@ -1514,16 +1523,46 @@ do_substr(NODE *tree)
 			length = SIZE_MAX;
 	}
 
+	/* the weird `! (foo)' tests help catch NaN values. */
+	if (! (d_index >= 1)) {
+		if (do_lint)
+			lintwarn(_("substr: start index %g is invalid, using 1"),
+				 d_index);
+		d_index = 1;
+	}
+	if (do_lint && double_to_int(d_index) != d_index)
+		lintwarn(_("substr: non-integer start index %g will be truncated"),
+			 d_index);
+
+	/* awk indices are from 1, C's are from 0 */
+	if (d_index <= SIZE_MAX)
+		indx = d_index - 1;
+	else
+		indx = SIZE_MAX;
+
+	if (nargs == 2) {	/* third arg. missing */
+		/* use remainder of string */
+		length = t1->stlen - indx;	/* default to bytes */
+#if MBS_SUPPORT
+		if (gawk_mb_cur_max > 1) {
+			t1 = force_wstring(t1);
+			if (t1->wstlen > 0)	/* use length of wide char string if we have one */
+				length = t1->wstlen - indx;
+		}
+#endif
+		d_length = length;	/* set here in case used in diagnostics, below */
+	}
+
 	if (t1->stlen == 0) {
 		/* substr("", 1, 0) produces a warning only if LINT_ALL */
 		if (do_lint && (do_lint == LINT_ALL || ((indx | length) != 0)))
 			lintwarn(_("substr: source string is zero length"));
-		free_temp(t1);
+		DEREF(t1);
 		return Nnull_string;
 	}
 
 	/* get total len of input string, for following checks */
-#ifdef MBS_SUPPORT
+#if MBS_SUPPORT
 	if (gawk_mb_cur_max > 1) {
 		t1 = force_wstring(t1);
 		src_len = t1->wstlen;
@@ -1535,7 +1574,7 @@ do_substr(NODE *tree)
 		if (do_lint)
 			lintwarn(_("substr: start index %g is past end of string"),
 				d_index);
-		free_temp(t1);
+		DEREF(t1);
 		return Nnull_string;
 	}
 	if (length > src_len - indx) {
@@ -1546,18 +1585,17 @@ do_substr(NODE *tree)
 		length = src_len - indx;
 	}
 
-#ifdef MBS_SUPPORT
-	if (gawk_mb_cur_max > 1) {
+#if MBS_SUPPORT
+	/* force_wstring() already called */
+	if (gawk_mb_cur_max == 1 || t1->wstlen == t1->stlen)
+		/* single byte case */
+		r = make_string(t1->stptr + indx, length);
+	else {
 		/* multibyte case, more work */
 		size_t result;
 		wchar_t *wp;
 		mbstate_t mbs;
 		char *substr, *cp;
-
-		/* force_wstring() already called */
-
-		if (t1->stlen == t1->wstlen)
-			goto single_byte_case;
 
 		/*
 		 * Convert the wide chars in t1->wstptr back into m.b. chars.
@@ -1576,84 +1614,95 @@ do_substr(NODE *tree)
 		}
 		*cp = '\0';
 		r = make_str_node(substr, cp - substr, ALREADY_MALLOCED);
-		r->flags |= TEMP;
-	} else {
-		/* single byte case, easy */
-single_byte_case:
-		r = tmp_string(t1->stptr + indx, length);
 	}
 #else
-	r = tmp_string(t1->stptr + indx, length);
+	r = make_string(t1->stptr + indx, length);
 #endif
 
-	free_temp(t1);
+	DEREF(t1);
 	return r;
 }
 
 /* do_strftime --- format a time stamp */
 
 NODE *
-do_strftime(NODE *tree)
+do_strftime(int nargs)
 {
 	NODE *t1, *t2, *t3, *ret;
 	struct tm *tm;
 	time_t fclock;
+	long clock_val;
 	char *bufp;
 	size_t buflen, bufsize;
 	char buf[BUFSIZ];
-	/* FIXME: One day make %d be %e, after C 99 is common. */
-	static const char def_format[] = "%a %b %d %H:%M:%S %Z %Y";
 	const char *format;
 	int formatlen;
 	int do_gmt;
+	NODE *val = NULL;
+	NODE *sub = NULL;
 
 	/* set defaults first */
-	format = def_format;	/* traditional date format */
+	format = def_strftime_format;	/* traditional date format */
 	formatlen = strlen(format);
-	(void) time(&fclock);	/* current time of day */
+	(void) time(& fclock);	/* current time of day */
 	do_gmt = FALSE;
 
-	t1 = t2 = t3 = NULL;
-	if (tree != NULL) {	/* have args */
-		if (tree->lnode != NULL) {
-			NODE *tmp = tree_eval(tree->lnode);
-			if (do_lint && (tmp->flags & (STRING|STRCUR)) == 0)
-				lintwarn(_("strftime: received non-string first argument"));
-			t1 = force_string(tmp);
-			format = t1->stptr;
-			formatlen = t1->stlen;
-			if (formatlen == 0) {
-				if (do_lint)
-					lintwarn(_("strftime: received empty format string"));
-				free_temp(t1);
-				return tmp_string("", 0);
-			}
+	if (PROCINFO_node != NULL) {
+		sub = make_string("strftime", 8);
+		val = in_array(PROCINFO_node, sub);
+		unref(sub);
+
+		if (val != NULL) {
+			if (do_lint && (val->flags & STRING) == 0)
+				lintwarn(_("strftime: format value in PROCINFO[\"strftime\"] has numeric type"));
+			val = force_string(val);
+			format = val->stptr;
+			formatlen = val->stlen;
 		}
-	
-		if (tree->rnode != NULL) {
-			t2 = tree_eval(tree->rnode->lnode);
+	}
+
+	t1 = t2 = t3 = NULL;
+	if (nargs > 0) {	/* have args */
+		NODE *tmp;
+
+		if (nargs == 3) {
+			t3 = POP_SCALAR();
+			if ((t3->flags & (NUMCUR|NUMBER)) != 0)
+				do_gmt = (t3->numbr != 0);
+			else
+				do_gmt = (t3->stlen > 0);
+			DEREF(t3);
+		}
+			
+		if (nargs >= 2) {
+			t2 = POP_SCALAR();
 			if (do_lint && (t2->flags & (NUMCUR|NUMBER)) == 0)
 				lintwarn(_("strftime: received non-numeric second argument"));
-			fclock = (time_t) force_number(t2);
-			free_temp(t2);
+			clock_val = (long) force_number(t2);
+			if (clock_val < 0)
+				fatal(_("strftime: second argument less than 0 or too big for time_t"));
+			fclock = (time_t) clock_val;
+			DEREF(t2);
+		}
 
-			if (tree->rnode->rnode != NULL) {
-				tree = tree->rnode->rnode;
-				t3 = tree_eval(tree->lnode);
-				if ((t3->flags & (NUMCUR|NUMBER)) != 0)
-					do_gmt = (t3->numbr != 0);
-				else
-					do_gmt = (t3->stlen > 0);
-
-				free_temp(t3);
-			}
+		tmp = POP_SCALAR();
+		if (do_lint && (tmp->flags & (STRING|STRCUR)) == 0)
+			lintwarn(_("strftime: received non-string first argument"));
+		t1 = force_string(tmp);
+		format = t1->stptr;
+		formatlen = t1->stlen;
+		if (formatlen == 0) {
+			if (do_lint)
+				lintwarn(_("strftime: received empty format string"));
+			DEREF(t1);
+			return make_string("", 0);
 		}
 	}
 
 	if (do_gmt)
-		tm = gmtime(&fclock);
+		tm = gmtime(& fclock);
 	else
-		tm = localtime(&fclock);
+		tm = localtime(& fclock);
 
 	bufp = buf;
 	bufsize = sizeof(buf);
@@ -1676,29 +1725,29 @@ do_strftime(NODE *tree)
 		else
 			erealloc(bufp, char *, bufsize, "do_strftime");
 	}
-	ret = tmp_string(bufp, buflen);
+	ret = make_string(bufp, buflen);
 	if (bufp != buf)
-		free(bufp);
+		efree(bufp);
 	if (t1)
-		free_temp(t1);
+		DEREF(t1);
 	return ret;
 }
 
 /* do_systime --- get the time of day */
 
 NODE *
-do_systime(NODE *tree ATTRIBUTE_UNUSED)
+do_systime(int nargs ATTRIBUTE_UNUSED)
 {
 	time_t lclock;
 
-	(void) time(&lclock);
-	return tmp_number((AWKNUM) lclock);
+	(void) time(& lclock);
+	return make_number((AWKNUM) lclock);
 }
 
 /* do_mktime --- turn a time string into a timestamp */
 
 NODE *
-do_mktime(NODE *tree)
+do_mktime(int nargs)
 {
 	NODE *t1;
 	struct tm then;
@@ -1708,7 +1757,7 @@ do_mktime(NODE *tree)
 	time_t then_stamp;
 	char save;
 
-	t1 = tree_eval(tree->lnode);
+	t1 = POP_SCALAR();
 	if (do_lint && (t1->flags & (STRING|STRCUR)) == 0)
 		lintwarn(_("mktime: received non-string argument"));
 	t1 = force_string(t1);
@@ -1721,13 +1770,22 @@ do_mktime(NODE *tree)
 			& hour, & minute, & second,
 		        & dst);
 
+    if (do_lint /* Ready? Set! Go: */
+       && (    (second < 0 || second > 60)
+        || (minute < 0 || minute > 60)
+        || (hour < 0 || hour > 23)
+        || (day < 1 || day > 31)
+        || (month < 1 || month > 12) ))
+        lintwarn(_("mktime: at least one of the values is out of the default range"));
+
 	t1->stptr[t1->stlen] = save;
-	free_temp(t1);
+	DEREF(t1);
 
 	if (count < 6
-	    || month < month - 1
-	    || year < year - 1900 || year - 1900 != (int) (year - 1900))
-		return tmp_number((AWKNUM) -1);
+	    || month == INT_MIN
+	    || year < INT_MIN + 1900
+	    || year - 1900 > INT_MAX)
+		return make_number((AWKNUM) -1);
 
 	memset(& then, '\0', sizeof(then));
 	then.tm_sec = second;
@@ -1739,42 +1797,30 @@ do_mktime(NODE *tree)
 	then.tm_isdst = dst;
 
 	then_stamp = mktime(& then);
-	return tmp_number((AWKNUM) then_stamp);
+	return make_number((AWKNUM) then_stamp);
 }
 
 /* do_system --- run an external command */
 
 NODE *
-do_system(NODE *tree)
+do_system(int nargs)
 {
 	NODE *tmp;
 	int ret = 0;
 	char *cmd;
 	char save;
 
+	if (do_sandbox)
+		fatal(_("'system' function not allowed in sandbox mode"));
+
 	(void) flush_io();     /* so output is synchronous with gawk's */
-	tmp = tree_eval(tree->lnode);
+	tmp = POP_SCALAR();
 	if (do_lint && (tmp->flags & (STRING|STRCUR)) == 0)
 		lintwarn(_("system: received non-string argument"));
 	cmd = force_string(tmp)->stptr;
 
 	if (cmd && *cmd) {
 		/* insure arg to system is zero-terminated */
-
-		/*
-		 * From: David Trueman <david@cs.dal.ca>
-		 * To: arnold@cc.gatech.edu (Arnold Robbins)
-		 * Date: Wed, 3 Nov 1993 12:49:41 -0400
-		 * 
-		 * It may not be necessary to save the character, but
-		 * I'm not sure.  It would normally be the field
-		 * separator.  If the parse has not yet gone beyond
-		 * that, it could mess up (although I doubt it).  If
-		 * FIELDWIDTHS is being used, it might be the first
-		 * character of the next field.  Unless someone wants
-		 * to check it out exhaustively, I suggest saving it
-		 * for now...
-		 */
 		save = cmd[tmp->stlen];
 		cmd[tmp->stlen] = '\0';
 
@@ -1787,8 +1833,8 @@ do_system(NODE *tree)
 
 		cmd[tmp->stlen] = save;
 	}
-	free_temp(tmp);
-	return tmp_number((AWKNUM) ret);
+	DEREF(tmp);
+	return make_number((AWKNUM) ret);
 }
 
 extern NODE **fmt_list;  /* declared in eval.c */
@@ -1796,54 +1842,60 @@ extern NODE **fmt_list;  /* declared in eval.c */
 /* do_print --- print items, separated by OFS, terminated with ORS */
 
 void 
-do_print(register NODE *tree)
+do_print(int nargs, int redirtype)
 {
-	register NODE **t;
 	struct redirect *rp = NULL;
-	register FILE *fp;
-	int numnodes, i;
-	NODE *save;
-	NODE *tval;
+	int errflg;	/* not used, sigh */
+	FILE *fp = NULL;
+	int i;
+	NODE *redir_exp = NULL;
+	NODE *tmp;
 
-	fp = redirect_to_fp(tree->rnode, & rp);
-	if (fp == NULL)
-		return;
+	assert(nargs <= max_args);
 
-	/*
-	 * General idea is to evaluate all the expressions first and
-	 * then print them, otherwise you get suprising behavior.
-	 * See test/prtoeval.awk for an example program.
-	 */
-	save = tree = tree->lnode;
-	for (numnodes = 0; tree != NULL; tree = tree->rnode)
-		numnodes++;
-	emalloc(t, NODE **, numnodes * sizeof(NODE *), "do_print");
+	if (redirtype != 0) {
+		redir_exp = PEEK(nargs);
+		if (redir_exp->type != Node_val)
+			fatal(_("attempt to use array `%s' in a scalar context"), array_vname(redir_exp));
+		rp = redirect(redir_exp, redirtype, & errflg);
+		if (rp != NULL)
+			fp = rp->fp;
+	} else
+		fp = output_fp;
 
-	tree = save;
-	for (i = 0; tree != NULL; i++, tree = tree->rnode) {
-		NODE *n;
-
-		/* Here lies the wumpus. R.I.P. */
-		n = tree_eval(tree->lnode);
-		t[i] = dupnode(n);
-		free_temp(n);
-
-		if ((t[i]->flags & (NUMBER|STRING)) == NUMBER) {
+	for (i = 1; i <= nargs; i++) {
+		tmp = args_array[i] = POP();
+		if (tmp->type == Node_var_array) {
+			while (--i > 0)
+				DEREF(args_array[i]);
+			fatal(_("attempt to use array `%s' in a scalar context"), array_vname(tmp));
+		}
+		if (do_lint && tmp->type == Node_var_new)
+			lintwarn(_("reference to uninitialized variable `%s'"),
+					tmp->vname);
+		if ((tmp->flags & (NUMBER|STRING)) == NUMBER) {
 			if (OFMTidx == CONVFMTidx)
-				(void) force_string(t[i]);
-			else {
-				tval = tmp_number(t[i]->numbr);
-				unref(t[i]);
-				t[i] = format_val(OFMT, OFMTidx, tval);
-			}
+				(void) force_string(tmp);
+			else
+				args_array[i] = format_val(OFMT, OFMTidx, tmp);
 		}
 	}
 
-	for (i = 0; i < numnodes; i++) {
-		efwrite(t[i]->stptr, sizeof(char), t[i]->stlen, fp, "print", rp, FALSE);
-		unref(t[i]);
+	if (redir_exp != NULL) {
+		DEREF(redir_exp);
+		decr_sp();
+	}
 
-		if (i != numnodes - 1 && OFSlen > 0)
+	if (fp == NULL) {
+		for (i = nargs; i > 0; i--)
+			DEREF(args_array[i]);
+		return;
+	}
+
+	for (i = nargs; i > 0; i--) {
+		efwrite(args_array[i]->stptr, sizeof(char), args_array[i]->stlen, fp, "print", rp, FALSE);
+		DEREF(args_array[i]);
+		if (i != 1 && OFSlen > 0)
 			efwrite(OFS, sizeof(char), (size_t) OFSlen,
 				fp, "print", rp, FALSE);
 
@@ -1853,20 +1905,30 @@ do_print(register NODE *tree)
 
 	if (rp != NULL && (rp->flag & RED_TWOWAY) != 0)
 		fflush(rp->fp);
-
-	free(t);
 }
 
 /* do_print_rec --- special case printing of $0, for speed */
 
 void 
-do_print_rec(register NODE *tree)
+do_print_rec(int nargs, int redirtype)
 {
+	FILE *fp = NULL;
+	NODE *f0;
 	struct redirect *rp = NULL;
-	register FILE *fp;
-	register NODE *f0;
+	int errflg;	/* not used, sigh */
+	NODE *redir_exp = NULL;
 
-	fp = redirect_to_fp(tree->rnode, & rp);
+	assert(nargs == 0);
+	if (redirtype != 0) {
+		redir_exp = TOP();
+		rp = redirect(redir_exp, redirtype, & errflg);
+		if (rp != NULL)
+			fp = rp->fp;
+		DEREF(redir_exp);
+		decr_sp();
+	} else
+		fp = output_fp;
+
 	if (fp == NULL)
 		return;
 
@@ -1887,161 +1949,150 @@ do_print_rec(register NODE *tree)
 		fflush(rp->fp);
 }
 
-#ifdef MBS_SUPPORT
-/* wide_tolower_toupper --- lower- or uppercase a multibyte string */
+#if MBS_SUPPORT
 
-typedef int (*isw_func)(wint_t);
-typedef wint_t (*tow_func)(wint_t);
+/* is_wupper --- function version of iswupper for passing function pointers */
 
-static NODE *
-wide_tolower_toupper(NODE *t1, isw_func iswu, tow_func towl)
+static int
+is_wupper(wchar_t c)
 {
-	register unsigned char *cp, *cpe;
-	register unsigned char *cp2;
-	size_t mbclen;
-	mbstate_t mbs, prev_mbs;
-	wchar_t wc;
-	NODE *t2;
-	/*
-	 * Since the lowercase char and its uppercase equivalent may occupy
-	 * different number of bytes (Turkish `i'), we cannot say the length
-	 * of the output string.
-	 * This approach is adapted from format_tree().
-	 */
-	unsigned char *obuf;
-	size_t osiz, ofre;
+	return iswupper(c);
+}
 
-	/*
-	 * Better 2 spare bytes than 1, consistently with make_str_node().
-	 * And we need gawk_mb_cur_max free bytes before we convert the last
-	 * char, so we add (gawk_mb_cur_max - 1).
-	 */
-	osiz = t1->stlen + 2 + (gawk_mb_cur_max - 1);
-	ofre = osiz - 2;
-	emalloc(obuf, unsigned char *, osiz, "wide_tolower_toupper");
+/* is_wlower --- function version of iswlower for passing function pointers */
 
-	memset(&mbs, 0, sizeof(mbstate_t));
-	cp = (unsigned char *)t1->stptr;
-	cpe = (unsigned char *)(t1->stptr + t1->stlen);
-	cp2 = obuf;
-	while (cp < cpe) {
-		if (ofre < gawk_mb_cur_max) {
-			size_t olen = cp2 - obuf;
-			ofre += osiz;
-			osiz *= 2;
-			erealloc(obuf, unsigned char *, osiz, "wide_tolower_toupper");
-			cp2 = obuf + olen;
-		}
-		prev_mbs = mbs;
-		mbclen = (size_t) mbrtowc(&wc, (char *) cp, cpe - cp,
-					  &mbs);
-		if (mbclen == 0 || mbclen == (size_t) -1 || mbclen == (size_t) -2) {
-			/* Null wide char, or a problem appeared. */
-			*cp2++ = *cp++;
-			ofre--;
-			continue;
-		}
-			 
-		/* If the character doesn't need change, copy it. */
-		if (!(*iswu)(wc)) {
-			ofre -= mbclen;
-			while (mbclen--)
-				*cp2++ = *cp++;
-			continue;
-		}
+static int
+is_wlower(wchar_t c)
+{
+	return iswlower(c);
+}
 
-		/* Increment the input pointer. */
-		cp += mbclen;
+/* to_wupper --- function version of towupper for passing function pointers */
 
-		/* Write the modified wide character. */
-		mbclen = wcrtomb((char *) cp2, (*towl)(wc), &prev_mbs);
+static int
+to_wlower(wchar_t c)
+{
+	return towlower(c);
+}
 
-		if (mbclen > 0 && mbclen < (size_t) -2) {
-			/* Increment the output pointer. */
-			cp2 += mbclen;
-			ofre -= mbclen;
-		} else {
-			/* A problem appeared. */
-			cp2++;
-			ofre--;
-		}
-	}
-	t2 = make_str_node((char *) obuf, cp2 - obuf, ALREADY_MALLOCED);
-	t2->flags |= TEMP;
-	return t2;
+/* to_wlower --- function version of towlower for passing function pointers */
+
+static int
+to_wupper(wchar_t c)
+{
+	return towupper(c);
+}
+
+/* wide_change_case --- generic case converter for wide characters */
+
+static void
+wide_change_case(wchar_t *wstr,
+			size_t wlen,
+			int (*is_x)(wchar_t c),
+			int (*to_y)(wchar_t c))
+{
+	size_t i;
+	wchar_t *wcp;
+
+	for (i = 0, wcp = wstr; i < wlen; i++, wcp++)
+		if (is_x(*wcp))
+			*wcp = to_y(*wcp);
+}
+
+/* wide_toupper --- map a wide string to upper case */
+
+static void
+wide_toupper(wchar_t *wstr, size_t wlen)
+{
+	wide_change_case(wstr, wlen, is_wlower, to_wupper);
+}
+
+/* wide_tolower --- map a wide string to lower case */
+
+static void
+wide_tolower(wchar_t *wstr, size_t wlen)
+{
+	wide_change_case(wstr, wlen, is_wupper, to_wlower);
 }
 #endif
 
 /* do_tolower --- lower case a string */
 
 NODE *
-do_tolower(NODE *tree)
+do_tolower(int nargs)
 {
 	NODE *t1, *t2;
 
-	t1 = tree_eval(tree->lnode);
+	t1 = POP_SCALAR();
 	if (do_lint && (t1->flags & (STRING|STRCUR)) == 0)
 		lintwarn(_("tolower: received non-string argument"));
 	t1 = force_string(t1);
+	t2 = make_string(t1->stptr, t1->stlen);
 
-#ifdef MBS_SUPPORT
-	if (gawk_mb_cur_max > 1)
-		t2 = wide_tolower_toupper(t1, iswupper, towlower);
-	else
-#endif
-	{
-		register unsigned char *cp, *cpe;
+	if (gawk_mb_cur_max == 1) {
+		unsigned char *cp, *cp2;
 
-		t2 = tmp_string(t1->stptr, t1->stlen);
 		for (cp = (unsigned char *)t2->stptr,
-		     cpe = (unsigned char *)(t2->stptr + t2->stlen); cp < cpe; cp++)
-			if (ISUPPER(*cp))
-				*cp = TOLOWER(*cp);
+		     cp2 = (unsigned char *)(t2->stptr + t2->stlen);
+			cp < cp2; cp++)
+			if (isupper(*cp))
+				*cp = tolower(*cp);
 	}
-	free_temp(t1);
+#if MBS_SUPPORT
+	else {
+		force_wstring(t2);
+		wide_tolower(t2->wstptr, t2->wstlen);
+		wstr2str(t2);
+	}
+#endif
+
+	DEREF(t1);
 	return t2;
 }
 
 /* do_toupper --- upper case a string */
 
 NODE *
-do_toupper(NODE *tree)
+do_toupper(int nargs)
 {
 	NODE *t1, *t2;
 
-	t1 = tree_eval(tree->lnode);
+	t1 = POP_SCALAR();
 	if (do_lint && (t1->flags & (STRING|STRCUR)) == 0)
 		lintwarn(_("toupper: received non-string argument"));
 	t1 = force_string(t1);
+	t2 = make_string(t1->stptr, t1->stlen);
 
-#ifdef MBS_SUPPORT
-	if (gawk_mb_cur_max > 1)
-		t2 = wide_tolower_toupper(t1, iswlower, towupper);
-	else
-#endif
-	{
-		register unsigned char *cp, *cpe;
+	if (gawk_mb_cur_max == 1) {
+		unsigned char *cp, *cp2;
 
-		t2 = tmp_string(t1->stptr, t1->stlen);
 		for (cp = (unsigned char *)t2->stptr,
-		     cpe = (unsigned char *)(t2->stptr + t2->stlen); cp < cpe; cp++)
-			if (ISLOWER(*cp))
-				*cp = TOUPPER(*cp);
+		     cp2 = (unsigned char *)(t2->stptr + t2->stlen);
+			cp < cp2; cp++)
+			if (islower(*cp))
+				*cp = toupper(*cp);
 	}
-	free_temp(t1);
+#if MBS_SUPPORT
+	else {
+		force_wstring(t2);
+		wide_toupper(t2->wstptr, t2->wstlen);
+		wstr2str(t2);
+	}
+#endif
+
+	DEREF(t1);
 	return t2;
 }
 
 /* do_atan2 --- do the atan2 function */
 
 NODE *
-do_atan2(NODE *tree)
+do_atan2(int nargs)
 {
 	NODE *t1, *t2;
 	double d1, d2;
 
-	t1 = tree_eval(tree->lnode);
-	t2 = tree_eval(tree->rnode->lnode);
+	POP_TWO_SCALARS(t1, t2);
 	if (do_lint) {
 		if ((t1->flags & (NUMCUR|NUMBER)) == 0)
 			lintwarn(_("atan2: received non-numeric first argument"));
@@ -2050,41 +2101,41 @@ do_atan2(NODE *tree)
 	}
 	d1 = force_number(t1);
 	d2 = force_number(t2);
-	free_temp(t1);
-	free_temp(t2);
-	return tmp_number((AWKNUM) atan2(d1, d2));
+	DEREF(t1);
+	DEREF(t2);
+	return make_number((AWKNUM) atan2(d1, d2));
 }
 
 /* do_sin --- do the sin function */
 
 NODE *
-do_sin(NODE *tree)
+do_sin(int nargs)
 {
 	NODE *tmp;
 	double d;
 
-	tmp = tree_eval(tree->lnode);
+	tmp = POP_SCALAR();
 	if (do_lint && (tmp->flags & (NUMCUR|NUMBER)) == 0)
 		lintwarn(_("sin: received non-numeric argument"));
 	d = sin((double) force_number(tmp));
-	free_temp(tmp);
-	return tmp_number((AWKNUM) d);
+	DEREF(tmp);
+	return make_number((AWKNUM) d);
 }
 
 /* do_cos --- do the cos function */
 
 NODE *
-do_cos(NODE *tree)
+do_cos(int nargs)
 {
 	NODE *tmp;
 	double d;
 
-	tmp = tree_eval(tree->lnode);
+	tmp = POP_SCALAR();
 	if (do_lint && (tmp->flags & (NUMCUR|NUMBER)) == 0)
 		lintwarn(_("cos: received non-numeric argument"));
 	d = cos((double) force_number(tmp));
-	free_temp(tmp);
-	return tmp_number((AWKNUM) d);
+	DEREF(tmp);
+	return make_number((AWKNUM) d);
 }
 
 /* do_rand --- do the rand function */
@@ -2097,7 +2148,7 @@ static char *const state = (char *const) istate;
 
 /* ARGSUSED */
 NODE *
-do_rand(NODE *tree ATTRIBUTE_UNUSED)
+do_rand(int nargs ATTRIBUTE_UNUSED)
 {
 	if (firstrand) {
 		(void) initstate((unsigned) 1, state, SIZEOF_STATE);
@@ -2110,13 +2161,13 @@ do_rand(NODE *tree ATTRIBUTE_UNUSED)
 	 *
 	 * 	0 <= n < 1
 	 */
-	return tmp_number((AWKNUM) (random() % GAWK_RANDOM_MAX) / GAWK_RANDOM_MAX);
+	return make_number((AWKNUM) (random() % GAWK_RANDOM_MAX) / GAWK_RANDOM_MAX);
 }
 
 /* do_srand --- seed the random number generator */
 
 NODE *
-do_srand(NODE *tree)
+do_srand(int nargs)
 {
 	NODE *tmp;
 	static long save_seed = 1;
@@ -2129,16 +2180,16 @@ do_srand(NODE *tree)
 		(void) setstate(state);
 	}
 
-	if (tree == NULL)
+	if (nargs == 0)
 		srandom((unsigned int) (save_seed = (long) time((time_t *) 0)));
 	else {
-		tmp = tree_eval(tree->lnode);
+		tmp = POP_SCALAR();
 		if (do_lint && (tmp->flags & (NUMCUR|NUMBER)) == 0)
 			lintwarn(_("srand: received non-numeric argument"));
 		srandom((unsigned int) (save_seed = (long) force_number(tmp)));
-		free_temp(tmp);
+		DEREF(tmp);
 	}
-	return tmp_number((AWKNUM) ret);
+	return make_number((AWKNUM) ret);
 }
 
 /* do_match --- match a regexp, set RSTART and RLENGTH,
@@ -2147,9 +2198,9 @@ do_srand(NODE *tree)
  */
 
 NODE *
-do_match(NODE *tree)
+do_match(int nargs)
 {
-	NODE *t1, *dest, *it;
+	NODE *tre, *t1, *dest, *it;
 	int rstart, len, ii;
 	int rlength;
 	Regexp *rp;
@@ -2161,25 +2212,23 @@ do_match(NODE *tree)
 	char *subsepstr;
 	size_t subseplen;
 
-	t1 = force_string(tree_eval(tree->lnode));
-	tree = tree->rnode;
-	rp = re_update(tree->lnode);
-
 	dest = NULL;
-	if (tree->rnode != NULL) {	/* 3rd optional arg for the subpatterns */
-		dest = get_param(tree->rnode->lnode);
+	if (nargs == 3) {	/* 3rd optional arg for the subpatterns */
+		dest = POP_PARAM();
 		if (dest->type != Node_var_array)
 			fatal(_("match: third argument is not an array"));
-
 		assoc_clear(dest);
 	}
+	tre = POP();
+	rp = re_update(tre);
+	t1 = POP_STRING();
 	
 	rstart = research(rp, t1->stptr, 0, t1->stlen, RE_NEED_START);
 	if (rstart >= 0) {	/* match succeded */
 		size_t *wc_indices = NULL;
 
 		rlength = REEND(rp, t1->stptr) - RESTART(rp, t1->stptr);	/* byte length */
-#ifdef MBS_SUPPORT
+#if MBS_SUPPORT
 		if (rlength > 0 && gawk_mb_cur_max > 1) {
 			t1 = str2wstr(t1, & wc_indices);
 			rlength = wc_indices[rstart + rlength - 1] - wc_indices[rstart] + 1;
@@ -2201,11 +2250,13 @@ do_match(NODE *tree)
 				if ((s = SUBPATSTART(rp, t1->stptr, ii)) != -1) {
 					size_t subpat_start;
 					size_t subpat_len;
-
+					NODE **lhs;
+					NODE *sub;
+					
 					start = t1->stptr + s;
 					subpat_start = s;
 					subpat_len = len = SUBPATEND(rp, t1->stptr, ii) - s;
-#ifdef MBS_SUPPORT
+#if MBS_SUPPORT
 					if (len > 0 && gawk_mb_cur_max > 1) {
 						subpat_start = wc_indices[s];
 						subpat_len = wc_indices[s + len - 1] - subpat_start + 1;
@@ -2214,11 +2265,13 @@ do_match(NODE *tree)
 	
 					it = make_string(start, len);
 					it->flags |= MAYBE_NUM;	/* user input */
-					/*
-					 * assoc_lookup() does free_temp() on 2nd arg.
-					 */
-					*assoc_lookup(dest, tmp_number((AWKNUM) (ii)), FALSE) = it;
-	
+
+					sub = make_number((AWKNUM) (ii));
+					lhs = assoc_lookup(dest, sub, FALSE);
+					unref(*lhs);
+					*lhs = it;
+					unref(sub);
+
 					sprintf(buff, "%d", ii);
 					ilen = strlen(buff);
 					amt = ilen + subseplen + strlen("length") + 2;
@@ -2236,7 +2289,11 @@ do_match(NODE *tree)
 					slen = ilen + subseplen + 5;
 	
 					it = make_number((AWKNUM) subpat_start + 1);
-					*assoc_lookup(dest, tmp_string(buf, slen), FALSE) = it;
+					sub = make_string(buf, slen);
+					lhs = assoc_lookup(dest, sub, FALSE);
+					unref(*lhs);
+					*lhs = it;
+					unref(sub);
 	
 					memcpy(buf, buff, ilen);
 					memcpy(buf + ilen, subsepstr, subseplen);
@@ -2245,27 +2302,32 @@ do_match(NODE *tree)
 					slen = ilen + subseplen + 6;
 	
 					it = make_number((AWKNUM) subpat_len);
-					*assoc_lookup(dest, tmp_string(buf, slen), FALSE) = it;
+					sub = make_string(buf, slen);
+					lhs = assoc_lookup(dest, sub, FALSE);
+					unref(*lhs);
+					*lhs = it;
+					unref(sub);
 				}
 			}
 
-			free(buf);
+			efree(buf);
 		}
 		if (wc_indices != NULL)
-			free(wc_indices);
+			efree(wc_indices);
 	} else {		/* match failed */
 		rstart = 0;
 		rlength = -1;
 	}
-	free_temp(t1);
+
+	DEREF(t1);
 	unref(RSTART_node->var_value);
 	RSTART_node->var_value = make_number((AWKNUM) rstart);
 	unref(RLENGTH_node->var_value);
 	RLENGTH_node->var_value = make_number((AWKNUM) rlength);
-	return tmp_number((AWKNUM) rstart);
+	return make_number((AWKNUM) rstart);
 }
 
-/* sub_common --- the common code (does the work) for sub, gsub, and gensub */
+/* do_sub --- do the work for sub, gsub, and gensub */
 
 /*
  * Gsub can be tricksy; particularly when handling the case of null strings.
@@ -2335,40 +2397,41 @@ do_match(NODE *tree)
  * 2001 standard:
  * 
  * sub(ere, repl[, in ])
- *	Substitute the string repl in place of the first instance of the extended regular
- *	expression ERE in string in and return the number of substitutions. An ampersand
- *	('&') appearing in the string repl shall be replaced by the string from in that
- *	matches the ERE. An ampersand preceded with a backslash ('\') shall be
- *	interpreted as the literal ampersand character. An occurrence of two consecutive
- *	backslashes shall be interpreted as just a single literal backslash character. Any
- *	other occurrence of a backslash (for example, preceding any other character) shall
- *	be treated as a literal backslash character. Note that if repl is a string literal (the
- *	lexical token STRING; see Grammar (on page 170)), the handling of the
- *	ampersand character occurs after any lexical processing, including any lexical
- *	backslash escape sequence processing. If in is specified and it is not an lvalue (see
- *	Expressions in awk (on page 156)), the behavior is undefined. If in is omitted, awk
- *	shall use the current record ($0) in its place.
+ *  Substitute the string repl in place of the first instance of the extended regular
+ *  expression ERE in string in and return the number of substitutions. An ampersand
+ *  ('&') appearing in the string repl shall be replaced by the string from in that
+ *  matches the ERE. An ampersand preceded with a backslash ('\') shall be
+ *  interpreted as the literal ampersand character. An occurrence of two consecutive
+ *  backslashes shall be interpreted as just a single literal backslash character. Any
+ *  other occurrence of a backslash (for example, preceding any other character) shall
+ *  be treated as a literal backslash character. Note that if repl is a string literal (the
+ *  lexical token STRING; see Grammar (on page 170)), the handling of the
+ *  ampersand character occurs after any lexical processing, including any lexical
+ *  backslash escape sequence processing. If in is specified and it is not an lvalue (see
+ *  Expressions in awk (on page 156)), the behavior is undefined. If in is omitted, awk
+ *  shall use the current record ($0) in its place.
  *
- * Because gawk has had its behavior for 7+ years, that behavior is remaining as
- * the default, with the POSIX behavior available for do_posix. Fun, fun, fun.
+ * 11/2010: The text in the 2008 standard is the same as just quoted.  However, POSIX behavior
+ * is now the default.  This can change the behavior of awk programs.  The old behavior
+ * is not available.
  */
 
 /*
  * NB: `howmany' conflicts with a SunOS 4.x macro in <sys/param.h>.
  */
 
-static NODE *
-sub_common(NODE *tree, long how_many, int backdigs)
+NODE *
+do_sub(int nargs, unsigned int flags)
 {
-	register char *scan;
-	register char *bp, *cp;
-	char *buf;
+	char *scan;
+	char *bp, *cp;
+	char *buf = NULL;
 	size_t buflen;
-	register char *matchend;
-	register size_t len;
+	char *matchend;
+	size_t len;
 	char *matchstart;
 	char *text;
-	size_t textlen;
+	size_t textlen = 0;
 	char *repl;
 	char *replend;
 	size_t repllen;
@@ -2379,47 +2442,80 @@ sub_common(NODE *tree, long how_many, int backdigs)
 	NODE *s;		/* subst. pattern */
 	NODE *t;		/* string to make sub. in; $0 if none given */
 	NODE *tmp;
-	NODE **lhs = &tree;	/* value not used -- just different from NULL */
-	int priv = FALSE;
-	Func_ptr after_assign = NULL;
-
-	int global = (how_many == -1);
+	NODE **lhs = NULL;
+	long how_many = 1;	/* one substitution for sub, also gensub default */
+	int global;
 	long current;
 	int lastmatchnonzero;
 	char *mb_indices = NULL;
+	
+	if ((flags & GENSUB) != 0) {
+		double d;
+		NODE *t1;
 
-	tmp = tree->lnode;		/* regexp */
-	rp = re_update(tmp);
+		tmp = PEEK(3);
+		rp = re_update(tmp);
 
-	tree = tree->rnode;		/* replacement text */
-	s = tree->lnode;
-	s = force_string(tree_eval(s));
+		t = POP_STRING();	/* original string */
 
-	tree = tree->rnode;		/* original string */
-	tmp = tree->lnode;
-	t = force_string(tree_eval(tmp));
+		t1 = POP_SCALAR();	/* value of global flag */
+		if ((t1->flags & (STRCUR|STRING)) != 0) {
+			if (t1->stlen > 0 && (t1->stptr[0] == 'g' || t1->stptr[0] == 'G'))
+				how_many = -1;
+			else {
+				d = force_number(t1);
+
+				if ((t1->flags & NUMCUR) != 0)
+					goto set_how_many;
+
+				how_many = 1;
+			}
+		} else {
+			d = force_number(t1);
+set_how_many:
+			if (d < 1)
+				how_many = 1;
+			else if (d < LONG_MAX)
+				how_many = d;
+			else
+				how_many = LONG_MAX;
+			if (d == 0)
+				warning(_("gensub: third argument of 0 treated as 1"));
+		}
+		DEREF(t1);
+
+	} else {
+
+		/* take care of regexp early, in case re_update is fatal */
+
+		tmp = PEEK(2);
+		rp = re_update(tmp);
+
+		if ((flags & GSUB) != 0)
+			how_many = -1;
+
+		/* original string */
+
+		if ((flags & LITERAL) != 0)
+			t = POP_STRING();
+		else {
+			lhs = POP_ADDRESS();
+			t = force_string(*lhs);
+		}
+	}
+
+	global = (how_many == -1);
+
+	s = POP_STRING();	/* replacement text */
+	decr_sp();		/* regexp, already updated above */
 
 	/* do the search early to avoid work on non-match */
 	if (research(rp, t->stptr, 0, t->stlen, RE_NEED_START) == -1 ||
-	    RESTART(rp, t->stptr) > t->stlen) {
-		free_temp(t);
-		free_temp(s);
-		return tmp_number((AWKNUM) 0.0);
-	}
+			RESTART(rp, t->stptr) > t->stlen)
+		goto done;
 
-	if (tmp->type == Node_val)
-		lhs = NULL;
-	else
-		lhs = get_lhs(tmp, &after_assign, FALSE);
 	t->flags |= STRING;
-	/*
-	 * create a private copy of the string
-	 */
-	if (t->stref > 1 || (t->flags & (PERM|FIELD)) != 0) {
-		tmp = copynode(t);
-		t = tmp;
-		priv = TRUE;
-	}
+
 	text = t->stptr;
 	textlen = t->stlen;
 	buflen = textlen + 2;
@@ -2427,7 +2523,7 @@ sub_common(NODE *tree, long how_many, int backdigs)
 	repl = s->stptr;
 	replend = repl + s->stlen;
 	repllen = replend - repl;
-	emalloc(buf, char *, buflen + 2, "sub_common");
+	emalloc(buf, char *, buflen + 2, "do_sub");
 	buf[buflen] = '\0';
 	buf[buflen + 1] = '\0';
 	ampersands = 0;
@@ -2441,7 +2537,7 @@ sub_common(NODE *tree, long how_many, int backdigs)
 	 * for example.
 	 */
 	if (gawk_mb_cur_max > 1 && repllen > 0) {
-		emalloc(mb_indices, char *, repllen * sizeof(char), "sub_common");
+		emalloc(mb_indices, char *, repllen * sizeof(char), "do_sub");
 		index_multibyte_buffer(repl, mb_indices, repllen);
 	}
 
@@ -2451,8 +2547,8 @@ sub_common(NODE *tree, long how_many, int backdigs)
 			repllen--;
 			ampersands++;
 		} else if (*scan == '\\') {
-			if (backdigs) {	/* gensub, behave sanely */
-				if (ISDIGIT(scan[1])) {
+			if (flags & GENSUB) {	/* gensub, behave sanely */
+				if (isdigit((unsigned char) scan[1])) {
 					ampersands++;
 					scan++;
 				} else {	/* \q for any q --> q */
@@ -2530,21 +2626,21 @@ sub_common(NODE *tree, long how_many, int backdigs)
 			 */
 			for (scan = repl; scan < replend; scan++)
 				if (*scan == '&'
-				    /*
-				     * Don't test repllen here. A simple "&" could
-				     * end up with repllen == 0.
-				     */
-				    && (gawk_mb_cur_max == 1
-					 || mb_indices[scan - repl] == 1)
+					/*
+					 * Don't test repllen here. A simple "&" could
+					 * end up with repllen == 0.
+					 */
+					&& (gawk_mb_cur_max == 1
+						|| mb_indices[scan - repl] == 1)
 				) {
-					for (cp = matchstart; cp < matchend; cp++)
-						*bp++ = *cp;
+						for (cp = matchstart; cp < matchend; cp++)
+								*bp++ = *cp;
 				} else if (*scan == '\\'
-				    && (gawk_mb_cur_max == 1
-					 || (repllen > 0 && mb_indices[scan - repl] == 1))
+					&& (gawk_mb_cur_max == 1
+						|| (repllen > 0 && mb_indices[scan - repl] == 1))
 				) {
-					if (backdigs) {	/* gensub, behave sanely */
-						if (ISDIGIT(scan[1])) {
+					if (flags & GENSUB) {	/* gensub, behave sanely */
+						if (isdigit((unsigned char) scan[1])) {
 							int dig = scan[1] - '0';
 							if (dig < NUMSUBPATS(rp, t->stptr) && SUBPATSTART(rp, tp->stptr, dig) != -1) {
 								char *start, *end;
@@ -2606,7 +2702,7 @@ sub_common(NODE *tree, long how_many, int backdigs)
 		textlen = text + textlen - matchend;
 		text = matchend;
 
-		if ((current >= how_many && !global)
+		if ((current >= how_many && ! global)
 		    || ((long) textlen <= 0 && matchstart == matchend)
 		    || research(rp, t->stptr, text - t->stptr, textlen, RE_NEED_START) == -1)
 			break;
@@ -2615,221 +2711,66 @@ sub_common(NODE *tree, long how_many, int backdigs)
 	sofar = bp - buf;
 	if (buflen - sofar - textlen - 1) {
 		buflen = sofar + textlen + 2;
-		erealloc(buf, char *, buflen, "sub_common");
+		erealloc(buf, char *, buflen, "do_sub");
 		bp = buf + sofar;
 	}
 	for (scan = matchend; scan < text + textlen; scan++)
 		*bp++ = *scan;
 	*bp = '\0';
 	textlen = bp - buf;
-	free(t->stptr);
-	t->stptr = buf;
-	t->stlen = textlen;
-	free_wstr(t);
-	t->flags &= ~(NUMCUR|NUMBER);
 
-	free_temp(s);
-	if (matches > 0 && lhs) {
-		if (priv) {
-			unref(*lhs);
-			*lhs = t;
-		}
-		if (after_assign != NULL)
-			(*after_assign)();
-	}
 	if (mb_indices != NULL)
-		free(mb_indices);
+		efree(mb_indices);
 
-	return tmp_number((AWKNUM) matches);
-}
+done:
+	DEREF(s);
 
-/* do_gsub --- global substitution */
+	if ((matches == 0 || (flags & LITERAL) != 0) && buf != NULL)
+		efree(buf); 
 
-NODE *
-do_gsub(NODE *tree)
-{
-	return sub_common(tree, -1, FALSE);
-}
-
-/* do_sub --- single substitution */
-
-NODE *
-do_sub(NODE *tree)
-{
-	return sub_common(tree, 1, FALSE);
-}
-
-/* do_gensub --- fix up the tree for sub_common for the gensub function */
-
-NODE *
-do_gensub(NODE *tree)
-{
-	NODE n1, n2, n3, *t, *tmp, *target, *ret;
-	long how_many = 1;	/* default is one substitution */
-	double d;
-
-	/*
-	 * We have to pull out the value of the global flag, and
-	 * build up a tree without the flag in it, turning it into the
-	 * kind of tree that sub_common() expects.  It helps to draw
-	 * a picture of this ...
-	 */
-	n1 = *tree;
-	n2 = *(tree->rnode);
-	n1.rnode = & n2;
-
-	t = tree_eval(n2.rnode->lnode);	/* value of global flag */
-
-	tmp = force_string(tree_eval(n2.rnode->rnode->lnode));	/* target */
-
-	/*
-	 * We make copy of the original target string, and pass that
-	 * in to sub_common() as the target to make the substitution in.
-	 * We will then return the result string as the return value of
-	 * this function.
-	 */
-	target = make_string(tmp->stptr, tmp->stlen);
-	free_temp(tmp);
-
-	n3 = *(n2.rnode->rnode);
-	n3.lnode = target;
-	n2.rnode = & n3;
-
-	if ((t->flags & (STRCUR|STRING)) != 0) {
-		if (t->stlen > 0 && (t->stptr[0] == 'g' || t->stptr[0] == 'G'))
-			how_many = -1;
-		else {
-			d = force_number(t);
-
-			if ((t->flags & NUMCUR) != 0)
-				goto set_how_many;
-
-			how_many = 1;
+	if (flags & GENSUB) {
+		if (matches > 0) {
+			/* return the result string */
+			DEREF(t);
+			return make_str_node(buf, textlen, ALREADY_MALLOCED);	
 		}
-	} else {
-		d = force_number(t);
-set_how_many:
-		if (d < 1)
-			how_many = 1;
-		else if (d < LONG_MAX)
-			how_many = d;
-		else
-			how_many = LONG_MAX;
-		if (d == 0)
-			warning(_("gensub: third argument of 0 treated as 1"));
+
+		/* return the original string */
+		return t;
 	}
 
-	free_temp(t);
-
-	ret = sub_common(&n1, how_many, TRUE);
-	free_temp(ret);
-
-	/*
-	 * Note that we don't care what sub_common() returns, since the
-	 * easiest thing for the programmer is to return the string, even
-	 * if no substitutions were done.
-	 */
-	target->flags |= TEMP;
-	return target;
-}
-
-#ifdef GFMT_WORKAROUND
-/*
- * printf's %g format [can't rely on gcvt()]
- *	caveat: don't use as argument to *printf()!
- * 'format' string HAS to be of "<flags>*.*g" kind, or we bomb!
- */
-static void
-sgfmt(char *buf,	/* return buffer; assumed big enough to hold result */
-	const char *format,
-	int alt,	/* use alternate form flag */
-	int fwidth,	/* field width in a format */
-	int prec,	/* indicates desired significant digits, not decimal places */
-	double g)	/* value to format */
-{
-	char dform[40];
-	register char *gpos;
-	register char *d, *e, *p;
-	int again = FALSE;
-
-	strncpy(dform, format, sizeof dform - 1);
-	dform[sizeof dform - 1] = '\0';
-	gpos = strrchr(dform, '.');
-
-	if (g == 0.0 && ! alt) {	/* easy special case */
-		*gpos++ = 'd';
-		*gpos = '\0';
-		(void) sprintf(buf, dform, fwidth, 0);
-		return;
+	/* For a string literal, must not change the original string. */
+	if (flags & LITERAL)
+		DEREF(t);
+	else if (matches > 0) {
+		unref(*lhs);
+		*lhs = make_str_node(buf, textlen, ALREADY_MALLOCED);	
 	}
 
-	/* advance to location of 'g' in the format */
-	while (*gpos && *gpos != 'g' && *gpos != 'G')
-		gpos++;
-
-	if (prec <= 0)	      /* negative precision is ignored */
-		prec = (prec < 0 ?  DEFAULT_G_PRECISION : 1);
-
-	if (*gpos == 'G')
-		again = TRUE;
-	/* start with 'e' format (it'll provide nice exponent) */
-	*gpos = 'e';
-	prec--;
-	(void) sprintf(buf, dform, fwidth, prec, g);
-	if ((e = strrchr(buf, 'e')) != NULL) {	/* find exponent  */
-		int expn = atoi(e+1);		/* fetch exponent */
-		if (expn >= -4 && expn <= prec) {	/* per K&R2, B1.2 */
-			/* switch to 'f' format and re-do */
-			*gpos = 'f';
-			prec -= expn;		/* decimal precision */
-			(void) sprintf(buf, dform, fwidth, prec, g);
-			e = buf + strlen(buf);
-			while (*--e == ' ')
-				continue;
-			e++;
-		}
-		else if (again)
-			*gpos = 'E';
-
-		/* if 'alt' in force, then trailing zeros are not removed */
-		if (! alt && (d = strrchr(buf, '.')) != NULL) {
-			/* throw away an excess of precision */
-			for (p = e; p > d && *--p == '0'; )
-				prec--;
-			if (d == p)
-				prec--;
-			if (prec < 0)
-				prec = 0;
-			/* and do that once again */
-			again = TRUE;
-		}
-		if (again)
-			(void) sprintf(buf, dform, fwidth, prec, g);
-	}
+	return make_number((AWKNUM) matches);
 }
-#endif	/* GFMT_WORKAROUND */
 
-/* tmp_integer - Convert an integer to a temporary number node.  */
+
+/* make_integer - Convert an integer to a number node.  */
 
 static NODE *
-tmp_integer(uintmax_t n)
+make_integer(uintmax_t n)
 {
 	n = adjust_uint(n);
 
-	return tmp_number((AWKNUM) n);
+	return make_number((AWKNUM) n);
 }
 
 /* do_lshift --- perform a << operation */
 
 NODE *
-do_lshift(NODE *tree)
+do_lshift(int nargs)
 {
 	NODE *s1, *s2;
 	uintmax_t uval, ushift, res;
 	AWKNUM val, shift;
 
-	s1 = tree_eval(tree->lnode);
-	s2 = tree_eval(tree->rnode->lnode);
+	POP_TWO_SCALARS(s1, s2);
 	if (do_lint) {
 		if ((s1->flags & (NUMCUR|NUMBER)) == 0)
 			lintwarn(_("lshift: received non-numeric first argument"));
@@ -2847,27 +2788,26 @@ do_lshift(NODE *tree)
 			lintwarn(_("lshift(%lf, %lf): too large shift value will give strange results"), val, shift);
 	}
 
-	free_temp(s1);
-	free_temp(s2);
+	DEREF(s1);
+	DEREF(s2);
 
 	uval = (uintmax_t) val;
 	ushift = (uintmax_t) shift;
 
 	res = uval << ushift;
-	return tmp_integer(res);
+	return make_integer(res);
 }
 
 /* do_rshift --- perform a >> operation */
 
 NODE *
-do_rshift(NODE *tree)
+do_rshift(int nargs)
 {
 	NODE *s1, *s2;
 	uintmax_t uval, ushift, res;
 	AWKNUM val, shift;
 
-	s1 = tree_eval(tree->lnode);
-	s2 = tree_eval(tree->rnode->lnode);
+	POP_TWO_SCALARS(s1, s2);
 	if (do_lint) {
 		if ((s1->flags & (NUMCUR|NUMBER)) == 0)
 			lintwarn(_("rshift: received non-numeric first argument"));
@@ -2885,27 +2825,26 @@ do_rshift(NODE *tree)
 			lintwarn(_("rshift(%lf, %lf): too large shift value will give strange results"), val, shift);
 	}
 
-	free_temp(s1);
-	free_temp(s2);
+	DEREF(s1);
+	DEREF(s2);
 
 	uval = (uintmax_t) val;
 	ushift = (uintmax_t) shift;
 
 	res = uval >> ushift;
-	return tmp_integer(res);
+	return make_integer(res);
 }
 
 /* do_and --- perform an & operation */
 
 NODE *
-do_and(NODE *tree)
+do_and(int nargs)
 {
 	NODE *s1, *s2;
 	uintmax_t uleft, uright, res;
 	AWKNUM left, right;
 
-	s1 = tree_eval(tree->lnode);
-	s2 = tree_eval(tree->rnode->lnode);
+	POP_TWO_SCALARS(s1, s2);
 	if (do_lint) {
 		if ((s1->flags & (NUMCUR|NUMBER)) == 0)
 			lintwarn(_("and: received non-numeric first argument"));
@@ -2921,27 +2860,26 @@ do_and(NODE *tree)
 			lintwarn(_("and(%lf, %lf): fractional values will be truncated"), left, right);
 	}
 
-	free_temp(s1);
-	free_temp(s2);
+	DEREF(s1);
+	DEREF(s2);
 
 	uleft = (uintmax_t) left;
 	uright = (uintmax_t) right;
 
 	res = uleft & uright;
-	return tmp_integer(res);
+	return make_integer(res);
 }
 
 /* do_or --- perform an | operation */
 
 NODE *
-do_or(NODE *tree)
+do_or(int nargs)
 {
 	NODE *s1, *s2;
 	uintmax_t uleft, uright, res;
 	AWKNUM left, right;
 
-	s1 = tree_eval(tree->lnode);
-	s2 = tree_eval(tree->rnode->lnode);
+	POP_TWO_SCALARS(s1, s2);
 	if (do_lint) {
 		if ((s1->flags & (NUMCUR|NUMBER)) == 0)
 			lintwarn(_("or: received non-numeric first argument"));
@@ -2957,27 +2895,29 @@ do_or(NODE *tree)
 			lintwarn(_("or(%lf, %lf): fractional values will be truncated"), left, right);
 	}
 
-	free_temp(s1);
-	free_temp(s2);
+	DEREF(s1);
+	DEREF(s2);
 
 	uleft = (uintmax_t) left;
 	uright = (uintmax_t) right;
 
 	res = uleft | uright;
-	return tmp_integer(res);
+	return make_integer(res);
 }
 
 /* do_xor --- perform an ^ operation */
 
 NODE *
-do_xor(NODE *tree)
+do_xor(int nargs)
 {
 	NODE *s1, *s2;
 	uintmax_t uleft, uright, res;
 	AWKNUM left, right;
 
-	s1 = tree_eval(tree->lnode);
-	s2 = tree_eval(tree->rnode->lnode);
+	POP_TWO_SCALARS(s1, s2);
+	left = force_number(s1);
+	right = force_number(s2);
+
 	if (do_lint) {
 		if ((s1->flags & (NUMCUR|NUMBER)) == 0)
 			lintwarn(_("xor: received non-numeric first argument"));
@@ -2993,32 +2933,34 @@ do_xor(NODE *tree)
 			lintwarn(_("xor(%lf, %lf): fractional values will be truncated"), left, right);
 	}
 
-	free_temp(s1);
-	free_temp(s2);
+	DEREF(s1);
+	DEREF(s2);
 
 	uleft = (uintmax_t) left;
 	uright = (uintmax_t) right;
 
 	res = uleft ^ uright;
-	return tmp_integer(res);
+	return make_integer(res);
 }
 
 /* do_compl --- perform a ~ operation */
 
 NODE *
-do_compl(NODE *tree)
+do_compl(int nargs)
 {
 	NODE *tmp;
 	double d;
 	uintmax_t uval;
 
-	tmp = tree_eval(tree->lnode);
+	tmp = POP_SCALAR();
 	if (do_lint && (tmp->flags & (NUMCUR|NUMBER)) == 0)
 		lintwarn(_("compl: received non-numeric argument"));
 	d = force_number(tmp);
-	free_temp(tmp);
+	DEREF(tmp);
 
 	if (do_lint) {
+		if ((tmp->flags & (NUMCUR|NUMBER)) == 0)
+			lintwarn(_("compl: received non-numeric argument"));
 		if (d < 0)
 			lintwarn(_("compl(%lf): negative value will give strange results"), d);
 		if (double_to_int(d) != d)
@@ -3027,19 +2969,18 @@ do_compl(NODE *tree)
 
 	uval = (uintmax_t) d;
 	uval = ~ uval;
-	return tmp_integer(uval);
+	return make_integer(uval);
 }
 
 /* do_strtonum --- the strtonum function */
 
 NODE *
-do_strtonum(NODE *tree)
+do_strtonum(int nargs)
 {
 	NODE *tmp;
 	AWKNUM d;
 
-	tmp = tree_eval(tree->lnode);
-
+	tmp = POP_SCALAR();
 	if ((tmp->flags & (NUMBER|NUMCUR)) != 0)
 		d = (AWKNUM) force_number(tmp);
 	else if (isnondecimal(tmp->stptr, use_lc_numeric))
@@ -3047,8 +2988,8 @@ do_strtonum(NODE *tree)
 	else
 		d = (AWKNUM) force_number(tmp);
 
-	free_temp(tmp);
-	return tmp_number((AWKNUM) d);
+	DEREF(tmp);
+	return make_number((AWKNUM) d);
 }
 
 /* nondec2awknum --- convert octal or hex value to double */
@@ -3112,7 +3053,7 @@ nondec2awknum(char *str, size_t len)
 		}
 	} else if (*str == '0') {
 		for (; len > 0; len--) {
-			if (! ISDIGIT(*str))
+			if (! isdigit((unsigned char) *str))
 				goto done;
 			else if (*str == '8' || *str == '9') {
 				str = start;
@@ -3136,7 +3077,7 @@ done:
 #if ENABLE_NLS && defined(LC_MESSAGES) && HAVE_DCGETTEXT
 
 static int
-localecategory_from_argument(NODE *tree)
+localecategory_from_argument(NODE *t)
 {
 	static const struct category_table {
 		int val;
@@ -3168,14 +3109,11 @@ localecategory_from_argument(NODE *tree)
 #endif /* LC_TIME */
 	};
 
-	if (tree != NULL) {
+	if (t != NULL) {
 		int low, high, i, mid;
-		NODE *tmp, *t;
 		char *category;
 		int lc_cat = -1;
 
-		tmp = tree->lnode;
-		t = force_string(tree_eval(tmp));
 		category = t->stptr;
 
 		/* binary search the table */
@@ -3197,7 +3135,6 @@ localecategory_from_argument(NODE *tree)
 		if (lc_cat == -1)	/* not there */
 			fatal(_("dcgettext: `%s' is not a valid locale category"), category);
 
-		free_temp(t);
 		return lc_cat;
 	} else
 		return LC_MESSAGES;
@@ -3215,94 +3152,108 @@ localecategory_from_argument(NODE *tree)
  */
 
 NODE *
-do_dcgettext(NODE *tree)
+do_dcgettext(int nargs)
 {
-	NODE *tmp, *t1, *t2;
+	NODE *tmp, *t1, *t2 = NULL;
 	char *string;
 	char *the_result;
 #if ENABLE_NLS && defined(LC_MESSAGES) && HAVE_DCGETTEXT
 	int lc_cat;
 	char *domain;
-#endif /* ENABLE_NLS */
 
-	tmp = tree->lnode;	/* first argument */
-	t1 = force_string(tree_eval(tmp));
-	string = t1->stptr;
-
-	t2 = NULL;
-#if ENABLE_NLS && defined(LC_MESSAGES) && HAVE_DCGETTEXT
-	tree = tree->rnode;	/* second argument */
-	if (tree != NULL) {
-		tmp = tree->lnode;
-		t2 = force_string(tree_eval(tmp));
-		domain = t2->stptr;
-	} else
-		domain = TEXTDOMAIN;
-
-	if (tree && tree->rnode != NULL) {	/* third argument */
-		lc_cat = localecategory_from_argument(tree->rnode);
+	if (nargs == 3) {	/* third argument */
+		tmp = POP_STRING();
+		lc_cat = localecategory_from_argument(tmp);
+		DEREF(tmp);
 	} else
 		lc_cat = LC_MESSAGES;
 
+	if (nargs >= 2) {  /* second argument */
+		t2 = POP_STRING();
+		domain = t2->stptr;
+	} else
+		domain = TEXTDOMAIN;
+#else
+	if (nargs == 3) {
+		tmp = POP_STRING();
+		DEREF(tmp);
+	}
+	if (nargs >= 2) {
+		t2 = POP_STRING();
+		DEREF(t2);
+	}
+#endif
+
+	t1 = POP_STRING();	/* first argument */
+	string = t1->stptr;
+
+#if ENABLE_NLS && defined(LC_MESSAGES) && HAVE_DCGETTEXT
 	the_result = dcgettext(domain, string, lc_cat);
+	if (t2 != NULL)
+		DEREF(t2);
 #else
 	the_result = string;
 #endif
-	free_temp(t1);
-	if (t2 != NULL)
-		free_temp(t2);
-
-	return tmp_string(the_result, strlen(the_result));
+	DEREF(t1);
+	return make_string(the_result, strlen(the_result));
 }
 
+
 NODE *
-do_dcngettext(NODE *tree)
+do_dcngettext(int nargs)
 {
 	NODE *tmp, *t1, *t2, *t3;
 	char *string1, *string2;
 	unsigned long number;
+	AWKNUM d;
 	char *the_result;
+
 #if ENABLE_NLS && defined(LC_MESSAGES) && HAVE_DCGETTEXT
 	int lc_cat;
 	char *domain;
-#endif /* ENABLE_NLS */
 
-	tmp = tree->lnode;	/* first argument */
-	t1 = force_string(tree_eval(tmp));
-	string1 = t1->stptr;
-
-	tmp = tree->rnode->lnode;	/* second argument */
-	t2 = force_string(tree_eval(tmp));
-	string2 = t2->stptr;
-
-	tmp = tree->rnode->rnode->lnode;	/* third argument */
-	number = (unsigned long) double_to_int(force_number(tree_eval(tmp)));
-
-	t3 = NULL;
-#if ENABLE_NLS && defined(LC_MESSAGES) && HAVE_DCGETTEXT
-	tree = tree->rnode->rnode->rnode;	/* fourth argument */
-	if (tree != NULL) {
-		tmp = tree->lnode;
-		t3 = force_string(tree_eval(tmp));
-		domain = t3->stptr;
-	} else
-		domain = TEXTDOMAIN;
-
-	if (tree && tree->rnode != NULL) {	/* fifth argument */
-		lc_cat = localecategory_from_argument(tree->rnode);
+	if (nargs == 5) {	/* fifth argument */
+		tmp = POP_STRING();
+		lc_cat = localecategory_from_argument(tmp);
+		DEREF(tmp);
 	} else
 		lc_cat = LC_MESSAGES;
 
+	t3 = NULL;
+	if (nargs >= 4) {	/* fourth argument */
+		t3 = POP_STRING();
+		domain = t3->stptr;
+	} else
+		domain = TEXTDOMAIN;
+#else
+	if (nargs == 5) {
+		tmp = POP_STRING();
+		DEREF(tmp);
+	}
+	if (nargs >= 4) {
+		t3 = POP_STRING();
+		DEREF(t3);
+	}
+#endif
+
+	POP_NUMBER(d);	/* third argument */
+	number = (unsigned long) double_to_int(d);
+	t2 = POP_STRING();	/* second argument */
+	string2 = t2->stptr;
+	t1 = POP_STRING();	/* first argument */
+	string1 = t1->stptr;
+
+#if ENABLE_NLS && defined(LC_MESSAGES) && HAVE_DCGETTEXT
+
 	the_result = dcngettext(domain, string1, string2, number, lc_cat);
+	if (t3 != NULL)
+		DEREF(t3);
 #else
 	the_result = (number == 1 ? string1 : string2);
 #endif
-	free_temp(t1);
-	free_temp(t2);
-	if (t3 != NULL)
-		free_temp(t3);
-
-	return tmp_string(the_result, strlen(the_result));
+	DEREF(t1);
+	DEREF(t2);
+	return make_string(the_result, strlen(the_result));
 }
 
 /* do_bindtextdomain --- set the directory for a text domain */
@@ -3317,44 +3268,43 @@ do_dcngettext(NODE *tree)
  */
 
 NODE *
-do_bindtextdomain(NODE *tree)
+do_bindtextdomain(int nargs)
 {
-	NODE *tmp, *t1, *t2;
-	char *directory, *domain;
-	char *the_result;
+	NODE *t1, *t2;
+	const char *directory, *domain;
+	const char *the_result;
 
 	t1 = t2 = NULL;
 	/* set defaults */
 	directory = NULL;
 	domain = TEXTDOMAIN;
 
-	tmp = tree->lnode;	/* first argument */
-	t1 = force_string(tree_eval(tmp));
-	if (t1->stlen > 0)
-		directory = t1->stptr;
-
-	tree = tree->rnode;	/* second argument */
-	if (tree != NULL) {
-		tmp = tree->lnode;
-		t2 = force_string(tree_eval(tmp));
-		domain = t2->stptr;
+	if (nargs == 2) {	/* second argument */
+		t2 = POP_STRING();
+		domain = (const char *) t2->stptr;
 	}
+
+	/* first argument */
+	t1 = POP_STRING();
+	if (t1->stlen > 0)
+		directory = (const char *) t1->stptr;
 
 	the_result = bindtextdomain(domain, directory);
 
-	free_temp(t1);
+	DEREF(t1);
 	if (t2 != NULL)
-		free_temp(t2);
+		DEREF(t2);
 
-	return tmp_string(the_result, strlen(the_result));
+	return make_string(the_result, strlen(the_result));
 }
+
 
 /* mbc_byte_count --- return number of bytes for corresponding numchars multibyte characters */
 
 static size_t
 mbc_byte_count(const char *ptr, size_t numchars)
 {
-#ifdef MBS_SUPPORT
+#if MBS_SUPPORT
 	mbstate_t cur_state;
 	size_t sum = 0;
 	int mb_len;
@@ -3385,15 +3335,15 @@ mbc_byte_count(const char *ptr, size_t numchars)
 static size_t
 mbc_char_count(const char *ptr, size_t numbytes)
 {
-#ifdef MBS_SUPPORT
+#if MBS_SUPPORT
 	mbstate_t cur_state;
 	size_t sum = 0;
 	int mb_len;
 
-	memset(& cur_state, 0, sizeof(cur_state));
-
 	if (gawk_mb_cur_max == 1)
 		return numbytes;
+
+	memset(& cur_state, 0, sizeof(cur_state));
 
 	mb_len = mbrlen(ptr, numbytes * gawk_mb_cur_max, &cur_state);
 	if (mb_len <= 0)

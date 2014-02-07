@@ -14,9 +14,8 @@
    Lesser General Public License for more details.
 
    You should have received a copy of the GNU Lesser General Public
-   License along with the GNU C Library; if not, write to the Free
-   Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-   02110-1301 USA.  */
+   License along with the GNU C Library; if not, see
+   <http://www.gnu.org/licenses/>.  */
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -50,10 +49,6 @@
 # define re_compile_fastmap(bufp) __re_compile_fastmap (bufp)
 
 # include "../locale/localeinfo.h"
-#endif
-
-#if defined (_MSC_VER)
-#include <stdio.h> /* for size_t */
 #endif
 
 /* On some systems, limits.h sets RE_DUP_MAX to a lower value than

@@ -1,7 +1,7 @@
 #
 # doc/Makefile.am --- automake input file for gawk
 #
-# Copyright (C) 2000, 2001, 2002, 2004, 2005, 2007
+# Copyright (C) 2000, 2001, 2002, 2004, 2005, 2007, 2010, 2011
 # the Free Software Foundation, Inc.
 #
 # This file is part of GAWK, the GNU implementation of the
@@ -28,15 +28,18 @@ info_TEXINFOS = gawk.texi gawkinet.texi
 
 man_MANS = gawk.1 igawk.1
 
-EXTRA_DIST = ChangeLog README.card ad.block setter.outline \
+EXTRA_DIST = ChangeLog ChangeLog.0 README.card ad.block setter.outline \
 	awkcard.in awkforai.txt texinfo.tex cardfonts \
+	general-program.eps general-program.fig general-program.pdf \
+	process-flow.eps process-flow.fig process-flow.pdf \
 	macros colors no.colors $(man_MANS) \
-	lflashlight.eps rflashlight.eps \
-	lflashlight.pdf rflashlight.pdf \
-	statist.jpg statist.eps statist.pdf
+	lflashlight-small.xpic lflashlight.eps lflashlight.pdf \
+	rflashlight-small.xpic rflashlight.eps rflashlight.pdf \
+	statist.jpg statist.eps statist.pdf \
+	bc_notes
 
 # Get rid of generated files when cleaning
-CLEANFILES = *.ps *.html *.dvi *~ awkcard.nc awkcard.tr gawk.pdf gawkinet.pdf
+CLEANFILES = *.ps *.html *.dvi *~ awkcard.nc awkcard.tr gawk.pdf gawkinet.pdf awkcard.pdf gawk.1.pdf igawk.1.pdf
 
 MAKEINFO = @MAKEINFO@ --no-split --force
 
@@ -62,7 +65,7 @@ AWKCARD = awkcard.ps
 # make pgawk.1 a link to gawk.1 in the installed man directory.
 
 # We want hard links for install-data-hook, below
-LN= ln
+LN= ln -f
 
 # Link gawk.1 to pgawk.1
 install-data-hook:
@@ -76,6 +79,8 @@ uninstall-hook:
 
 postscript: gawk.ps gawkinet.ps gawk.1.ps igawk.1.ps $(AWKCARD)
 
+pdf: postscript gawk.pdf gawkinet.pdf awkcard.pdf gawk.1.pdf igawk.1.pdf
+
 gawk.ps: gawk.dvi
 	dvips -o gawk.ps gawk.dvi
 
@@ -85,8 +90,14 @@ gawkinet.ps: gawkinet.dvi
 gawk.1.ps: gawk.1
 	-groff -man $(srcdir)/gawk.1 > gawk.1.ps
 
+gawk.1.pdf: gawk.1.ps
+	ps2pdf gawk.1.ps gawk.1.pdf
+
 igawk.1.ps: igawk.1
 	-groff -man $(srcdir)/igawk.1 > igawk.1.ps
+
+igawk.1.pdf: igawk.1.ps
+	ps2pdf igawk.1.ps igawk.1.pdf
 
 awkcard.tr: awkcard.in
 	sed 's:SRCDIR:$(srcdir):' < $(srcdir)/awkcard.in > awkcard.tr
@@ -96,3 +107,6 @@ awkcard.ps: $(CARDFILES)
 
 awkcard.nc: $(CARDFILES)
 	$(TROFF) $(CARDSRC_N) | $(SEDME) | cat $(srcdir)/setter.outline - | $(SEDME2) > awkcard.ps && touch awkcard.nc
+
+awkcard.pdf: awkcard.ps
+	ps2pdf awkcard.ps awkcard.pdf

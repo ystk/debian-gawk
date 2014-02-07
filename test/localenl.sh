@@ -35,7 +35,8 @@
 
 AWK=${AWK:-../gawk}
 
-for LC_ALL in C UNKNOWN POSIX en_US.ISO-8859-1 en_US.UTF-8
+# April 2010: Remove UNKNOWN, causes spurious failures on some systems
+for LC_ALL in C POSIX en_US.ISO-8859-1 en_US.UTF-8 #UNKNOWN 
 do
 export LC_ALL
 cat <<EOF |
@@ -49,7 +50,7 @@ line7
 line8
 line9
 EOF
-$AWK '
+$AWK --posix '
 BEGIN { RS="\0"; }
 { 
   if (match($0, /\n[^2\n]*2/)) { got2=1; } else { print "no match 2"; }

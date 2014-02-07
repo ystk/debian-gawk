@@ -1,7 +1,7 @@
 dnl
 dnl configure.ac --- autoconf input file for gawk
 dnl
-dnl Copyright (C) 1995-2009 the Free Software Foundation, Inc.
+dnl Copyright (C) 1995-2012 the Free Software Foundation, Inc.
 dnl
 dnl This file is part of GAWK, the GNU implementation of the
 dnl AWK Programming Language.
@@ -23,7 +23,7 @@ dnl
 
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([GNU Awk], 3.1.7, bug-gawk@gnu.org, gawk)
+AC_INIT([GNU Awk], 4.0.1, bug-gawk@gnu.org, gawk)
 
 # This is a hack. Different versions of install on different systems
 # are just too different. Chuck it and use install-sh.
@@ -39,18 +39,12 @@ then
 	export INSTALL
 fi
 
-AC_PREREQ(2.63)
-AM_INIT_AUTOMAKE([1.11])
+AC_PREREQ(2.68)
+AM_INIT_AUTOMAKE([1.11 dist-xz])
 
 AC_CONFIG_MACRO_DIR([m4])
 
 dnl Additional argument stuff
-AC_ARG_ENABLE(portals, [  --enable-portals	Enable /p as path prefix for portals],
-	if test "$enableval" = yes
-	then
-		AC_DEFINE(HAVE_PORTALS, 1, [we have portals on /p on this system])
-	fi
-)
 AC_ARG_WITH(whiny-user-strftime, [  --with-whiny-user-strftime	Force use of included version of strftime for deficient systems],
 	if test "$withval" = yes
 	then
@@ -64,40 +58,6 @@ AC_ARG_ENABLE([lint], [  --disable-lint	Disable gawk lint checking],
 		AC_DEFINE(NO_LINT, 1, [disable lint checks])
 	fi
 )
-AC_ARG_ENABLE([libsigsegv], [  --disable-libsigsegv	Disable building and using of libsigsegv],
-	if test "$enableval" = no
-	then
-		AC_DEFINE(NO_LIBSIGSEGV, 1, [disable use of libsigsegv])
-		disable_libsigsegv=yes
-	fi
-)
-AC_ARG_ENABLE(switch, [  --enable-switch	Enable switch statements for awk programs],
-	if test "$enableval" = yes
-	then
-		AC_DEFINE(ALLOW_SWITCH, 1, [switch statements are enabled in awk programs])
-	fi
-)
-AC_ARG_ENABLE([directories-fatal], [  --disable-directories-fatal	Disable fatal errors on directories],
-	if test "$enableval" = no
-	then
-		AC_DEFINE(NO_DIRECTORY_FATAL, 1, [disable fatal errors on directories])
-	fi
-)
-
-case $disable_libsigsegv in
-yes)	: do nothing
-	;;
-*)
-	dnl configure libsigsegv
-	AC_CONFIG_SUBDIRS([libsigsegv])
-	LIBSIGSEGV="libsigsegv/src/.libs/libsigsegv.a $LIBS"
-	SEGVINCLUDE='-I$(builddir)/libsigsegv/src'
-	SEGVSUBDIR=libsigsegv
-	AC_SUBST(LIBSIGSEGV)
-	AC_SUBST(SEGVINCLUDE)
-	AC_SUBST(SEGVSUBDIR)
-	;;
-esac
 
 AC_USE_SYSTEM_EXTENSIONS
 
@@ -107,7 +67,6 @@ AC_PROG_YACC
 AC_PROG_LN_S
 AC_PROG_CC
 AC_PROG_CPP
-AC_PROG_LIBTOOL
 
 AC_OBJEXT
 AC_EXEEXT
@@ -153,8 +112,9 @@ dnl	need -D_SYSV3 for ISC
 	CFLAGS="$CFLAGS -D_SYSV3"
 fi
 
-dnl check for C compiler for automake. Needed for dfa.h.
-AM_C_PROTOTYPES
+dnl Set the programming language for checks. Fortunately,
+dnl this only needs to be set once, since everything is in C.
+AC_LANG([C])
 
 dnl Cygwin doesn't like to get libs with full paths
 dnl since that overrides linking against DLLs.
@@ -169,7 +129,7 @@ esac
 
 dnl initialize GNU gettext
 AM_GNU_GETTEXT([external])
-AM_GNU_GETTEXT_VERSION([0.17])
+AM_GNU_GETTEXT_VERSION([0.18.1])
 AM_LANGINFO_CODESET
 gt_LC_MESSAGES
 
@@ -178,8 +138,8 @@ AC_HEADER_STDC
 AC_HEADER_SYS_WAIT
 AC_HEADER_TIME
 AC_CHECK_HEADERS(arpa/inet.h fcntl.h limits.h locale.h libintl.h mcheck.h \
-	netdb.h netinet/in.h  signum.h stdarg.h stddef.h string.h \
-	sys/param.h sys/socket.h sys/time.h unistd.h \
+	netdb.h netinet/in.h stdarg.h stddef.h string.h \
+	sys/ioctl.h sys/param.h sys/socket.h sys/time.h unistd.h \
 	termios.h stropts.h wchar.h wctype.h)
 
 if test "$ac_cv_header_string_h" = yes
@@ -201,9 +161,6 @@ gl_AC_TYPE_UINTMAX_T
 AC_CHECK_TYPE(ssize_t, int)
 AC_CHECK_SIZEOF(unsigned int)
 AC_CHECK_SIZEOF(unsigned long)
-AC_EGREP_HEADER([int.*sprintf], stdio.h,
-	AC_DEFINE(SPRINTF_RET, int, [return type of sprintf]),
-	AC_DEFINE(SPRINTF_RET, char *))
 dnl see if time_t is defined in <sys/types.h>
 AC_TRY_COMPILE([#include <sys/types.h>],[
 	time_t foo;
@@ -296,15 +253,22 @@ AC_CHECK_FUNC(getaddrinfo, [AC_DEFINE(HAVE_GETADDRINFO, 1, [have getaddrinfo])],
 AC_CHECK_LIB(m, fmod)
 AC_CHECK_LIB(m, isinf)
 AC_CHECK_LIB(m, ismod)
+dnl Don't look for libsigsegv on OSF/1, gives us severe headaches
+case `uname` in
+OSF1)	: ;;
+*)
+	gl_LIBSIGSEGV
+	;;
+esac
 
 # Need the check for mkstemp and tmpfile for missing_d/snprintf.c.
 AC_CHECK_FUNCS(atexit btowc fmod getgrent getgroups grantpt \
 	isascii iswctype iswlower iswupper mbrlen \
 	memcmp memcpy memcpy_ulong memmove memset \
-	memset_ulong mkstemp setlocale snprintf strchr \
-	strerror strftime strncasecmp strtod strtoul \
-	system tmpfile towlower towupper tzset wcrtomb \
-	wcscoll wcscoll wctype)
+	memset_ulong mkstemp setenv setlocale setsid snprintf strchr \
+	strerror strftime strncasecmp strcoll strtod strtoul \
+	system tmpfile towlower towupper tzset usleep wcrtomb \
+	wcscoll wctype)
 dnl this check is for both mbrtowc and the mbstate_t type, which is good
 AC_FUNC_MBRTOWC
 
@@ -316,7 +280,9 @@ AC_CHECK_HEADER(dlfcn.h,
 	then
 		# Add others here as appropriate,
 		# one day use GNU libtool.
-		if uname | $EGREP -i 'linux|freebsd|cygwin' > /dev/null
+		# 3/2010: Used to have cygwin here but removed since
+		# we get complaints that -export-dynamic doesn't work.
+		if uname | $EGREP -i 'linux|freebsd' > /dev/null
 		then
 			LDFLAGS="$LDFLAGS -export-dynamic"
 		fi
@@ -343,6 +309,7 @@ esac
 dnl check for printf %F format
 AC_MSG_CHECKING([for printf %F format])
 AC_RUN_IFELSE([
+AC_LANG_SOURCE([
 #include <stdio.h>
 
 int main()
@@ -356,7 +323,7 @@ int main()
 	else
 		return 1;
 }
-],
+])],
 	has_f_format=yes,
 	has_f_format=no,
 	has_f_format=no  dnl Cross-compiling, assuming the worst.
@@ -368,6 +335,9 @@ AC_MSG_RESULT($has_f_format)
 
 dnl check for sockets
 GAWK_AC_LIB_SOCKETS
+
+dnl check for readline support
+GNUPG_CHECK_READLINE
 
 dnl checks for structure members
 AC_STRUCT_ST_BLKSIZE

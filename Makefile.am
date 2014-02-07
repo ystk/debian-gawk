@@ -1,7 +1,7 @@
 #
 # Makefile.am --- automake input file for gawk
 #
-# Copyright (C) 2000-2007 the Free Software Foundation, Inc.
+# Copyright (C) 2000-2011 the Free Software Foundation, Inc.
 #
 # This file is part of GAWK, the GNU implementation of the
 # AWK Programming Language.
@@ -23,10 +23,7 @@
 
 ## process this file with automake to produce Makefile.in
 
-# Automatic de-ANSI-fication if needed, make .bz2 files also.
-AUTOMAKE_OPTIONS = dist-bzip2
-
-# This undocumented variable insures that aclocal runs
+# This variable insures that aclocal runs
 # correctly after changing configure.ac
 ACLOCAL_AMFLAGS = -I m4
 
@@ -36,11 +33,13 @@ AM_MAKEFLAGS = 'CFLAGS=$(CFLAGS)' 'LDFLAGS=$(LDFLAGS)'
 # Stuff to include in the dist that doesn't need it's own
 # Makefile.am files
 EXTRA_DIST = \
+	ChangeLog.0 \
 	COPYING \
 	FUTURES \
 	INSTALL \
 	LIMITATIONS \
 	NEWS \
+	NEWS.0 \
 	POSIX.STD \
 	PROBLEMS \
 	README_d \
@@ -53,22 +52,26 @@ EXTRA_DIST = \
 	m4 \
 	missing \
 	missing_d \
+	po/README \
 	pc \
 	posix \
 	regcomp.c \
 	regex_internal.c \
 	regex_internal.h \
 	regexec.c \
-	unsupported \
 	version.in \
 	vms \
 	ylwrap
+
+# It's OK for the generated file `version.c' not to be removed by
+# "make distclean".
+distcleancheck_listfiles = \
+  find . -type f -print | grep -v '^\./version\.c$$'
 
 # The order to do things in.
 # Build explicitly in "." in order to build gawk first, so
 # that `make check' without a prior `make' works.
 SUBDIRS = \
-	$(SEGVSUBDIR) \
 	. \
 	awklib \
 	doc \
@@ -76,7 +79,7 @@ SUBDIRS = \
 	test
 
 # what to make and install
-bin_PROGRAMS = gawk pgawk
+bin_PROGRAMS = gawk pgawk dgawk
 
 # sources for both gawk and pgawk
 base_sources = \
@@ -97,7 +100,6 @@ base_sources = \
 	getopt1.c \
 	getopt_int.h \
 	gettext.h \
-	hard-locale.h \
 	io.c \
 	mbsupport.h \
 	main.c \
@@ -110,23 +112,24 @@ base_sources = \
 	regex.c \
 	regex.h \
 	replace.c \
-	version.c
+	version.c \
+	xalloc.h
 
 gawk_SOURCES = $(base_sources) eval.c profile.c
 pgawk_SOURCES = $(base_sources) eval_p.c profile_p.c
+dgawk_SOURCES = $(base_sources) eval_d.c profile.c cmd.h command.y debug.c
 
 # Get extra libs as needed, Automake will supply LIBINTL and SOCKET_LIBS.
 LDADD = $(LIBSIGSEGV) $(LIBINTL) $(SOCKET_LIBS)
+dgawk_LDADD = $(LDADD) @LIBREADLINE@
 
 # Directory for gawk's data files. Automake supplies datadir.
 pkgdatadir = $(datadir)/awk
 
 # stuff for compiling gawk/pgawk
-DEFPATH="\".$(PATH_SEPARATOR)$(pkgdatadir)\""
+DEFPATH='".$(PATH_SEPARATOR)$(pkgdatadir)"'
 
-DEFS= -DDEFPATH=$(DEFPATH) -DHAVE_CONFIG_H -DGAWK -DLOCALEDIR="\"$(datadir)/locale\""
-
-AM_CPPFLAGS = $(SEGVINCLUDE)
+DEFS= -DDEFPATH=$(DEFPATH) -DHAVE_CONFIG_H -DGAWK -DLOCALEDIR='"$(datadir)/locale"'
 
 # Get rid of core files when cleaning
 CLEANFILES = core core.*
@@ -146,14 +149,14 @@ install-exec-hook:
 	(cd $(DESTDIR)$(bindir); \
 	$(LN) gawk$(EXEEXT) gawk-$(VERSION)$(EXEEXT) 2>/dev/null ; \
 	$(LN) pgawk$(EXEEXT) pgawk-$(VERSION)$(EXEEXT) 2>/dev/null ; \
-	if [ ! -f awk$(EXEEXT) ]; \
-	then	$(LN_S) gawk$(EXEEXT) awk$(EXEEXT); \
+	if [ ! -f awk ]; \
+	then	$(LN_S) gawk$(EXEEXT) awk; \
 	fi; exit 0)
 
 # Undo the above when uninstalling
 uninstall-links:
 	(cd $(DESTDIR)$(bindir); \
-	if [ -f awk$(EXEEXT) ] && cmp awk$(EXEEXT) gawk$(EXEEXT) > /dev/null; then rm -f awk$(EXEEXT); fi ; \
+	if [ -f awk ] && cmp awk gawk$(EXEEXT) > /dev/null; then rm -f awk; fi ; \
 	rm -f gawk-$(VERSION)$(EXEEXT) pgawk-$(VERSION)$(EXEEXT); exit 0)
 
 uninstall-recursive: uninstall-links
@@ -162,21 +165,31 @@ uninstall-recursive: uninstall-links
 check-local: gawk$(EXEEXT) pgawk$(EXEEXT)
 
 # A little extra clean up when making distributions.
-# FIXME: most of this rule should go away upon switching to libtool.
+# And additional set up for the pc directory.
 dist-hook:
 	cd $(distdir)/extension ; rm -f *.o *.so
-	cd $(distdir) ; find . -type d -name CVS | xargs rm -fr
+	cd $(srcdir)/pc ; \
+	sed -n -f configpk.sed < ../configure.ac > tmp.sed ; \
+	sed -f config.sed < ../configh.in > config.tmp ; \
+	sed -f tmp.sed < config.tmp > config.h ; \
+	$(RM) tmp.sed config.tmp
 
 # Special rules for individual files
+# Use of awk instead of $(AWK) is deliberate, in case gawk doesn't build
+# or work correctly.
 awkgram.c: awkgram.y
 	$(YACC) $(AM_YFLAGS) $(YFLAGS) $<
-	sed 's/parse error/syntax error/g' < y.tab.c | $(AWK) -f $(srcdir)/bisonfix.awk > $*.c && rm y.tab.c
+	sed 's/parse error/syntax error/g' < y.tab.c | awk -f $(srcdir)/bisonfix.awk awkgram > $*.c && rm y.tab.c
 	if test -f y.tab.h; then \
 	if cmp -s y.tab.h $*.h; then rm -f y.tab.h; else mv y.tab.h $*.h; fi; \
 	else :; fi
 
 version.c: config.status version.in
 	$(SHELL) ./config.status --file=version.c:version.in
+
+command.c: command.y
+	$(YACC) -p zz $<
+	sed 's/parse error/syntax error/g' < y.tab.c | awk -f $(srcdir)/bisonfix.awk command > $*.c && rm y.tab.c
 
 # This is for my development & testing.
 efence: gawk
@@ -187,5 +200,5 @@ diffout valgrind-scan:
 
 valgrind:
 	cd test; rm -f log.[0-9]*; \
-	make check AWK="valgrind --log-file=log ../gawk"; \
+	make check AWK="valgrind --leak-check=full --log-file=log.%p ../gawk"; \
 	make valgrind-scan

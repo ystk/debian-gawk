@@ -1,4 +1,5 @@
-#!/bin/sh -e
+#!/bin/sh
+set -e
 
 update-alternatives --quiet --install /usr/bin/awk awk /usr/bin/gawk 10 \
   --slave /usr/share/man/man1/awk.1.gz awk.1.gz /usr/share/man/man1/gawk.1.gz \
@@ -9,4 +10,4 @@ for badlink in /usr/man/man1/awk.1 /usr/man/man1/nawk.1; do
     if ! ls -l $(ls -l $badlink | cut -d">" -f2) >/dev/null 2>&1; then
       rm -f $badlink; fi; fi; done
 
-exit 0
+#DEBHELPER#

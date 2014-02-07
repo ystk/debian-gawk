@@ -11,7 +11,7 @@
  */
 
 /* 
- * Copyright (C) 1995-2004, 2008, 2009 the Free Software Foundation, Inc.
+ * Copyright (C) 1995-2004, 2008, 2009, 2011 the Free Software Foundation, Inc.
  * 
  * This file is part of GAWK, the GNU implementation of the
  * AWK Programming Language.
@@ -31,13 +31,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  */
 
-/* for MIPS RiscOS, from Nelson H. F. Beebe, beebe@math.utah.edu */
-#if defined(__host_mips) && defined(SYSTYPE_BSD43)
-#undef HAVE_STRTOD
-#undef HAVE_STRERROR
-#endif
-
-/* for VMS POSIX, from Pat Rankin, rankin@pactechdata.com */
+/* for VMS POSIX, from Pat Rankin, r.pat.rankin@gmail.com */
 #ifdef VMS_POSIX
 #undef VMS
 #include "vms/redirect.h"
@@ -48,41 +42,9 @@
 #define GETPGRP_VOID	1
 #endif
 
-/* For Amigas, from Fred Fish, fnf@ninemoons.com */
-#ifdef __amigaos__
-#define fork vfork
-#endif
-
-/* For BeOS, from mc@whoever.com */
-#if defined(__dest_os) && __dest_os == __be_os
-#define BROKEN_STRNCASECMP
-#define ELIDE_CODE
-#include <alloca.h>
-#endif
-
-/* For Tandems, based on code from scldad@sdc.com.au */
-#ifdef TANDEM
-#define tempnam(a,b)      tmpnam(NULL)
-#define variable(a,b,c)   variabl(a,b,c)
-#define srandom srand
-#define random rand
-
-#include <cextdecs(PROCESS_GETINFO_)>
-#endif
-
-/* For 16-bit DOS */
-#if defined(MSC_VER) && defined(MSDOS)
-#define NO_PROFILING	1
-#endif
-
 /* For MacOS X, which is almost BSD Unix */
 #ifdef __APPLE__
 #define HAVE_MKTIME	1
-#endif
-
-#ifdef __WIN32__
-#undef HAVE_STRFTIME
-/* #define system(s) os_system(s) */
 #endif
 
 /* For ULTRIX 4.3 */
@@ -106,8 +68,11 @@
 /* For z/OS, from Dave Pitts */
 #ifdef ZOS_USS
 #undef HAVE_DLFCN_H
-#endif
-
-#if !defined(NO_LIBSIGSEGV) && !defined(DJGPP) && !defined(VMS)
-#define HAVE_SIGSEGV_H 1
+#undef HAVE_SYS_PARAM_H
+#undef HAVE_MCHECK_H
+#undef HAVE_SETENV
+#define setenv zos_setenv
+#define unsetenv zos_unsetenv
+extern int setenv(const char *name, const char *value, int rewrite);
+extern int unsetenv(const char *name);
 #endif

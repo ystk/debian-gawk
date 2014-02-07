@@ -1,6 +1,7 @@
 /* vms_misc.c -- sustitute code for missing/different run-time library routines.
 
-   Copyright (C) 1991-1993, 1996-1997, 2001, 2003, 2009 the Free Software Foundation, Inc.
+   Copyright (C) 1991-1993, 1996-1997, 2001, 2003, 2009, 2010, 2011
+   the Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -37,7 +38,7 @@
 #ifdef strerror
 # undef strerror
 #endif
-extern char *strerror P((int,...));
+extern char *strerror(int,...);
 
 /* vms_strerror() -- convert numeric error code into text string */
 char *
@@ -88,8 +89,8 @@ unlink( const char *file_spec ) {
 #ifdef open
 # undef open
 #endif
-extern int creat P((const char *,int,...));
-extern int open  P((const char *,int,unsigned,...));
+extern int creat(const char *,int,...);
+extern int open(const char *,int,unsigned,...);
 
 /* vms_open() - open a file, possibly creating it */
 int
@@ -97,7 +98,7 @@ vms_open( const char *name, int mode, ... )
 {
     int result;
 
-    if (STREQN(name, "/dev/", 5)) {
+    if (strncmp(name, "/dev/", 5) == 0) {
 	/* (this used to be handled in vms_devopen(), but that is only
 	   called when opening files for output; we want it for input too) */
 	if (strcmp(name + 5, "null") == 0)	/* /dev/null -> NL: */
@@ -306,7 +307,7 @@ VMS_fstat (fd, statbuf)
 
   if (result == 0		/* GAWK addition; fixup /dev/null flags */
       && (statbuf->st_mode & S_IFREG)
-      && STREQ(statbuf->st_dev, "_NLA0:"))
+      && strcmp(statbuf->st_dev, "_NLA0:") == 0)
     {
       statbuf->st_mode &= ~S_IFREG;
       statbuf->st_mode |= S_IFCHR;
@@ -353,7 +354,7 @@ VMS_stat (name, statbuf)
 
   if (result == 0		/* GAWK addition; fixup /dev/null flags */
       && (statbuf->st_mode & S_IFREG)
-      && STREQ(statbuf->st_dev, "_NLA0:"))
+      && strcmp(statbuf->st_dev, "_NLA0:") == 0)
     {
       statbuf->st_mode &= ~S_IFREG;
       statbuf->st_mode |= S_IFCHR;

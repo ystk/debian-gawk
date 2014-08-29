@@ -1,15 +1,17 @@
 Source: gawk
 Section: interpreters
 Priority: optional
-Build-Depends: bison,
+Build-Depends: autotools-dev,
+               bison,
                debhelper (>= 9),
                gettext,
+               libmpfr-dev,
                libreadline-dev,
                libsigsegv-dev,
                locales (>= 0)
 Maintainer: Arthur Loiret <aloiret@debian.org>
 Uploaders: Jeroen Schot <schot@a-eskwadraat.nl>
-Standards-Version: 3.9.3
+Standards-Version: 3.9.5
 Homepage: http://www.gnu.org/software/gawk/
 
 Package: gawk

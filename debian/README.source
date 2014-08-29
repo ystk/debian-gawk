@@ -1,10 +1,11 @@
-gawk for Debian
----------------
+The source tarball is a copy of the upstream tarball with the following
+non-free files removed:
 
-This source is created from upstream tarball, with non-free files removed:
+doc/gawk.info
+doc/gawk.texi
+doc/gawkinet.info
+doc/gawkinet.texi
+doc/gawktexi.in
 
-	"rm doc/*.info doc/*.texi"
-
-Those are packaged in the gawk-doc package.
-
- -- Arthur Loiret <aloiret@debian.org>, Fri,  6 Nov 2009 12:55:03 +0200
+These files are licenced under the GNU Documentation license. They are
+available in the gawk-doc package.
